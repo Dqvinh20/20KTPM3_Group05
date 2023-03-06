@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">tripblog</string>
+    <string name="login_title">Login</string>
+    <string name="signup_title">Sign up</string>
+    <string name="forgot_password">Forgot password ?</string>
+    <string name="no_account">Not a member ?</string>
+    <string name="password_hint">Password</string>
+</resources>

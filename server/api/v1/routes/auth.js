@@ -38,8 +38,4 @@ router.post(
   AuthController.signup
 );
 
-router.get("/test", Passport.isAuth, (req, res) => {
-  return res.status(200).json({ success: true, msg: "Auth test" });
-});
-
 module.exports = router;

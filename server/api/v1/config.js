@@ -5,6 +5,7 @@ const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_P
 const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(connectionString, {
   ssl: isProduction,
+  logging: false,
 });
 
 sequelize

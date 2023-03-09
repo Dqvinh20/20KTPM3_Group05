@@ -1,48 +1,54 @@
-package com.example.tripblog.ui.login;
+package com.example.tripblog.ui.signup;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.tripblog.R;
 import com.example.tripblog.api.RetrofitClient;
 import com.example.tripblog.api.services.AuthService;
-import com.example.tripblog.databinding.ActivityLoginBinding;
 import com.example.tripblog.model.AuthResponse;
-import com.example.tripblog.ui.signup.SignupActivity;
+import com.example.tripblog.ui.login.LoginActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
+    private final String TAG = "SIGNUP";
     TextInputLayout editEmailLayout, editPasswordLayout;
     TextInputEditText editEmail, editPassword;
     Button loginBtn;
-    TextView forgotPasswordTxt, signupTxt;
     private final Retrofit retrofitClient = RetrofitClient.getInstance();
 
-    ActivityLoginBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityLoginBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_signup);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_ios_new_24);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        actionBar.setTitle(null);
+        Log.d("Signup", "Created");
 
         editEmailLayout = (TextInputLayout) findViewById(R.id.editEmailLayout);
         editEmail = (TextInputEditText) findViewById(R.id.editEmail);
@@ -51,36 +57,61 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         editPassword = (TextInputEditText) findViewById(R.id.editPassword);
 
         loginBtn = (Button) findViewById(R.id.loginBtn);
-        loginBtn.setOnClickListener(LoginActivity.this);
-
-        forgotPasswordTxt = (TextView) findViewById(R.id.forgotPasswordTxt);
-        forgotPasswordTxt.setOnClickListener(LoginActivity.this);
-        signupTxt = (TextView) findViewById(R.id.signupTxt);
-        signupTxt.setOnClickListener(LoginActivity.this);
+        loginBtn.setOnClickListener(SignupActivity.this);
 
         editEmail.addTextChangedListener(new ValidationTextWatcher(editEmail));
         editPassword.addTextChangedListener(new ValidationTextWatcher(editPassword));
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("LOGIN", "Login onResume");
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.signupTxt) {
-            goToSignup();
+        String email = editEmail.getText().toString();
+        String password = editPassword.getText().toString();
+        if (email.isEmpty()) {
+            editEmailLayout.setError("Email is required");
+            requestFocus(editEmail);
+            return;
         }
-        else if (view.getId() == R.id.forgotPasswordTxt) {
-            goToForgotPassword();
+
+        if (password.isEmpty()) {
+            editPasswordLayout.setError("Password is required");
+            requestFocus(editPassword);
+            return;
         }
-        else if (view.getId() == R.id.loginBtn) {
-            if (!validateEmail()) return;
-            if (!validatePassword()) return;
-            login();
-        }
+
+        AuthService authService = retrofitClient.create(AuthService.class);
+        authService.signup(email, password).enqueue(new Callback<AuthResponse>() {
+            @Override
+            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                AuthResponse body = response.body();
+                if (body.getStatus().equals( "failure")){
+                    editEmailLayout.setError(body.getError().getAsString());
+                    return;
+                }
+                else if (body.getStatus().equals( "error")) {
+                    JsonArray errors = (JsonArray) body.getError();
+                    Log.d(TAG, errors.toString());
+                    JsonObject content = errors.get(0).getAsJsonObject();
+                    if (content.get("param").getAsString().equals("email")) {
+                        editEmailLayout.setError(content.get("msg").toString());
+                    }
+                }
+
+                // TODO: Need to save jwt token
+                Toast.makeText(SignupActivity.this, body.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<AuthResponse> call, Throwable t) {
+                Log.e(TAG, t.toString());
+            }
+        });
     }
     private void requestFocus(View v) {
         if  (v.requestFocus()) {
@@ -122,56 +153,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return true;
     }
 
-    private void login() {
-        String email = editEmail.getText().toString();
-        String password = editPassword.getText().toString();
-        if (email.isEmpty()) {
-            editEmailLayout.setError("Email is required");
-            requestFocus(editEmail);
-            return;
-        }
-
-        if (password.isEmpty()) {
-            editPasswordLayout.setError("Password is required");
-            requestFocus(editPassword);
-            return;
-        }
-
-        AuthService authService = retrofitClient.create(AuthService.class);
-        authService.login(email, password).enqueue(new Callback<AuthResponse>() {
-            @Override
-            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                AuthResponse body = response.body();
-                if (body.getStatus().equals( "failure")){
-                    Log.d("LOGIN", body.getStatus());
-                    editEmailLayout.setError(body.getError().getAsString());
-                    return;
-                }
-                else if (body.getStatus().equals( "error")) {
-                }
-
-                // TODO: Need to save jwt token
-                Toast.makeText(LoginActivity.this, body.toString(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<AuthResponse> call, Throwable t) {
-                Log.e("LOGIN", t.toString());
-            }
-        });
-
-    }
-
-    private void goToForgotPassword() {
-        // TODO: Implement go to forgot password activity
-    }
-
-    private void goToSignup() {
-        // TODO: Implement go to signup activity
-        Intent signup = new Intent(LoginActivity.this, SignupActivity.class);
-        startActivity(signup);
-    }
-
     private class ValidationTextWatcher implements TextWatcher {
         private View view;
         private ValidationTextWatcher(View view) {
@@ -200,4 +181,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     }
+
 }

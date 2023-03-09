@@ -18,6 +18,10 @@ const Post = sequelize.define(
     brief_description: {
       type: DataTypes.STRING,
     },
+    cover_img: {
+      type: DataTypes.STRING,
+      defaultValue: 
+    }
   },
   { tableName: "posts" }
 );

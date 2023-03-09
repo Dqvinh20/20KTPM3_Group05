@@ -24,9 +24,20 @@ const getFollowings = async (req, res) => {
         res.json(error);
     }
 };
-
+const followUser = async (req, res) => {
+    try {
+        const user = await UserService.followUser(
+            req.params.user_id,
+            req.body.following_id
+        );
+        res.json(user);
+    } catch (error) {
+        res.json(error);
+    }
+};
 module.exports = {
     getFollowers,
     getFollowings,
     getUserInfo,
+    followUser,
 };

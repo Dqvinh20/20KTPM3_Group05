@@ -37,9 +37,11 @@ const getUserInfo = async (user_id) => {
         where: {
             id: user_id,
         },
-        attributes: ["id", "email", "avatar"],
+        attributes: ["id", "email", "followers_count", "following_count"],
     });
 };
+
+const followUser = async (user_id, following_id) => {};
 
 module.exports = {
     getUserByEmail,

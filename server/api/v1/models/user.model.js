@@ -51,6 +51,18 @@ const User = sequelize.define(
     }
 );
 
+User.belongsToMany(User, {
+    as: "followers",
+    through: "user_followers",
+    foreignKey: "following_id",
+    otherKey: "follower_id",
+});
+User.belongsToMany(User, {
+    as: "followings",
+    through: "user_followers",
+    foreignKey: "follower_id",
+    otherKey: "following_id",
+});
 User.prototype.checkPassword = function (plainPass, hashPass) {
     return bcrypt.compareSync(plainPass, hashPass);
 };

@@ -3,6 +3,7 @@ const Passport = require("./utils/passport");
 
 router.use("/auth", require("./routes/auth"));
 router.use("/post", Passport.isAuth, require("./routes/post"));
+router.use("/user", require("./routes/user"));
 
 // router.get("/test", (req, res) => {
 //   return res.send("test");

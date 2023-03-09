@@ -8,8 +8,32 @@ const getUserByEmail = async (email) => {
 const createUser = async (user) => {
     return await User.create(user);
 };
+const getFollowers = async (user_id) => {
+    return await User.findAll({
+        where: {
+            id: user_id,
+        },
+        include: {
+            association: "followers",
+            attributes: ["id", "email", "avatar"],
+        },
+    });
+};
 
+const getFollowings = async (user_id) => {
+    return await User.findAll({
+        where: {
+            id: user_id,
+        },
+        include: {
+            association: "followings",
+            attributes: ["id", "email", "avatar"],
+        },
+    });
+};
 module.exports = {
     getUserByEmail,
     createUser,
+    getFollowers,
+    getFollowings,
 };

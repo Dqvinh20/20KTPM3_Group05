@@ -8,7 +8,14 @@ const getFollowers = async (req, res) => {
         res.json(error);
     }
 };
-
+const getUserInfo = async (req, res) => {
+    try {
+        const user = await UserService.getUserInfo(req.params.user_id);
+        res.json(user);
+    } catch (error) {
+        res.json(error);
+    }
+};
 const getFollowings = async (req, res) => {
     try {
         const followings = await UserService.getFollowings(req.params.user_id);
@@ -21,4 +28,5 @@ const getFollowings = async (req, res) => {
 module.exports = {
     getFollowers,
     getFollowings,
+    getUserInfo,
 };

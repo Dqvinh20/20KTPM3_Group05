@@ -31,9 +31,20 @@ const getFollowings = async (user_id) => {
         },
     });
 };
+
+const getUserInfo = async (user_id) => {
+    return await User.findOne({
+        where: {
+            id: user_id,
+        },
+        attributes: ["id", "email", "avatar"],
+    });
+};
+
 module.exports = {
     getUserByEmail,
     createUser,
     getFollowers,
     getFollowings,
+    getUserInfo,
 };

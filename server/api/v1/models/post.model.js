@@ -4,22 +4,26 @@ const sequelize = require("../config");
 const User = require("./user.model");
 
 const Post = sequelize.define(
-    "Post",
-    {
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
-            allowNull: false,
-        },
-        title: {
-            type: DataTypes.STRING,
-        },
-        brief_description: {
-            type: DataTypes.STRING,
-        },
+  "Post",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false,
     },
-    { tableName: "posts" }
+    title: {
+      type: DataTypes.STRING,
+    },
+    brief_description: {
+      type: DataTypes.STRING,
+    },
+    cover_img: {
+      type: DataTypes.STRING,
+      defaultValue: 
+    }
+  },
+  { tableName: "posts" }
 );
 
 User.hasMany(Post, {

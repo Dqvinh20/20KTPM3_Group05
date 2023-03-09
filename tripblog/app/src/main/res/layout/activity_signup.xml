@@ -9,7 +9,7 @@
     android:padding="@dimen/layout_padding"
     android:layout_gravity="center_vertical"
     android:gravity="start"
-    tools:context=".ui.login.LoginActivity"
+    tools:context=".ui.signup.SignupActivity"
     >
     <ImageView
         android:layout_width="@dimen/logo_width"
@@ -27,7 +27,7 @@
         android:layout_gravity="center_horizontal"
         style="@style/MainTitleText"
         android:textAllCaps="true"
-        android:text="@string/login_title"
+        android:text="@string/signup_title"
         />
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -75,36 +75,5 @@
 
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:text="@string/login_title" />
-
-    <TextView
-        android:textSize="15sp"
-        android:layout_marginBottom="@dimen/auth_item_margin_bottom"
-        android:textColor="@color/hyper_link"
-        android:id="@+id/forgotPasswordTxt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/forgot_password"
-        android:textAlignment="textEnd"
-        />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/no_account" />
-
-        <TextView
-            android:layout_marginStart="12dp"
-            android:textColor="@color/hyper_link"
-            android:id="@+id/signupTxt"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/signup_title" />
-    </LinearLayout>
+        android:text="@string/signup_title" />
 </LinearLayout>

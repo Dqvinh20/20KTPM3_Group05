@@ -1,9 +1,11 @@
 const router = require("express").Router();
+const upload = require("../utils/multer");
+
 const PostController = require("../controllers/post.controller");
 
 router.get("/", PostController.getAll);
 
-router.post("/create", PostController.createPost);
+router.post("/create", upload.single("cover_img"), PostController.createPost);
 
 router.patch("/update", PostController.updatePost);
 

@@ -1,4 +1,4 @@
-const User = require("../models/user.model");
+const { User } = require("../models/user.model");
 
 const getUserByEmail = async (email) => {
     console.log("email: " + email);
@@ -41,7 +41,20 @@ const getUserInfo = async (user_id) => {
     });
 };
 
-const followUser = async (user_id, following_id) => {};
+const followUser = async (user_id, following_id) => {
+    return await FollowUser.create({
+        follower_id: user_id,
+        following_id: following_id,
+    });
+};
+const checkFollowing = async (user_id, following_id) => {
+    return await FollowUser.findOne({
+        where: {
+            follower_id: user_id,
+            following_id: following_id,
+        },
+    });
+};
 
 module.exports = {
     getUserByEmail,
@@ -49,4 +62,6 @@ module.exports = {
     getFollowers,
     getFollowings,
     getUserInfo,
+    followUser,
+    checkFollowing,
 };

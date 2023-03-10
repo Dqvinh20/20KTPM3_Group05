@@ -25,11 +25,17 @@ const getFollowings = async (req, res) => {
     }
 };
 const followUser = async (req, res) => {
+    const user_id = req.user.id; // lấy id của bản thân người dùng
+    const following_id = req.params.user_id; // lấy id của người  mà người dùng muốn follow
     try {
-        const user = await UserService.followUser(
-            req.params.user_id,
-            req.body.following_id
+        const existFollowing = await UserService.checkFollowing(
+            user_id,
+            following_id
         );
+        if (existFollowing)
+            return res.json({ message: "You are already following this user" });
+        const user = await UserService.followUser(user_id, following_id);
+        console.log(user);
         res.json(user);
     } catch (error) {
         res.json(error);

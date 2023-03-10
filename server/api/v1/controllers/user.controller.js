@@ -28,14 +28,18 @@ const followUser = async (req, res) => {
     const user_id = req.user.id; // lấy id của bản thân người dùng
     const following_id = req.params.user_id; // lấy id của người  mà người dùng muốn follow
     try {
-        const existFollowing = await UserService.checkFollowing(
-            user_id,
-            following_id
-        );
-        if (existFollowing)
-            return res.json({ message: "You are already following this user" });
         const user = await UserService.followUser(user_id, following_id);
-        console.log(user);
+        console.log("User" + user);
+        res.json(user);
+    } catch (error) {
+        res.json(error);
+    }
+};
+const unfollowUser = async (req, res) => {
+    const user_id = req.user.id; // lấy id của bản thân người dùng
+    const following_id = req.params.user_id; // lấy id của người  mà người dùng muốn follow
+    try {
+        const user = await UserService.unfollowUser(user_id, following_id);
         res.json(user);
     } catch (error) {
         res.json(error);
@@ -46,4 +50,5 @@ module.exports = {
     getFollowings,
     getUserInfo,
     followUser,
+    unfollowUser,
 };

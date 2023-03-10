@@ -41,24 +41,28 @@ const getUserInfo = async (user_id) => {
     });
 };
 const incressFollowing = async (user_id) => {
+    // người dùng khi follow thì tăng số lượng người mà người dùng đó đang follow lên 1
     return await User.update(
         { following_count: sequelize.literal("following_count + 1") },
         { where: { id: user_id } }
     );
 };
 const decressFollowing = async (user_id) => {
+    // người dùng khi unfollow thì giảm số lượng người mà người dùng đó đang follow xuống 1
     return await User.update(
         { following_count: sequelize.literal("following_count - 1") },
         { where: { id: user_id } }
     );
 };
 const decressFollower = async (user_id) => {
+    // người dùng khi unfollow thì giảm số lượng người mà người dùng đó đang follow xuống 1
     return await User.update(
         { followers_count: sequelize.literal("followers_count - 1") },
         { where: { id: user_id } }
     );
 };
 const incressFollower = async (user_id) => {
+    // người dùng khi follow thì tăng số lượng người mà người dùng đó đang follow lên 1
     return await User.update(
         { followers_count: sequelize.literal("followers_count + 1") },
         { where: { id: user_id } }

@@ -11,9 +11,11 @@ var opts = {
 
 passport.use(
   new JWTStrategy(opts, function verify(jwtPayload, done) {
-    return User.findOne({ where: { id: jwtPayload.id } })
+    return User.findByPk(jwtPayload.id, {
+      attributes: { exclude: ["password"] },
+    })
       .then((user) => {
-        return done(null, user);
+        return done(null, user.toJSON());
       })
       .catch((err) => {
         return done(err);

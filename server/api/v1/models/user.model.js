@@ -29,6 +29,12 @@ const User = sequelize.define(
                 this.setDataValue("password", encryptPassword(value));
             },
         },
+        user_name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: "user " + Math.floor(Math.random() * 1000000),
+        },
+
         avatar: {
             type: DataTypes.STRING,
             defaultValue: "https://i.imgur.com/1Q9ZQ9r.png", // hinh test

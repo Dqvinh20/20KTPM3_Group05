@@ -45,10 +45,33 @@ const unfollowUser = async (req, res) => {
         res.json(error);
     }
 };
+const likePost = async (req, res) => {
+    const user_id = req.user.id;
+    const post_id = req.params.post_id;
+    try {
+        const post = await UserService.likePost(user_id, post_id);
+        res.json(post);
+    } catch (error) {
+        res.json(error);
+    }
+};
+const unlikePost = async (req, res) => {
+    const user_id = req.user.id;
+    const post_id = req.params.post_id;
+    try {
+        const post = await UserService.unlikePost(user_id, post_id);
+        res.json(post);
+    } catch (error) {
+        res.json(error);
+    }
+};
+
 module.exports = {
     getFollowers,
     getFollowings,
     getUserInfo,
     followUser,
     unfollowUser,
+    likePost,
+    unlikePost,
 };

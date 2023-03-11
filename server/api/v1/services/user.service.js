@@ -1,5 +1,7 @@
 const User = require("../models/user.model");
 const sequelize = require("../config");
+const PostService = require("../services/post.service");
+
 const getUserByEmail = async (email) => {
     console.log("email: " + email);
     return await User.findOne({ where: { email } });
@@ -15,7 +17,7 @@ const getFollowers = async (user_id) => {
         },
         include: {
             association: "followers",
-            attributes: ["id", "email", "avatar"],
+            attributes: ["id", "user_name", "email", "avatar"],
         },
     });
 };
@@ -27,7 +29,7 @@ const getFollowings = async (user_id) => {
         },
         include: {
             association: "followings",
-            attributes: ["id", "email", "avatar"],
+            attributes: ["id", "user_name", "email", "avatar"],
         },
     });
 };
@@ -37,31 +39,38 @@ const getUserInfo = async (user_id) => {
         where: {
             id: user_id,
         },
-        attributes: ["id", "email", "followers_count", "following_count"],
+        attributes: [
+            "id",
+            "user_name",
+            "email",
+            "avatar",
+            "followers_count",
+            "following_count",
+        ],
     });
 };
-const incressFollowing = async (user_id) => {
+const increaseFollowing = async (user_id) => {
     // người dùng khi follow thì tăng số lượng người mà người dùng đó đang follow lên 1
     return await User.update(
         { following_count: sequelize.literal("following_count + 1") },
         { where: { id: user_id } }
     );
 };
-const decressFollowing = async (user_id) => {
+const decreaseFollowing = async (user_id) => {
     // người dùng khi unfollow thì giảm số lượng người mà người dùng đó đang follow xuống 1
     return await User.update(
         { following_count: sequelize.literal("following_count - 1") },
         { where: { id: user_id } }
     );
 };
-const decressFollower = async (user_id) => {
+const decreaseFollower = async (user_id) => {
     // người dùng khi unfollow thì giảm số lượng người mà người dùng đó đang follow xuống 1
     return await User.update(
         { followers_count: sequelize.literal("followers_count - 1") },
         { where: { id: user_id } }
     );
 };
-const incressFollower = async (user_id) => {
+const increaseFollower = async (user_id) => {
     // người dùng khi follow thì tăng số lượng người mà người dùng đó đang follow lên 1
     return await User.update(
         { followers_count: sequelize.literal("followers_count + 1") },
@@ -79,8 +88,8 @@ const followUser = async (user_id, following_id) => {
     if (existingFollow) {
         return { error: "User already followed" };
     }
-    incressFollowing(user_id);
-    incressFollower(following_id);
+    increaseFollowing(user_id);
+    increaseFollower(following_id);
 
     return await sequelize.models.user_followers.create({
         follower_id: user_id,
@@ -97,11 +106,36 @@ const unfollowUser = async (user_id, following_id) => {
     if (!existingFollow) {
         return { error: "User already unfollowed" };
     }
-    decressFollowing(user_id);
-    decressFollower(following_id);
+    decreaseFollowing(user_id);
+    decreaseFollower(following_id);
     return existingFollow.destroy();
 };
 
+const likePost = async (user_id, post_id) => {
+    const existingLike = await sequelize.models.users_posts_like.findOne({
+        where: {
+            user_id: user_id,
+            post_id: post_id,
+        },
+    });
+    if (existingLike) return { error: "The user liked the post" };
+    PostService.increaseLikePost(post_id);
+    return await sequelize.models.users_posts_like.create({
+        user_id: user_id,
+        post_id: post_id,
+    });
+};
+const unlikePost = async (user_id, post_id) => {
+    const existingLike = await sequelize.models.users_posts_like.findOne({
+        where: {
+            user_id: user_id,
+            post_id: post_id,
+        },
+    });
+    if (!existingLike) return { error: "The user not like the post" };
+    PostService.decreaseLikePost(post_id);
+    return existingLike.destroy();
+};
 module.exports = {
     getUserByEmail,
     createUser,
@@ -109,9 +143,11 @@ module.exports = {
     getFollowings,
     getUserInfo,
     followUser,
-    incressFollowing,
-    decressFollowing,
-    decressFollower,
-    incressFollower,
+    increaseFollowing,
+    decreaseFollowing,
+    decreaseFollower,
+    increaseFollower,
     unfollowUser,
+    likePost,
+    unlikePost,
 };

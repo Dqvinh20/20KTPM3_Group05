@@ -1,23 +1,16 @@
 {
-  "development": {
-    "username": "postgres",
-    "password": "vinh1706",
-    "database": "android_db",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "test": {
-    "username": "postgres",
-    "password": "vinh1706",
-    "database": "android_db",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "production": {
-    "username": "postgres",
-    "password": "vinh1706",
-    "database": "android_db",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  }
+    "development": {
+        "username": "root",
+        "password": "123456",
+        "database": "location_map",
+        "host": "127.0.0.1",
+        "dialect": "postgres"
+    },
+    "test": {
+        "username": "root",
+        "password": "123456",
+        "database": "location_map",
+        "host": "127.0.0.1",
+        "dialect": "postgres"
+    }
 }

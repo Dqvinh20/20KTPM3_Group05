@@ -13,7 +13,7 @@ import com.example.tripblog.ui.fragments.HomeFragment;
 import com.example.tripblog.ui.fragments.CreateFragment;
 import com.example.tripblog.ui.fragments.ProfileFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainCallbacks{
 
     ActivityMainBinding binding;
     @Override
@@ -39,5 +39,13 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onMsgFromFragToMain(String sender, String strValue) {
+        if(sender.equals("CREATE_TRIP_BTN")){
+            replaceFragment(new CreateFragment());
+            binding.bottomNavigationView.setSelectedItemId(R.id.create);
+        }
     }
 }

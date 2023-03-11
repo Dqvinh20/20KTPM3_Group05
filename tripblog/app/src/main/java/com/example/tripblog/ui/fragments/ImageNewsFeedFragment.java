@@ -17,6 +17,7 @@ import com.example.tripblog.ui.MainActivity;
 
 public class ImageNewsFeedFragment extends Fragment {
     HomeFragment homeFragment;
+    MainActivity main;
     Button createtripButton;
     public static ImageNewsFeedFragment newInstance(String Arg){
         ImageNewsFeedFragment fragment = new ImageNewsFeedFragment();
@@ -29,6 +30,7 @@ public class ImageNewsFeedFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
         homeFragment = (HomeFragment) getParentFragment();
+        main = (MainActivity) getActivity();
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,7 +40,7 @@ public class ImageNewsFeedFragment extends Fragment {
         createtripButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                main.onMsgFromFragToMain("CREATE_TRIP_BTN","");
             }
         });
         return relativeLayout;

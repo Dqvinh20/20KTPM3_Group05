@@ -3,15 +3,64 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/teal_200"
+    android:background="@color/white"
     tools:context=".ui.fragments.HomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textSize="26dp"
-        android:text="Home" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <FrameLayout
+                android:id="@+id/infornewsfeed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1">
+                <TextView
+                    android:layout_marginLeft="20sp"
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Featured guides from users"
+                    android:textSize="29sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"/>
+
+                <!--        <HorizontalScrollView-->
+                <!--            android:layout_width="match_parent"-->
+                <!--            android:layout_height="wrap_content">-->
+
+                <!--            <LinearLayout-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="wrap_content"-->
+                <!--                android:orientation="horizontal">-->
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/listPostnewsFeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+
+                    android:paddingHorizontal="10dp"
+                    android:clipToPadding="false"
+                    />
+                <!--            </LinearLayout>-->
+                <!--        </HorizontalScrollView>-->
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
 
 </FrameLayout>

@@ -1,5 +1,7 @@
 package com.example.tripblog.api;
 
+//import androidx.viewbinding.BuildConfig;
+
 import com.example.tripblog.BuildConfig;
 
 import java.util.concurrent.TimeUnit;

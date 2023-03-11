@@ -1,5 +1,6 @@
 package com.example.tripblog.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ import com.example.tripblog.R;
 import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.component.CustomPostNewsfeedAdapter;
 import com.example.tripblog.ui.component.PostnewsfeedAdapterRecycle;
+import com.example.tripblog.ui.post.ViewPost;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -108,12 +110,21 @@ public class HomeFragment extends Fragment {
         listPostnewsFeed.setLayoutManager(linearLayoutManager);
         PostnewsfeedAdapterRecycle postnewfeed = new PostnewsfeedAdapterRecycle();
         postnewfeed.setDate(id,name,title,briefDes,views,avatars,images);
+        postnewfeed.setContext((MainActivity) getContext());
         TextView home = frameLayout.findViewById(R.id.home);
+
         postnewfeed.setItemClickListener(new PostnewsfeedAdapterRecycle.ItemClickListener() {
             @Override
-            public void onItemClick(String details) {
+            public void onItemClick(String postid) {
+                home.setText("1");
+                Intent intent=new Intent(getContext(), ViewPost.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("postid", postid);
+                intent.putExtras(bundle);
                 home.setText("Click");
-                showToast(details);
+                showToast(postid);
+                startActivityForResult(intent, 1122);
+
             }
         });
         listPostnewsFeed.setAdapter(postnewfeed);

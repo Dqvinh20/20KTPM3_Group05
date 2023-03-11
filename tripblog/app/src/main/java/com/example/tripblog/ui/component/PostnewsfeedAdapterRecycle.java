@@ -1,5 +1,8 @@
 package com.example.tripblog.ui.component;
 
+
+
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,9 +15,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tripblog.R;
+import com.example.tripblog.ui.MainActivity;
+import com.example.tripblog.ui.post.ViewPost;
 
 public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<PostnewsfeedAdapterRecycle.PostNewsFeedHolder>{
     private String[] avatars; String[] images; String[] name; String[] tilte; String[] brief_des;String[] views; String[] id;
+    private Context context;
     private AdapterView.OnItemClickListener listener;
     private ItemClickListener itemClickListener;
     public void setDate(String[] id,
@@ -31,10 +37,14 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
         this.brief_des = brief_des;
         this.views = views;
         this.images = images;
+
         notifyDataSetChanged();
     }
     public  void setItemClickListener(ItemClickListener itemClickListener){
         this.itemClickListener = itemClickListener;
+    }
+    public  void setContext(Context context){
+        this.context =  context;
     }
     @NonNull
     @Override
@@ -58,8 +68,7 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
         holder.imageView.setImageResource(R.drawable.japan);
         String urldisplay = avatars[position];
         holder.itemView.setOnClickListener(view -> {
-
-            itemClickListener.onItemClick(name[position]);
+            itemClickListener.onItemClick(id[position]);
         });
         holder.itemView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -86,13 +95,14 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
 
     }
 
+
     @Override
     public int getItemCount() {
         if(name != null) return name.length;
         return 0;
     }
     public interface ItemClickListener{
-        void onItemClick(String details);
+        void onItemClick(String postid);
     }
     public class PostNewsFeedHolder extends RecyclerView.ViewHolder{
         private TextView namelb ;

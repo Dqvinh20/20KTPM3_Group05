@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +36,9 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    ImageNewsFeedFragment imageNewsFeedFragment;
+    FragmentTransaction ft;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -99,6 +103,10 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        ft = getFragmentManager().beginTransaction();
+        imageNewsFeedFragment = ImageNewsFeedFragment.newInstance("Image Infor");
+        ft.replace(R.id.infornewsfeed,imageNewsFeedFragment);
+        ft.commit();
     }
 
     @Override
@@ -111,17 +119,14 @@ public class HomeFragment extends Fragment {
         PostnewsfeedAdapterRecycle postnewfeed = new PostnewsfeedAdapterRecycle();
         postnewfeed.setDate(id,name,title,briefDes,views,avatars,images);
         postnewfeed.setContext((MainActivity) getContext());
-        TextView home = frameLayout.findViewById(R.id.home);
 
         postnewfeed.setItemClickListener(new PostnewsfeedAdapterRecycle.ItemClickListener() {
             @Override
             public void onItemClick(String postid) {
-                home.setText("1");
                 Intent intent=new Intent(getContext(), ViewPost.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("postid", postid);
                 intent.putExtras(bundle);
-                home.setText("Click");
                 showToast(postid);
                 startActivityForResult(intent, 1122);
 

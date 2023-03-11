@@ -14,6 +14,7 @@ import com.example.tripblog.ui.fragments.CreateFragment;
 import com.example.tripblog.ui.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
+
     ActivityMainBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

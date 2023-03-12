@@ -12,11 +12,11 @@ router.delete("/unlike/:post_id", UserController.unlikePost);
 router.patch("/update", multer.single("avatar_img"), UserController.updateUser);
 module.exports = router;
 
-//PATCH /update/:user_id: Cập   nhật thông tin cá nhân
-//POST /reset-password: Đặt lại mật khẩu
+// TODO:
 
 //DONE
-// TODO:
+//PATCH /update/:user_id: Cập   nhật thông tin cá nhân
+//POST /reset-password: Đặt lại mật khẩu
 //GET /like/:post_id: Thích bài viết
 //GET /un-like/:post_id: Bỏ like bài viết
 //GET /:user_id: Lấy thông tin cá nhân

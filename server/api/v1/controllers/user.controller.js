@@ -1,4 +1,5 @@
 const UserService = require("../services/user.service");
+const cloudinary = require("../utils/cloudinary");
 
 const getFollowers = async (req, res) => {
     try {
@@ -65,7 +66,31 @@ const unlikePost = async (req, res) => {
         res.json(error);
     }
 };
+const updateUser = async (req, res) => {
+    const user_id = req.user.id;
+    const user_name = req.body;
+    var avatar_img_url = null;
 
+    if (req.file) {
+        const upload_img = await Promise.resolve(
+            cloudinary.uploadStream(req.file.buffer, {
+                folder: "avatar/" + req.user.id,
+            })
+        );
+        avatar_img_url = upload_img.url;
+    }
+
+    try {
+        const update = await UserService.updateUser(
+            user_id,
+            user_name,
+            avatar_img_url
+        );
+        res.json(update);
+    } catch (error) {
+        res.json(error);
+    }
+};
 module.exports = {
     getFollowers,
     getFollowings,
@@ -74,4 +99,5 @@ module.exports = {
     unfollowUser,
     likePost,
     unlikePost,
+    updateUser,
 };

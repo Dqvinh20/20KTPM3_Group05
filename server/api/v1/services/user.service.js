@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const sequelize = require("../config");
 const PostService = require("../services/post.service");
+const { where } = require("sequelize");
 
 const getUserByEmail = async (email) => {
     console.log("email: " + email);
@@ -136,6 +137,20 @@ const unlikePost = async (user_id, post_id) => {
     PostService.decreaseLikePost(post_id);
     return existingLike.destroy();
 };
+const updateUser = async (user_id, user_name, avatar_url) => {
+    return await User.update(
+        {
+            user_name: user_name,
+            avatar: avatar_url,
+        },
+
+        {
+            where: {
+                id: user_id,
+            },
+        }
+    );
+};
 module.exports = {
     getUserByEmail,
     createUser,
@@ -150,4 +165,5 @@ module.exports = {
     unfollowUser,
     likePost,
     unlikePost,
+    updateUser,
 };

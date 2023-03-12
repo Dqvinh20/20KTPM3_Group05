@@ -42,4 +42,28 @@ router.post(
     AuthController.signup
 );
 
+router.post(
+    "/reset-password",
+    [
+        body("email").trim().isEmail(),
+        body("email")
+            .trim()
+            .custom(async (value) => {
+                try {
+                    console.log(value);
+                    const user = await UserService.getUserByEmail(value);
+                    if (!user) {
+                        return Promise.reject("E-mail not exist");
+                    }
+                } catch (error) {
+                    return Promise.reject(
+                        "Error occurred while validating e-mail"
+                    );
+                }
+            }),
+    ],
+    Validation.validate,
+    AuthController.resetPassword
+);
+
 module.exports = router;

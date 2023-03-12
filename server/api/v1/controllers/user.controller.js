@@ -92,6 +92,7 @@ const updateUser = async (req, res) => {
         res.json(error);
     }
 };
+
 module.exports = {
     getFollowers,
     getFollowings,

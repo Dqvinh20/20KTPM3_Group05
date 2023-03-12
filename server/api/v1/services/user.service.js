@@ -11,6 +11,7 @@ const getUserByEmail = async (email) => {
 const createUser = async (user) => {
     return await User.create(user);
 };
+
 const getFollowers = async (user_id) => {
     return await User.findAll({
         where: {
@@ -50,6 +51,7 @@ const getUserInfo = async (user_id) => {
         ],
     });
 };
+
 const increaseFollowing = async (user_id) => {
     // người dùng khi follow thì tăng số lượng người mà người dùng đó đang follow lên 1
     return await User.update(
@@ -57,6 +59,7 @@ const increaseFollowing = async (user_id) => {
         { where: { id: user_id } }
     );
 };
+
 const decreaseFollowing = async (user_id) => {
     // người dùng khi unfollow thì giảm số lượng người mà người dùng đó đang follow xuống 1
     return await User.update(
@@ -64,6 +67,7 @@ const decreaseFollowing = async (user_id) => {
         { where: { id: user_id } }
     );
 };
+
 const decreaseFollower = async (user_id) => {
     // người dùng khi unfollow thì giảm số lượng người mà người dùng đó đang follow xuống 1
     return await User.update(
@@ -71,6 +75,7 @@ const decreaseFollower = async (user_id) => {
         { where: { id: user_id } }
     );
 };
+
 const increaseFollower = async (user_id) => {
     // người dùng khi follow thì tăng số lượng người mà người dùng đó đang follow lên 1
     return await User.update(
@@ -97,6 +102,7 @@ const followUser = async (user_id, following_id) => {
         following_id: following_id,
     });
 };
+
 const unfollowUser = async (user_id, following_id) => {
     const existingFollow = await sequelize.models.user_followers.findOne({
         where: {
@@ -126,6 +132,7 @@ const likePost = async (user_id, post_id) => {
         post_id: post_id,
     });
 };
+
 const unlikePost = async (user_id, post_id) => {
     const existingLike = await sequelize.models.users_posts_like.findOne({
         where: {
@@ -137,6 +144,7 @@ const unlikePost = async (user_id, post_id) => {
     PostService.decreaseLikePost(post_id);
     return existingLike.destroy();
 };
+
 const updateUser = async (user_id, user_name, avatar_url) => {
     return await User.update(
         {
@@ -151,6 +159,16 @@ const updateUser = async (user_id, user_name, avatar_url) => {
         }
     );
 };
+
+const updatePassword = async (email, password) => {
+    return await User.update(
+        {
+            password: password,
+        },
+        { where: { email: email } }
+    );
+};
+
 module.exports = {
     getUserByEmail,
     createUser,
@@ -166,4 +184,5 @@ module.exports = {
     likePost,
     unlikePost,
     updateUser,
+    updatePassword,
 };

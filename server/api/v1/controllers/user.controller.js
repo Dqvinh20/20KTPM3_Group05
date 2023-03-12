@@ -68,7 +68,8 @@ const unlikePost = async (req, res) => {
 };
 const updateUser = async (req, res) => {
     const user_id = req.user.id;
-    const user_name = req.body;
+    const { user_name } = req.body;
+    console.log(req.body);
     var avatar_img_url = null;
 
     if (req.file) {

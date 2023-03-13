@@ -10,18 +10,18 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.example.tripblog.R;
+import com.example.tripblog.ui.PlanListAdapter;
 import com.example.tripblog.ui.ViewPagerAdapter;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link PlanFragment#newInstance} factory method to
+ * Use the {@link PrivatePlanFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PlanFragment extends Fragment {
+public class PrivatePlanFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,7 +36,7 @@ public class PlanFragment extends Fragment {
     ViewPager2 viewPager;
 
 
-    public PlanFragment() {
+    public PrivatePlanFragment() {
         // Required empty public constructor
     }
 
@@ -49,8 +49,8 @@ public class PlanFragment extends Fragment {
      * @return A new instance of fragment PublicPlanFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PlanFragment newInstance(String param1, String param2) {
-        PlanFragment fragment = new PlanFragment();
+    public static PrivatePlanFragment newInstance(String param1, String param2) {
+        PrivatePlanFragment fragment = new PrivatePlanFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -71,22 +71,14 @@ public class PlanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        return inflater.inflate(R.layout.fragment_private_plan, container, false);
     }
-//    @Override
-//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-//        viewPagerAdapter = new ViewPagerAdapter(this);
-//        viewPager = view.findViewById(R.id.pager);
-//        viewPager.setAdapter(viewPagerAdapter);
-//    }
+    String[] name = {"Thailand Plan", "Trekking Plan", "Must-go Places", "Nevada Plan"};
+    Integer[] img = {R.drawable.da_lat, R.drawable.da_lat, R.drawable.da_lat, R.drawable.da_lat};
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        viewPagerAdapter = new ViewPagerAdapter(this);
-        viewPager = view.findViewById(R.id.pager);
-        viewPager.setAdapter(viewPagerAdapter);
-        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> tab.setText("OBJECT " + (position + 1))
-        ).attach();
+        super.onViewCreated(view, savedInstanceState);
+        ListView planList = (ListView) view.findViewById(R.id.userList);
+        planList.setAdapter(new PlanListAdapter(getContext(), R.layout.plan_item, name, img));
     }
 }

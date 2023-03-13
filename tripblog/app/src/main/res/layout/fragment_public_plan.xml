@@ -3,12 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.PlanFragment">
+    tools:context=".ui.fragments.PublicPlanFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ListView
+        android:id="@+id/userList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="hello blank fragment" />
+        android:layout_height="wrap_content"
+        android:divider="@color/black"
+        android:dividerHeight="0.3dp"
+        >
+
+    </ListView>
 
 </FrameLayout>

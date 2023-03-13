@@ -1,35 +1,38 @@
 package com.example.tripblog.ui;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.tripblog.ui.fragments.PlanObjectFragment;
+import com.example.tripblog.ui.fragments.PrivatePlanFragment;
+import com.example.tripblog.ui.fragments.PublicPlanFragment;
 
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
-    public ViewPagerAdapter(Fragment fragment) {
-        super(fragment);
+
+
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+        super(fragmentActivity);
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        // Return a NEW fragment instance in createFragment(int)
-        Fragment fragment = new PlanObjectFragment();
-        Bundle args = new Bundle();
-        // Our object is just an integer :-P
-        args.putInt(PlanObjectFragment.ARG_OBJECT, position + 1);
+        switch(position) {
+            case 0:
+                return new PrivatePlanFragment();
+            case 1:
+                return new PublicPlanFragment();
+            default:
+                return new PublicPlanFragment();
+        }
 
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public int getItemCount() {
-        return 100;
+        return 2;
     }
 }

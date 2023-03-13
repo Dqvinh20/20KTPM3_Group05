@@ -2,13 +2,22 @@ package com.example.tripblog.ui.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TableLayout;
 
 import com.example.tripblog.R;
+import com.example.tripblog.ui.PlanListAdapter;
+import com.example.tripblog.ui.ViewPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,6 +35,9 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -62,5 +74,30 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewPager = view.findViewById(R.id.pager);
+        viewPager.setAdapter(new ViewPagerAdapter(getActivity()));
+
+        tabLayout = view.findViewById(R.id.tab_layout);
+
+        new TabLayoutMediator(tabLayout,viewPager, (tab, position) -> {
+            switch(position) {
+                case 0:
+                    tab.setText("Private");
+                    break;
+                case 1:
+                    tab.setText("Public");
+                    break;
+            }
+        }).attach();
+
+
+//        ListView planList = (ListView) view.findViewById(R.id.userList);
+//        planList.setAdapter(new PlanListAdapter(getContext(), R.layout.plan_item, name, img));
+
     }
 }

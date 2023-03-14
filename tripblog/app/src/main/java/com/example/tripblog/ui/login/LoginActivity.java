@@ -1,8 +1,11 @@
 package com.example.tripblog.ui.login;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +23,7 @@ import com.example.tripblog.api.RetrofitClient;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivityLoginBinding;
 import com.example.tripblog.model.AuthResponse;
+import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.signup.SignupActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -37,6 +41,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     TextView forgotPasswordTxt, signupTxt;
     private final Retrofit retrofitClient = RetrofitClient.getInstance();
 
+    private final String TAG = LoginActivity.class.getSimpleName();
     ActivityLoginBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +65,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         editEmail.addTextChangedListener(new ValidationTextWatcher(editEmail));
         editPassword.addTextChangedListener(new ValidationTextWatcher(editPassword));
+
+        // DEBUG ONLY
+        editEmail.setText("test@gmail.com");
+        editPassword.setText("Vinh1706!");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("LOGIN", "Login onResume");
     }
 
     @Override
@@ -103,7 +111,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 return false;
             }
         }
-
         return true;
     }
 
@@ -138,28 +145,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         AuthService authService = retrofitClient.create(AuthService.class);
+        Log.d(TAG, "OnLoginButton Press");
+        Log.d(TAG, "Waiting response");
         authService.login(email, password).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 AuthResponse body = response.body();
+                Log.d(TAG, "Received response successfully");
+
                 if (body.getStatus().equals( "failure")){
-                    Log.d("LOGIN", body.getStatus());
                     editEmailLayout.setError(body.getError().getAsString());
                     return;
                 }
                 else if (body.getStatus().equals( "error")) {
+                    editEmailLayout.setError("Unexpected error occur ! Try again !!!");
                 }
 
-                // TODO: Need to save jwt token
-                Toast.makeText(LoginActivity.this, body.toString(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Saved token");
+                String token = body.getData().getAsJsonObject().get("token").getAsString();
+                SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
+                sharedPreferences.edit().putString("token", token).commit();
+
+                // Go to main
+                Log.d(TAG, "Go to Home Page");
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finishAfterTransition();
             }
 
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
-                Log.e("LOGIN", t.toString());
             }
         });
-
     }
 
     private void goToForgotPassword() {
@@ -167,7 +184,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void goToSignup() {
-        // TODO: Implement go to signup activity
         Intent signup = new Intent(LoginActivity.this, SignupActivity.class);
         startActivity(signup);
     }
@@ -199,5 +215,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     break;
             }
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

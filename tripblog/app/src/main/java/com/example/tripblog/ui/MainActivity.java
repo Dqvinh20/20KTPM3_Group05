@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.tripblog.R;
@@ -26,6 +27,10 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             if (currFragment != null && item.getItemId() == currFragment) {
                 return false;
             }
+
+            if (currFragment != null && item.getItemId() == currFragment) {
+                return false;
+            }
             if (item.getItemId() == R.id.home) {
                 replaceFragment(new HomeFragment());
             } else if (item.getItemId() == R.id.profile) {
@@ -44,12 +49,32 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             replaceFragment(new CreateFragment());
             binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
         });
+
+        binding.create.setOnClickListener((v) -> {
+            if (currFragment != null && v.getId() == currFragment) {
+                return;
+            }
+            currFragment = v.getId();
+            replaceFragment(new CreateFragment());
+            binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
+        });
     }
 
+    private void logout() {
+        SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
+        sharedPreferences.edit().putString("token", "").commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+//        moveTaskToBack(true);
+        finish();
+    }
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -58,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
     public void onMsgFromFragToMain(String sender, String strValue) {
         if(sender.equals("CREATE_TRIP_BTN")){
             replaceFragment(new CreateFragment());
+            currFragment = binding.create.getId();
+            binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
             currFragment = binding.create.getId();
             binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
         }

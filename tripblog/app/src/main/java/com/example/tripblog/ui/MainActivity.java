@@ -14,8 +14,8 @@ import com.example.tripblog.ui.fragments.CreateFragment;
 import com.example.tripblog.ui.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks{
-
     ActivityMainBinding binding;
+    private Integer currFragment = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,14 +23,26 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         setContentView(binding.getRoot());
         replaceFragment(new HomeFragment());
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (currFragment != null && item.getItemId() == currFragment) {
+                return false;
+            }
             if (item.getItemId() == R.id.home) {
                 replaceFragment(new HomeFragment());
             } else if (item.getItemId() == R.id.profile) {
                 replaceFragment(new ProfileFragment());
-            } else if (item.getItemId() == R.id.create) {
-                replaceFragment(new CreateFragment());
             }
+
+            currFragment = item.getItemId();
             return true;
+        });
+
+        binding.create.setOnClickListener((v) -> {
+            if (currFragment != null && v.getId() == currFragment) {
+                return;
+            }
+            currFragment = v.getId();
+            replaceFragment(new CreateFragment());
+            binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
         });
     }
 
@@ -38,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
@@ -45,7 +58,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
     public void onMsgFromFragToMain(String sender, String strValue) {
         if(sender.equals("CREATE_TRIP_BTN")){
             replaceFragment(new CreateFragment());
-            binding.bottomNavigationView.setSelectedItemId(R.id.create);
+            currFragment = binding.create.getId();
+            binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
         }
     }
 }

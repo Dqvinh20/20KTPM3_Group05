@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="hyper_link">#03A9F4</color>
+    <color name="gray">#DDDDDD</color>
+    <color name="gray_200">#C8C8C8</color>
 </resources>

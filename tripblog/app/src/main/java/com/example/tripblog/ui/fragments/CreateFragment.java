@@ -3,48 +3,35 @@ package com.example.tripblog.ui.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.core.util.Pair;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.tripblog.R;
+import com.example.tripblog.databinding.FragmentCreateBinding;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.datepicker.MaterialDatePicker;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CreateFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class CreateFragment extends Fragment {
+    FragmentCreateBinding binding;
+    private MaterialDatePicker tripDates = null;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private Long startDate = null;
+    private Long endDate = null;
 
     public CreateFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MenuFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CreateFragment newInstance(String param1, String param2) {
+    public static CreateFragment newInstance() {
         CreateFragment fragment = new CreateFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -52,8 +39,6 @@ public class CreateFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -61,6 +46,51 @@ public class CreateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_create, container, false);
+        binding = FragmentCreateBinding.inflate(inflater,container,false);
+        binding.tripDates.setOnClickListener(view -> onTripDatesPicker());
+        binding.states.setOnClickListener(view -> openPrivacySettingBottomSheet());
+
+        return binding.getRoot();
+    }
+
+    private void onTripDatesPicker() {
+        if (tripDates == null) {
+            tripDates = MaterialDatePicker.Builder.dateRangePicker()
+                    .setTitleText("Trip dates")
+                    .build();
+
+            tripDates.addOnPositiveButtonClickListener((selection -> {
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+                Pair<Long, Long> dates = (Pair<Long, Long>) selection;
+                cal.setTimeInMillis(dates.first);
+                binding.startDate.setText(sdf.format(cal.getTime()));
+                cal.setTimeInMillis(dates.second);
+                binding.endDate.setText(sdf.format(cal.getTime()));
+            }));
+        }
+
+        tripDates.show(getActivity().getSupportFragmentManager(), "TRIP-DATES-PICKER");
+    }
+
+    private void openPrivacySettingBottomSheet() {
+        View v = getLayoutInflater().inflate(R.layout.state_choose_bottom_sheet, null);
+        BottomSheetDialog popupMenu = new BottomSheetDialog(this.getContext());
+        popupMenu.setContentView(v);
+        popupMenu.show();
+
+        LinearLayout publicLayout = (LinearLayout) v.findViewById(R.id.publicChoose);
+        publicLayout.setOnClickListener(view -> {
+            binding.states.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_public_24, 0, R.drawable.ic_baseline_arrow_drop_down_24, 0);
+            binding.states.setText("Public");
+            popupMenu.dismiss();
+        });
+        LinearLayout privateLayout = (LinearLayout) v.findViewById(R.id.privateChoose);
+        privateLayout.setOnClickListener(view -> {
+            binding.states.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_lock_24, 0, R.drawable.ic_baseline_arrow_drop_down_24, 0);
+            binding.states.setText("Private");
+            popupMenu.dismiss();
+        });
     }
 }

@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">tripblog</string>
     <string name="login_title">Đăng nhập</string>
     <string name="signup_title">Đăng ký</string>
+    <string name="email_hint">Email</string>
     <string name="forgot_password">Bạn quên mật khẩu ?</string>
     <string name="no_account">Bạn chưa có tài khoản ?</string>
     <string name="password_hint">Mật khẩu</string>
+    <string name="name_hint">Họ và tên</string>
+    <string name="confirm_password_hint">Nhập lại mật khẩu</string>
+    <string name="invalid_email_err">Địa chỉ E-mail không hợp lệ</string>
+    <string name="invalid_pass_length_err">Mật khẩu tối tiểu 6 kí tự</string>
+    <string name="email_required_err">Bạn phải nhập Email</string>
+    <string name="pass_required_err">Mật khẩu không được để trống</string>
+    <string name="invalid_confirm_pass_err">Mật khẩu không trùng khớp</string>
 </resources>

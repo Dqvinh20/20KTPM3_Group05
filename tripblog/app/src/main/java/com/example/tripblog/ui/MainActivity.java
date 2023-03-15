@@ -58,9 +58,11 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             replaceFragment(new CreateFragment());
             binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
         });
+        // logout();
     }
 
     private void logout() {
+        // Use to logout when debug
         SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
         sharedPreferences.edit().putString("token", "").commit();
     }

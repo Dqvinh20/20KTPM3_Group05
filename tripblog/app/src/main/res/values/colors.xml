@@ -10,4 +10,5 @@
     <color name="hyper_link">#03A9F4</color>
     <color name="gray">#DDDDDD</color>
     <color name="gray_200">#C8C8C8</color>
+    <color name="red">#FF0000</color>
 </resources>

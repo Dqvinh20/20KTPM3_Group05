@@ -1,6 +1,7 @@
 package com.example.tripblog.ui.search;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -16,6 +17,7 @@ import androidx.appcompat.widget.SearchView;
 
 import com.example.tripblog.R;
 import com.example.tripblog.databinding.ActivitySearchBinding;
+import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.post.ViewPost;
 import com.example.tripblog.ui.post.ViewSearchList;
 
@@ -55,6 +57,7 @@ public class Search extends AppCompatActivity {
         inflater.inflate(R.menu.menu_search_activity, menu);
         MenuItem menuItem = menu.findItem(R.id.action_search_activity);
         menuItem.expandActionView();
+
         menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(@NonNull MenuItem item) {
@@ -73,6 +76,10 @@ public class Search extends AppCompatActivity {
        binding.suggestSearchLocation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent=new Intent(Search.this, ViewSearchList.class);
+                intent.putExtra("title",result[position].getTitle());
+                intent.setAction(Intent.ACTION_VIEW);
+                startActivityForResult(intent, 1122);
                 searchView.setQuery(result[position].getTitle(),true);
 
             }
@@ -102,5 +109,10 @@ public class Search extends AppCompatActivity {
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        finish();
     }
 }

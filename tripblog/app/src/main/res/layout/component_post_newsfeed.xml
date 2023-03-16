@@ -61,7 +61,8 @@
             android:background = "@drawable/avatar"
             android:contentDescription = "Avatar"
             tools:srcCompat="@tools:sample/avatars"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:id="@+id/nameTextView"

@@ -16,6 +16,7 @@
     <string name="email_required_err">Email is required</string>
     <string name="pass_required_err">Password is required</string>
     <string name="invalid_confirm_pass_err">Confirm password does not match</string>
+    <string name="reset_password">Reset password</string>
 
     <!--    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>-->
 </resources>

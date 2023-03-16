@@ -13,4 +13,5 @@
     <string name="email_required_err">Bạn phải nhập Email</string>
     <string name="pass_required_err">Mật khẩu không được để trống</string>
     <string name="invalid_confirm_pass_err">Mật khẩu không trùng khớp</string>
+    <string name="reset_password">Đặt lại mật khẩu</string>
 </resources>

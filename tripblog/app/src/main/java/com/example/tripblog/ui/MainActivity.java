@@ -7,16 +7,23 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 
 import com.example.tripblog.R;
 import com.example.tripblog.databinding.ActivityMainBinding;
@@ -25,24 +32,26 @@ import com.example.tripblog.ui.fragments.CreateFragment;
 import com.example.tripblog.ui.fragments.ProfileFragment;
 import com.example.tripblog.ui.post.ViewPost;
 import com.example.tripblog.ui.search.Search;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks{
     ActivityMainBinding binding;
     private Integer currFragment = null;
+    private long lastClickTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         replaceFragment(new HomeFragment());
+
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if (currFragment != null && item.getItemId() == currFragment) {
                 return false;
             }
 
-            if (currFragment != null && item.getItemId() == currFragment) {
-                return false;
-            }
             if (item.getItemId() == R.id.home) {
                 replaceFragment(new HomeFragment());
             } else if (item.getItemId() == R.id.profile) {
@@ -54,23 +63,24 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         });
 
         binding.create.setOnClickListener((v) -> {
-            if (currFragment != null && v.getId() == currFragment) {
+            // Prevent double click
+            if (SystemClock.elapsedRealtime() - lastClickTime < 1000){
                 return;
             }
-            currFragment = v.getId();
-            replaceFragment(new CreateFragment());
-            binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
+            lastClickTime = SystemClock.elapsedRealtime();
+
+            // Open create post dialog
+            displayCreatePostDialog();
         });
 
-        binding.create.setOnClickListener((v) -> {
-            if (currFragment != null && v.getId() == currFragment) {
-                return;
-            }
-            currFragment = v.getId();
-            replaceFragment(new CreateFragment());
-            binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
-        });
-        // logout();
+//        logout();
+    }
+
+    private void displayCreatePostDialog() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        CreateFragment createFragment = CreateFragment.newInstance();
+        createFragment.show(fragmentTransaction, "CREATE");
     }
 
     @Override
@@ -112,19 +122,14 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
     @Override
     public void onMsgFromFragToMain(String sender, String strValue) {
         if(sender.equals("CREATE_TRIP_BTN")){
-            replaceFragment(new CreateFragment());
-            currFragment = binding.create.getId();
-            binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
-            currFragment = binding.create.getId();
-            binding.bottomNavigationView.setSelectedItemId(R.id.places_holder);
+            displayCreatePostDialog();
         }
     }
 }

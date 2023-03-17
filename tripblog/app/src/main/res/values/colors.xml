@@ -11,4 +11,7 @@
     <color name="gray">#DDDDDD</color>
     <color name="gray_200">#C8C8C8</color>
     <color name="red">#FF0000</color>
+    <color name="gray_ic_155">#9B9B9B</color>
+    <color name="gray_bg">#ECECEC</color>
+
 </resources>

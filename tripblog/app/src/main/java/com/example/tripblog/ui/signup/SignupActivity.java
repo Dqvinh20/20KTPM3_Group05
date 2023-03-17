@@ -1,7 +1,6 @@
 package com.example.tripblog.ui.signup;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -15,32 +14,26 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tripblog.R;
-import com.example.tripblog.api.RetrofitClient;
+import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivitySignupBinding;
 import com.example.tripblog.model.AuthResponse;
-import com.example.tripblog.ui.login.LoginActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.android.material.snackbar.Snackbar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
     public final String TAG = SignupActivity.class.getSimpleName();
-    private final Retrofit retrofitClient = RetrofitClient.getInstance();
     MaterialAlertDialogBuilder loading = null;
-
     ActivitySignupBinding binding;
 
     @Override
@@ -89,8 +82,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             loading.setCancelable(false);
         }
         AlertDialog loadingDialog = loading.show();
+        AuthService authService = TripBlogApplication.createService(AuthService.class);
 
-        AuthService authService = retrofitClient.create(AuthService.class);
         Log.d(TAG, "OnSignupBtn Press");
         Log.d(TAG, "Waiting response");
         authService.signup(email, password).enqueue(new Callback<AuthResponse>() {
@@ -107,20 +100,38 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 else if (body.getStatus().equals( "error")) {
                     binding.editEmailLayout.setError("Unexpected error occur ! Try again !!!");
                     loadingDialog.dismiss();
-                    Log.e(TAG, "Server error: " + body.getError().toString());
+                    Snackbar
+                            .make(binding.getRoot(), "Unexpected error occur!", Snackbar.LENGTH_LONG)
+                            .setAction("Retry", view -> {
+                                signup();
+                            })
+                            .show();
                     return;
                 }
 
                 loadingDialog.dismiss();
-
-                // TODO: After signup successfully
-                Toast.makeText(SignupActivity.this, "Signup successfully", Toast.LENGTH_SHORT).show();
-                finish();
+                Snackbar
+                        .make(binding.getRoot(), "Signup successfully", Snackbar.LENGTH_SHORT)
+                        .setDuration(200)
+                        .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+                        .addCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar transientBottomBar, int event) {
+                                super.onDismissed(transientBottomBar, event);
+                                finishAfterTransition();
+                            }
+                        })
+                        .show();
             }
 
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
-                Log.e(TAG, "Client error: " + t);
+                Snackbar
+                        .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_LONG)
+                        .setAction("Retry", view -> {
+                            signup();
+                        })
+                        .show();
                 loadingDialog.dismiss();
             }
         });

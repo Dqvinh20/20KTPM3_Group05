@@ -20,21 +20,23 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.example.tripblog.R;
-import com.example.tripblog.api.RetrofitClient;
+import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivityLoginBinding;
 import com.example.tripblog.model.AuthResponse;
+import com.example.tripblog.model.User;
 import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.signup.SignupActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    private final Retrofit retrofitClient = RetrofitClient.getInstance();
     public final String TAG = LoginActivity.class.getSimpleName();
     MaterialAlertDialogBuilder loading = null;
     ActivityLoginBinding binding;
@@ -135,11 +137,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             loading.setBackground(getDrawable(android.R.color.transparent));
             loading.setCancelable(false);
         }
+
         AlertDialog loadingDialog = loading.show();
 
-        AuthService authService = retrofitClient.create(AuthService.class);
+        AuthService authService = TripBlogApplication.createService(AuthService.class);
         Log.d(TAG, "OnLoginButton Press");
         Log.d(TAG, "Waiting response");
+
         authService.login(email, password).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
@@ -152,17 +156,32 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     return;
                 }
                 else if (body.getStatus().equals( "error")) {
-                    binding.editEmailLayout.setError("Unexpected error occur ! Try again !!!");
-                    loadingDialog.dismiss();
+//                    binding.editEmailLayout.setError("Unexpected error occur ! Try again !!!");
                     Log.e(TAG, "Server error: " + body.getError().toString());
+                    loadingDialog.dismiss();
+                    Snackbar
+                            .make(binding.getRoot(), "Unexpected error occur!", Snackbar.LENGTH_LONG)
+                            .setAction("Retry", view -> {
+                                login();
+                            })
+                            .show();
                     return;
                 }
 
+                // Save logged user
+                JsonElement userJson = body.getData().getAsJsonObject().get("user");
+                User loggedUser = new Gson().fromJson(userJson, User.class);
+                TripBlogApplication.getInstance().setLoggedUser(loggedUser);
+
                 Log.d(TAG, "Saved token");
                 String token = body.getData().getAsJsonObject().get("token").getAsString();
+                TripBlogApplication.updateToken(token); // Save token for next req
+
                 SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
                 sharedPreferences.edit().putString("token", token).commit();
+
                 loadingDialog.dismiss();
+
                 // Go to main
                 Log.d(TAG, "Go to Home Page");
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -174,6 +193,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onFailure(Call<AuthResponse> call, Throwable t) {
                 Log.e(TAG, "Client error: " + t);
                 loadingDialog.dismiss();
+                Snackbar
+                        .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_LONG)
+                        .setAction("Retry", view -> {
+                            login();
+                        })
+                        .show();
             }
         });
     }
@@ -231,7 +256,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         return super.dispatchTouchEvent( event );
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

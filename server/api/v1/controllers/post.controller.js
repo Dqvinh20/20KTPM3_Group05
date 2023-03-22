@@ -21,7 +21,8 @@ const createPost = async (req, res) => {
     cover_img = upload_img.url;
   }
 
-  const { title, brief_description, start_date, end_date } = req.body;
+  const { title, brief_description, start_date, end_date, is_public } =
+    req.body;
   const created_by = req.user.id;
 
   try {
@@ -29,8 +30,9 @@ const createPost = async (req, res) => {
       title,
       brief_description,
       cover_img,
-      start_date,
-      end_date,
+      start_date: new Date(start_date),
+      end_date: new Date(end_date),
+      is_public,
       created_by,
     });
 
@@ -41,7 +43,18 @@ const createPost = async (req, res) => {
 };
 
 const updatePost = async (req, res) => {
+  var cover_img = null;
+  if (req.file) {
+    const upload_img = await Promise.resolve(
+      cloudinary.uploadStream(req.file.buffer, {
+        folder: "posts/" + req.user.id,
+      })
+    );
+    cover_img = upload_img.url;
+  }
+
   const { post_id, ...data } = req.body;
+  cover_img ? (data.cover_img = cover_img) : null;
 
   try {
     const post = await PostService.updatePost(post_id, data);

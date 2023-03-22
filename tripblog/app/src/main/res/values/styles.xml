@@ -69,5 +69,10 @@
         <item name="android:textColor">@android:color/transparent</item>
         <item name="android:textSize">0sp</item>
     </style>
+    <style name="RoundButton" parent="@style/Widget.MaterialComponents.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingVertical">10dp</item>
+        <item name="android:paddingHorizontal">40dp</item>
+    </style>
 
 </resources>

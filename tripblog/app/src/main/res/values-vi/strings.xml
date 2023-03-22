@@ -13,5 +13,15 @@
     <string name="email_required_err">Bạn phải nhập Email</string>
     <string name="pass_required_err">Mật khẩu không được để trống</string>
     <string name="invalid_confirm_pass_err">Mật khẩu không trùng khớp</string>
+    <string name="create_post_title">Lên lịch trình</string>
+    <string name="edit_trip_title">Tên chuyến đi</string>
+    <string name="trip_dates">Thời gian đi</string>
+    <string name="start_date">Ngày khởi hành</string>
+    <string name="end_date">Ngày về</string>
+    <string name="public_txt">Công khai</string>
+    <string name="private_txt">Cá nhân</string>
+    <string name="privacy_setting">Quyền riêng tư</string>
+    <string name="public_scope">Mọi người đều có thể truy cập bài viết của bạn</string>
+    <string name="private_scope">Chỉ có bạn truy cập được bài viết</string>
     <string name="reset_password">Đặt lại mật khẩu</string>
 </resources>

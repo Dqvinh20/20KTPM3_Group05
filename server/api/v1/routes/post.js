@@ -7,7 +7,7 @@ router.get("/", PostController.getAll);
 
 router.post("/create", upload.single("cover_img"), PostController.createPost);
 
-router.patch("/update", PostController.updatePost);
+router.patch("/update", upload.single("cover_img"), PostController.updatePost);
 
 router.delete("/delete", PostController.deletePost);
 

@@ -10,6 +10,8 @@ const sequelize = new Sequelize(connectionString, {
 
 sequelize
     // .sync({ force: true }) // Uncomment this line to drop all tables and recreate them
+    // .sync({ alter: true }) // Comment this line to drop all tables and recreate them
+
     .sync() // Comment this line to drop all tables and recreate them
     .then(() => console.log("Database & tables created!"));
 

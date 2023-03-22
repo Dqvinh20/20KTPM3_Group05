@@ -26,6 +26,7 @@ import com.example.tripblog.databinding.ActivityLoginBinding;
 import com.example.tripblog.model.AuthResponse;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.MainActivity;
+import com.example.tripblog.ui.resetpassword.ResetPassword;
 import com.example.tripblog.ui.signup.SignupActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -54,8 +55,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         binding.editPassword.addTextChangedListener(new ValidationTextWatcher(binding.editPassword));
 
         // DEBUG ONLY
-        binding.editEmail.setText("test@gmail.com");
-        binding.editPassword.setText("Vinh1706!");
+        binding.editEmail.setText("vanhau02qn@gmail.com");
+        binding.editPassword.setText("xgpb8unf");
     }
 
     @Override
@@ -205,6 +206,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void goToForgotPassword() {
         // TODO: Implement go to forgot password activity
+        Intent reset = new Intent(LoginActivity.this, ResetPassword.class);
+        startActivity(reset);
     }
 
     private void goToSignup() {

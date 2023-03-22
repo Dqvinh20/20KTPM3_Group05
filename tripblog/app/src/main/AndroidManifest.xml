@@ -2,12 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--Normal Permissions-->
+    <!--Normal
+    Permissions-->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!--Dangerous Permissions-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!--Dangerous
+    Permissions-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -23,10 +25,14 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.resetpassword.ResetPassword"
+            android:exported="false"
+            />
+        <activity
             android:name=".ui.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Tripblog.NoActionBar"
-            >
+        >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,7 +60,7 @@
             android:name=".ui.post.PostDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.Tripblog.NoActionBar"
-            />
+        />
     </application>
 
 </manifest>

@@ -5,26 +5,20 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TableLayout;
 
 import com.example.tripblog.R;
 import com.example.tripblog.ui.PlanListAdapter;
-import com.example.tripblog.ui.ViewPagerAdapter;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
-
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
+ * Use the {@link PublicPlanFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment {
+public class PublicPlanFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,10 +29,9 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private TabLayout tabLayout;
-    private ViewPager2 viewPager;
-    private ViewPagerAdapter viewPagerAdapter;
-    public ProfileFragment() {
+    public static final String ARG_OBJECT = "object";
+
+    public PublicPlanFragment() {
         // Required empty public constructor
     }
 
@@ -48,11 +41,11 @@ public class ProfileFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileFragment.
+     * @return A new instance of fragment PrivatePlanFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
+    public static PublicPlanFragment newInstance(String param1, String param2) {
+        PublicPlanFragment fragment = new PublicPlanFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -73,31 +66,14 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        return inflater.inflate(R.layout.fragment_public_plan, container, false);
     }
-
+    String[] name = {"Da Lat Plan", "Vung Tau Plan"};
+    Integer[] img = {R.drawable.da_lat, R.drawable.da_lat};
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewPager = view.findViewById(R.id.pager);
-        viewPager.setAdapter(new ViewPagerAdapter(getActivity()));
-
-        tabLayout = view.findViewById(R.id.tab_layout);
-
-        new TabLayoutMediator(tabLayout,viewPager, (tab, position) -> {
-            switch(position) {
-                case 0:
-                    tab.setText("Private");
-                    break;
-                case 1:
-                    tab.setText("Public");
-                    break;
-            }
-        }).attach();
-
-
-//        ListView planList = (ListView) view.findViewById(R.id.userList);
-//        planList.setAdapter(new PlanListAdapter(getContext(), R.layout.plan_item, name, img));
-
+        ListView planList = (ListView) view.findViewById(R.id.userList);
+        planList.setAdapter(new PlanListAdapter(getContext(), R.layout.plan_item, name, img));
     }
 }

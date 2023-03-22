@@ -57,6 +57,9 @@
             android:name=".ui.post.ViewSearchList"
             android:exported="false" />
         <activity
+            android:name=".ui.post.ViewPost"
+            android:exported="false" />
+        <activity
             android:name=".ui.post.PostDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.Tripblog.NoActionBar"

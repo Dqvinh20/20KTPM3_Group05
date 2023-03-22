@@ -1,46 +1,56 @@
 const Post = require("../models/post.model");
 const sequelize = require("../config");
 
-const OFFSET = 0;
-const LIMIT = 10;
+const queryAuthor = {
+  association: "author",
+  attributes: ["id", "email", "avatar", "user_name", "user_name_non_accent"],
+};
 
 const common = (query) => {
   return {
-    ...query,
     attributes: {
       exclude: ["created_by"],
     },
-    include: [
-      {
-        association: "author",
-        attributes: [
-          "id",
-          "email",
-          "avatar",
-          "user_name",
-          "user_name_non_accent",
-        ],
-      },
-    ],
+    include: [{ ...queryAuthor }],
+    ...query,
   };
 };
 
-const getAll = async ({ page, limit, order }) => {
-  var offset = OFFSET;
-  if (page) offset = (page - 1) * limit;
-  if (!limit) limit = LIMIT;
+const getAll = async ({ offset, limit, order, no_limit, ...options }) => {
+  if (no_limit) {
+    limit = null;
+    offset = null;
+  }
 
-  return await Post.findAll(
+  const posts = await Post.findAll(
     common({
       offset,
       limit,
+      ...options,
       order: [["createdAt", order ? order : "DESC"]],
     })
   );
+
+  return posts;
 };
 
 const getPostById = async (id) => {
-  return await Post.findByPk(id, common({}));
+  const post = await Post.findByPk(
+    id,
+    common({
+      include: [
+        {
+          ...queryAuthor,
+        },
+        {
+          association: "schedules",
+          separate: true,
+          order: [["date", "ASC"]],
+        },
+      ],
+    })
+  );
+  return post;
 };
 
 const createPost = async (post_data) => {
@@ -49,13 +59,24 @@ const createPost = async (post_data) => {
       {
         association: "author",
       },
+      {
+        association: "schedules",
+      },
     ],
   });
   return await getPostById(newPost.id);
 };
 
 const updatePost = async (id, post) => {
-  return await Post.update(post, { where: { id } });
+  const result = await Post.update(
+    post,
+    common({
+      where: { id },
+      returning: true,
+      individualHooks: true,
+    })
+  );
+  return [result[0], [await getPostById(id)]];
 };
 
 const deletePost = async (id) => {
@@ -82,4 +103,5 @@ module.exports = {
   deletePost,
   increaseLikePost,
   decreaseLikePost,
+  model: Post,
 };

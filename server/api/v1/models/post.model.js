@@ -29,7 +29,7 @@ const Post = sequelize.define(
     },
     is_public: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      defaultValue: true,
     },
     view_count: {
       type: DataTypes.INTEGER,
@@ -104,7 +104,7 @@ User.belongsToMany(Post, {
 });
 
 (async () => {
-  // await Post.sync({ force: true });
+  // await Post.sync();
   // await Post.create({
   //   title: "Post 1",
   //   brief_description: "Post 1 brief description",

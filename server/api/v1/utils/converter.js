@@ -1,3 +1,5 @@
+const dayjs = require("dayjs");
+
 module.exports.toLowerCaseNonAccentVietnamese = (str) => {
   str = str.toLowerCase();
   //     We can also use this instead of from line 11 to line 17
@@ -19,4 +21,19 @@ module.exports.toLowerCaseNonAccentVietnamese = (str) => {
   str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // Huyền sắc hỏi ngã nặng
   str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // Â, Ê, Ă, Ơ, Ư
   return str;
+};
+
+const getMethods = (obj) => {
+  let properties = new Set();
+  let currentObj = obj;
+  do {
+    Object.getOwnPropertyNames(currentObj).map((item) => properties.add(item));
+  } while ((currentObj = Object.getPrototypeOf(currentObj)));
+  return [...properties.keys()].filter(
+    (item) => typeof obj[item] === "function"
+  );
+};
+
+module.exports.toScheduleTitle = (date) => {
+  return dayjs(date).format("ddd D/M");
 };

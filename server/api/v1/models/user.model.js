@@ -42,7 +42,7 @@ const User = sequelize.define(
     avatar: {
       type: DataTypes.STRING,
       defaultValue:
-        "https://res.cloudinary.com/dkzlalahi/image/upload/v1678277295/default_male_avatar.jpg", // hinh test
+        "https://res.cloudinary.com/dkzlalahi/image/upload/v1678277295/default_male_avatar.jpg",
     },
     followers_count: {
       type: DataTypes.INTEGER,

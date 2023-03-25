@@ -15,7 +15,7 @@ public class RetrofitClient {
             .connectTimeout(2, TimeUnit.SECONDS);
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
-                    .baseUrl(BuildConfig.BASE_URL_LOCAL)
+                    .baseUrl(BuildConfig.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create());
     private static Retrofit insRetrofit = null;
     private RetrofitClient() {}

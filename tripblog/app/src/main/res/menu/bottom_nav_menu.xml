@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:title="Home"
         android:id="@+id/home"
         android:icon="@drawable/ic_baseline_home_24"
+        app:showAsAction="always"
         />
     <item
-        android:title="Create"
-        android:id="@+id/create"
-        android:icon="@drawable/ic_baseline_add_24"
+        android:title=""
+        android:id="@+id/places_holder"
+        android:enabled="false"
+        android:checkable="false"
         />
 
     <item android:title="Profile"
         android:id="@+id/profile"
         android:icon="@drawable/ic_baseline_person_24"
+        app:showAsAction="always"
         />
 </menu>

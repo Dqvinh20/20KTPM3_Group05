@@ -1,17 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_200"
-        tools:context=".ui.fragments.CreateFragment">
+    android:theme="@style/Theme.Tripblog.NoActionBar"
+    android:padding="@dimen/auth_layout_padding"
+    android:focusableInTouchMode="true"
+    android:background="@android:color/white"
+    tools:context=".ui.fragments.CreateFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textSize="26dp"
-        android:text="Create" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <FrameLayout
+            android:id="@+id/titleLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            >
 
-</FrameLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/close"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            app:strokeColor="@null"
+            app:icon="@drawable/ic_baseline_close_24"
+            app:iconTint="@color/gray_ic_155"
+            app:iconSize="26dp"
+            app:elevation="0dp"
+            app:rippleColor="@color/gray"
+            app:backgroundTint="@color/gray_bg"
+            />
+        <TextView
+            style="@style/MainTitleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/create_post_title"/>
+        </FrameLayout>
+
+        <RelativeLayout
+            android:id="@+id/destinationLayout"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/titleLayout"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            style="@style/FormInputBox"
+            >
+            <TextView
+                android:id="@+id/subhead1"
+                style="@style/SubHeading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginVertical="4dp"
+                android:text="@string/edit_trip_title"
+                />
+            <EditText
+                android:id="@+id/editTripTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/subhead1"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginVertical="4dp"
+                android:background="@android:color/transparent"
+                android:hint="@string/edit_trip_title_hint"
+                android:maxLines="8"
+                android:maxLength="200"
+                android:ems="3"
+                android:textSize="18sp"
+                android:inputType="text|textMultiLine"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/tripDatesLayout"
+            android:layout_below="@+id/destinationLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/form_border"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            >
+
+            <TextView
+                android:id="@+id/subhead2"
+                style="@style/SubHeading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:text="@string/trip_dates"/>
+
+            <LinearLayout
+                android:id="@+id/tripDates"
+                android:layout_below="@id/subhead2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clickable="false"
+                android:focusable="false"
+                android:paddingVertical="6dp"
+                >
+
+                <TextView
+                    android:id="@+id/startDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|start"
+                    android:text="@string/start_date"
+                    app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24"
+                    android:drawablePadding="6dp"
+                    android:textSize="18sp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    />
+
+                <TextView
+                    android:id="@+id/endDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|start"
+                    android:text="@string/end_date"
+                    android:drawablePadding="6dp"
+                    app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24"
+                    android:textSize="18sp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/privacySetting"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_below="@+id/tripDatesLayout"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/default_text_size"
+            android:textColor="@color/gray_ic_155"
+            android:drawableLeft="@drawable/ic_baseline_public_24"
+            android:drawableRight="@drawable/ic_baseline_arrow_drop_down_24"
+            android:text="@string/public_txt"
+            app:rippleColor="@color/gray_200"
+            />
+
+        <Button
+            android:id="@+id/createPost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/privacySetting"
+            android:layout_centerHorizontal="true"
+            android:text="@string/create_post_title"
+            style="@style/RoundButton"
+            />
+
+    </RelativeLayout>
+
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        style="?attr/floatingActionButtonSmallSurfaceStyle"-->
+<!--        app:srcCompat="@drawable/ic_baseline_close_24"-->
+<!--        app:backgroundTint="@color/gray"-->
+<!--        app:elevation="0dp"-->
+<!--        >-->
+
+<!--    </com.google.android.material.floatingactionbutton.FloatingActionButton>-->
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

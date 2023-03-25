@@ -1,8 +1,13 @@
 const router = require("express").Router();
 const Passport = require("./utils/passport");
 
+require("./models");
+
 router.use("/auth", require("./routes/auth"));
+router.use("/home", Passport.isAuth, require("./routes/home"));
+router.use("/search", Passport.isAuth, require("./routes/search"));
 router.use("/post", Passport.isAuth, require("./routes/post"));
+router.use("/user", Passport.isAuth, require("./routes/user"));
 
 // router.get("/test", (req, res) => {
 //   return res.send("test");

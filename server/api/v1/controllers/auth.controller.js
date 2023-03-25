@@ -1,6 +1,6 @@
 const { ValidationError } = require("sequelize");
 const jwt = require("jsonwebtoken");
-
+const AuthService = require("../services/auth.service");
 const UserService = require("../services/user.service");
 const ResponseType = require("../models/response.model");
 
@@ -8,7 +8,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await UserService.getUserByEmail(email);
+    let user = await UserService.getUserByEmail(email);
     if (!user) {
       return res.json(ResponseType.Failure("E-mail or password incorrect"));
     }
@@ -24,7 +24,13 @@ const login = async (req, res) => {
       }
     );
 
-    return res.json(ResponseType.Success({ token }));
+    user = user.toJSON();
+    delete user.password;
+    delete user.createdAt;
+    delete user.updatedAt;
+    delete user.tokens;
+
+    return res.json(ResponseType.Success({ token, user }));
   } catch (error) {
     if (error instanceof ValidationError) {
       return res.json(
@@ -56,7 +62,27 @@ const signup = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    // console.log(req.body);
+    const user = await AuthService.resetPassword(email);
+    res.json(ResponseType.Success(user));
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return res.json(
+        ResponseType.Error({
+          name: error.name,
+          msg: error.errors[0].message,
+        })
+      );
+    }
+    return res.json(ResponseType.Error(error.message));
+  }
+};
+
 module.exports = {
   login,
   signup,
+  resetPassword,
 };

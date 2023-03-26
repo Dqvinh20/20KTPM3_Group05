@@ -12,11 +12,11 @@ const Location = sequelize.define(
       primaryKey: true,
       allowNull: false,
     },
-    title: {
+    name: {
       type: DataTypes.TEXT,
-      defaultValue: "Untitled",
+      allowNull: false,
     },
-    title_non_accent: {
+    name_non_accent: {
       type: DataTypes.TEXT,
     },
     place_id: {
@@ -28,6 +28,10 @@ const Location = sequelize.define(
       allowNull: false,
     },
     address: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    formatted_address: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
@@ -53,5 +57,9 @@ const Location = sequelize.define(
     onDelete: "CASCADE",
   }
 );
+
+// (async () => {
+//   await Location.sync({ force: true });
+// })();
 
 module.exports = Location;

@@ -53,10 +53,17 @@
 
                     android:paddingHorizontal="10dp"
                     android:clipToPadding="false"
-                    />
+                    >
+
+                </androidx.recyclerview.widget.RecyclerView>
                 <!--            </LinearLayout>-->
                 <!--        </HorizontalScrollView>-->
             </LinearLayout>
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
 
         </LinearLayout>
     </ScrollView>

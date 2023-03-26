@@ -1,6 +1,8 @@
+const { Op } = require("sequelize");
+
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
-const { Op } = require("sequelize");
+const Location = require("../models/location.model");
 
 const commonPost = {
   attributes: { exclude: ["created_by", "title_non_accent"] },
@@ -9,6 +11,8 @@ const commonPost = {
 const commonUser = {
   attributes: ["id", "user_name", "user_name_non_accent", "email", "avatar"],
 };
+
+const commonLocation = {};
 
 const searchPost = async (query) => {
   const result = await Post.findAll({
@@ -25,8 +29,9 @@ const searchPost = async (query) => {
   return result;
 };
 
-const searchUser = async (query) => {
+const searchUser = async (query, { limit }) => {
   const result = await User.findAll({
+    limit,
     ...commonUser,
     where: {
       [Op.or]: [
@@ -54,6 +59,8 @@ const searchUser = async (query) => {
   });
   return result;
 };
+
+const searchLocation = async (query) => {};
 
 module.exports = {
   searchPost,

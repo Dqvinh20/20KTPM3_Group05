@@ -1,7 +1,7 @@
 const Location = require("../models/location.model");
 
-const hardReset = async () => {
-  return await Location.sync({ force: true });
+const getAllLocations = async () => {
+  return await Location.findAll();
 };
 
 const getLocationById = async (location_id) => {
@@ -22,9 +22,9 @@ const deleteLocation = async (location_id) => {
 };
 
 module.exports = {
+  getAllLocations,
   getLocationById,
   createLocation,
   updateLocation,
   deleteLocation,
-  hardReset,
 };

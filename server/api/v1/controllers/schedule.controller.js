@@ -55,8 +55,6 @@ const editLocationNote = async (req, res) => {
       note
     );
 
-    console.log(getMethods(result));
-
     return res.json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message });

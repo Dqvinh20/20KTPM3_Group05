@@ -90,7 +90,8 @@ const getPostById = async (req, res) => {
 const getPostsByUser = async (req, res) => {
   const { user_id } = req.params;
   const { is_public } = req.query;
-  if (is_public === false && req.user.id !== user_id) {
+
+  if (is_public === "false" && req.user.id !== user_id) {
     return res.status(401).json({
       error: "You can't not access private posts of another user",
     });

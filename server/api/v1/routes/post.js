@@ -7,6 +7,8 @@ router.get("/", PostController.getAll);
 
 router.get("/:post_id", PostController.getPostById);
 
+router.get("/of-user/:user_id", PostController.getPostsByUser);
+
 router.post("/create", upload.single("cover_img"), PostController.createPost);
 router.get("/create/example-post", PostController.createExamplePost);
 

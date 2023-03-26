@@ -44,13 +44,13 @@ const Location = sequelize.define(
     tableName: "locations",
     hooks: {
       beforeCreate: (location) => {
-        location.title_non_accent = Converter.toLowerCaseNonAccentVietnamese(
-          location.title
+        location.name_non_accent = Converter.toLowerCaseNonAccentVietnamese(
+          location.name
         );
       },
       beforeUpdate: (location) => {
-        location.title_non_accent = Converter.toLowerCaseNonAccentVietnamese(
-          location.title
+        location.name_non_accent = Converter.toLowerCaseNonAccentVietnamese(
+          location.name
         );
       },
     },

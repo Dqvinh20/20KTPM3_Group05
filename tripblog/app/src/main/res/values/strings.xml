@@ -28,6 +28,11 @@
     <string name="privacy_setting">Privacy Settings</string>
     <string name="public_scope">Anyone can view your post</string>
     <string name="private_scope">Only you can view your post</string>
+    <string name="reset_password">Reset password</string>
+    <string name="success">Success</string>
+    <string name="success_message">New password have send to your email!</string>
+    <string name="failure">Fail</string>
+    <string name="failure_message">Reset password fail</string>
 
     <!--    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>-->
 </resources>

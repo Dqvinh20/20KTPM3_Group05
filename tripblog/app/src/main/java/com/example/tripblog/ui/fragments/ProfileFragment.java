@@ -14,7 +14,7 @@ import android.widget.ListView;
 import android.widget.TableLayout;
 
 import com.example.tripblog.R;
-import com.example.tripblog.ui.PlanListAdapter;
+import com.example.tripblog.ui.adapter.PlanListAdapter;
 import com.example.tripblog.ui.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -87,17 +87,15 @@ public class ProfileFragment extends Fragment {
         new TabLayoutMediator(tabLayout,viewPager, (tab, position) -> {
             switch(position) {
                 case 0:
-                    tab.setText("Private");
+                    tab.setText("Public");
                     break;
                 case 1:
-                    tab.setText("Public");
+                    tab.setText("Private");
                     break;
             }
         }).attach();
 
 
-//        ListView planList = (ListView) view.findViewById(R.id.userList);
-//        planList.setAdapter(new PlanListAdapter(getContext(), R.layout.plan_item, name, img));
 
     }
 }

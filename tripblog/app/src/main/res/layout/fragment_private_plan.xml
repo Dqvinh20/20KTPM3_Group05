@@ -13,6 +13,15 @@
         android:divider="@color/black"
         android:dividerHeight="0.3dp">
     </ListView>
+    <TextView
+        android:id="@+id/noPlanTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/quantum_grey600"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        android:layout_marginTop="30dp"
+        />
 
 
 </FrameLayout>

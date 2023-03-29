@@ -1,33 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="12dp"
+    >
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/standard_bottom_sheet"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         style="@style/Widget.Material3.BottomSheet"
         >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             >
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="match_parent"
                 android:layout_height="?minTouchTargetSize"
-                android:gravity="start"
+                android:gravity="start|center_vertical"
+                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 android:text="Edit profile"
-                app:icon="@drawable/ic_baseline_arrow_drop_down_24"
+                app:icon="@android:drawable/ic_menu_edit"
                 app:iconPadding="10dp"
+                android:id="@+id/editProfile"
 
                 />
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="match_parent"
+                android:layout_height="?minTouchTargetSize"
+                android:gravity="start|center_vertical"
+                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                android:text="Donate"
+                app:icon="@android:drawable/ic_menu_report_image"
+                app:iconPadding="10dp"
+                android:id="@+id/donate"
+
+                />
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="match_parent"
+                android:layout_height="?minTouchTargetSize"
+                android:gravity="start|center_vertical"
+                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                android:text="Logout"
+                app:icon="@drawable/ic_baseline_logout_24"
+                app:iconPadding="10dp"
+                android:id="@+id/logout"
+
+                />
+
         </LinearLayout>
     </FrameLayout>
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

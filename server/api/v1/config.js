@@ -13,9 +13,9 @@ const sequelize = new Sequelize(
     }
 );
 
-sequelize
-    .sync() // Create tables if they don't exist
-    .then(() => console.log("Database & tables created!"));
+// sequelize   //dưng xoa nhe an cat do
+//     .sync() // Create tables if they don't exist
+//     .then(() => console.log("Database & tables created!"));
 
 sequelize
     .authenticate()

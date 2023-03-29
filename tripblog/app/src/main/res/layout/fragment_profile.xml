@@ -10,9 +10,16 @@
         android:layout_height="match_parent"
         android:background="@color/teal_700"
         tools:context=".ui.fragments.ProfileFragment">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/standard_bottom_sheet"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+            tools:ignore="MissingConstraints">
+        </FrameLayout>
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.Material3.Button.IconButton"
-            android:id="@+id/iconButton"
+            android:id="@+id/moreSettingProfileBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"

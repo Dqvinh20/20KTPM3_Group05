@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         binding.editPassword.addTextChangedListener(new ValidationTextWatcher(binding.editPassword));
 
         // DEBUG ONLY
-        binding.editEmail.setText("thong89x@gmail.com");
+        binding.editEmail.setText("test@gmail.com");
         binding.editPassword.setText("123456");
     }
 

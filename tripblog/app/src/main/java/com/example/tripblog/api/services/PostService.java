@@ -14,6 +14,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface PostService {
@@ -21,6 +22,9 @@ public interface PostService {
 //    Call<JsonArray> getAllPost(@Query("page")Integer page, @Query("limit")Integer limit);
     @GET("post/")
     Call<JsonObject> getAllPost(@Query("page")Integer page);
+
+    @GET("post/of-user/{id}")
+    Call<JsonArray> getPostByUserId(@Path("id")Integer userId, @Query("is_public")Boolean isPublic);
 
     @FormUrlEncoded
     @POST("post/create")

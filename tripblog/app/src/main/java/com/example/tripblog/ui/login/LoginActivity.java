@@ -140,11 +140,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         AlertDialog loadingDialog = loading.show();
-
         AuthService authService = TripBlogApplication.createService(AuthService.class);
         Log.d(TAG, "OnLoginButton Press");
         Log.d(TAG, "Waiting response");
-
         authService.login(email, password).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
@@ -176,10 +174,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 Log.d(TAG, "Saved token");
                 String token = body.getData().getAsJsonObject().get("token").getAsString();
-                TripBlogApplication.updateToken(token); // Save token for next req
-
                 SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
                 sharedPreferences.edit().putString("token", token).commit();
+                TripBlogApplication.updateToken(token); // Save token for next req
 
                 loadingDialog.dismiss();
 

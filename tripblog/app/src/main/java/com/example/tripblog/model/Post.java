@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class Post implements Serializable {
     private Integer id;
@@ -28,8 +29,18 @@ public class Post implements Serializable {
     private Boolean isPublic;
     private Date createdAt;
     private Date updatedAt;
-
     private User author;
+
+    private List<Schedule> schedules;
+
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
 
     @SerializedName("is_liked_by_you")
     private boolean isLikedByYou;
@@ -59,7 +70,12 @@ public class Post implements Serializable {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 "author=" + (author != null ? author.toString() : "null") +
+                "schedules=" + (schedules != null ? schedules.toString() : "null") +
                 '}';
+    }
+
+    public Post() {
+        this.isPublic = true;
     }
 
     public User getAuthor() {

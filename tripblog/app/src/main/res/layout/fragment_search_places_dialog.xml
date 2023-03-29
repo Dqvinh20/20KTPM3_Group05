@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="10dp"
+    tools:context=".ui.fragments.SearchPlacesDialogFragment">
+    
+    <FrameLayout
+        android:background="@drawable/places_search_bar_bg"
+        android:id="@+id/searchBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginBottom="34dp"
+        >
+        <com.google.android.material.button.MaterialButton
+            app:icon="@drawable/ic_baseline_keyboard_backspace_24"
+            app:iconTint="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            app:rippleColor="@color/gray"
+            app:backgroundTint="@color/gray"
+            android:id="@+id/close"
+            />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:hint="@string/edit_trip_title_hint"
+            android:textSize="20sp"
+            android:layout_marginHorizontal="?attr/actionBarSize"
+            android:background="@null"
+            android:inputType="text"
+            android:id="@+id/editQuery"
+            />
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            app:icon="@drawable/ic_baseline_close_24"
+            app:iconTint="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            app:rippleColor="@color/gray"
+            app:backgroundTint="@color/gray"
+            android:id="@+id/clearText"
+            />
+    </FrameLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/loading"
+        android:indeterminateOnly="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/searchBarLayout"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchResults"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/searchBarLayout"
+        />
+
+</RelativeLayout>

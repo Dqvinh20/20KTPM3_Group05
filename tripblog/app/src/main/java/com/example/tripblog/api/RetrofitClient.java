@@ -32,13 +32,10 @@ public class RetrofitClient {
         if (TextUtils.isEmpty(token)) {
             return insRetrofit;
         }
-
         AuthenticationInterceptor authInterceptor = new AuthenticationInterceptor(token);
-        if(!httpClient.interceptors().contains(authInterceptor)) {
-            httpClient.addInterceptor(authInterceptor);
-            insRetrofit = builder.client(httpClient.build()).build();
-        }
-
+        httpClient.interceptors().clear();
+        httpClient.addInterceptor(authInterceptor);
+        insRetrofit = builder.client(httpClient.build()).build();
         return insRetrofit;
     }
 }

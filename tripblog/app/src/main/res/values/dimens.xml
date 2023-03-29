@@ -9,4 +9,12 @@
     <dimen name="auth_title_margin_top">5dp</dimen>
     <dimen name="auth_title_margin_bottom">20dp</dimen>
     <dimen name="auth_item_margin_bottom">4dp</dimen>
+
+    <!-- Post Detail Item-->
+    <dimen name="post_detail_item_margin_vertical">8dp</dimen>
+    <dimen name="post_detail_item_padding_vertical">12dp</dimen>
+    <dimen name="content_item_padding_horizontal">20dp</dimen>
+
+    <!-- Map item -->
+    <dimen name="location_name_margin_horizontal">10dp</dimen>
 </resources>

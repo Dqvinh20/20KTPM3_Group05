@@ -29,6 +29,7 @@ import com.example.tripblog.model.Post;
 import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.component.CustomPostNewsfeedAdapter;
 import com.example.tripblog.ui.component.PostnewsfeedAdapterRecycle;
+import com.example.tripblog.ui.post.PostDetailActivity;
 import com.example.tripblog.ui.post.ViewPost;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -184,7 +185,9 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemClick(Integer postid) {
                 Log.i("postid",postid.toString());
-
+                Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+                intent.putExtra("postId", postid);
+                startActivity(intent);
             }
         });
         listPostnewsFeed.setAdapter(postnewfeed);

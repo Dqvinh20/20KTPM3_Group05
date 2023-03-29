@@ -44,6 +44,7 @@ const getPostById = async (id) => {
         },
         {
           association: "schedules",
+          include: [{ association: "locations", exclude: ["place_id"] }],
           separate: true,
           order: [["date", "ASC"]],
         },
@@ -61,6 +62,7 @@ const createPost = async (post_data) => {
       },
       {
         association: "schedules",
+        include: [{ association: "locations", exclude: ["place_id"] }],
       },
     ],
   });
@@ -95,6 +97,7 @@ const decreaseLikePost = async (id) => {
     { where: { id } }
   );
 };
+
 module.exports = {
   getAll,
   getPostById,

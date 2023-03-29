@@ -39,6 +39,7 @@ const getAll = async (req, res) => {
         is_public: true,
       },
     });
+
     if (no_limit && no_limit === "true") {
       return res.json({
         page: 1,
@@ -75,7 +76,7 @@ const getPostById = async (req, res) => {
     post.setDataValue("is_liked_by_you", await post.hasLiked_by(req.user.id));
 
     if (post.is_public === false && req.user.id !== post.author.id) {
-      return res.json({
+      return res.status(401).json({
         error: "You can't not access private posts of another user",
       });
     }
@@ -89,8 +90,9 @@ const getPostById = async (req, res) => {
 const getPostsByUser = async (req, res) => {
   const { user_id } = req.params;
   const { is_public } = req.query;
-  if (is_public === false && req.user.id !== user_id) {
-    return res.json({
+
+  if (is_public === "false" && req.user.id !== Number(user_id)) {
+    return res.status(401).json({
       error: "You can't not access private posts of another user",
     });
   }

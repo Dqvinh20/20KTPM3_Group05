@@ -6,8 +6,10 @@ require("./models");
 router.use("/auth", require("./routes/auth"));
 router.use("/home", Passport.isAuth, require("./routes/home"));
 router.use("/search", Passport.isAuth, require("./routes/search"));
-router.use("/post", Passport.isAuth, require("./routes/post"));
 router.use("/user", Passport.isAuth, require("./routes/user"));
+router.use("/post", Passport.isAuth, require("./routes/post"));
+router.use("/schedule", Passport.isAuth, require("./routes/schedule"));
+router.use("/location", Passport.isAuth, require("./routes/location"));
 
 // router.get("/test", (req, res) => {
 //   return res.send("test");

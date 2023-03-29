@@ -20,4 +20,9 @@ public interface AuthService {
 
     @GET("auth/logged-user")
     Call<User> retrieveLoggedUserInfo();
+
+    @FormUrlEncoded
+    @POST("auth/reset-password")
+    Call<AuthResponse> resetPassword(@Field("email") String email);
 }
+

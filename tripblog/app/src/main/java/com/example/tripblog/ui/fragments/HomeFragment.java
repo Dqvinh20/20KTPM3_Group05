@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,10 +21,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tripblog.R;
+import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.api.services.PostService;
+import com.example.tripblog.databinding.FragmentCreateBinding;
+import com.example.tripblog.databinding.FragmentHomeBinding;
+import com.example.tripblog.model.Post;
 import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.component.CustomPostNewsfeedAdapter;
 import com.example.tripblog.ui.component.PostnewsfeedAdapterRecycle;
 import com.example.tripblog.ui.post.ViewPost;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,9 +56,11 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = HomeFragment.class.getSimpleName();
 
     ImageNewsFeedFragment imageNewsFeedFragment;
     FragmentTransaction ft;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -103,6 +125,7 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
         ft = getFragmentManager().beginTransaction();
         imageNewsFeedFragment = ImageNewsFeedFragment.newInstance("Image Infor");
         ft.replace(R.id.infornewsfeed,imageNewsFeedFragment);
@@ -112,23 +135,55 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_home, container, false);
         listPostnewsFeed = frameLayout.findViewById(R.id.listPostnewsFeed);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),RecyclerView.HORIZONTAL,false);
         listPostnewsFeed.setLayoutManager(linearLayoutManager);
         PostnewsfeedAdapterRecycle postnewfeed = new PostnewsfeedAdapterRecycle();
-        postnewfeed.setDate(id,name,title,briefDes,views,avatars,images);
+
+        PostService postService = TripBlogApplication.createService(PostService.class);
+        postService.getAllPost(
+               1
+        ).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("Data","true");
+                Log.d("Data",Boolean.toString(response.isSuccessful()));
+                Log.d("Data",response.toString());
+
+                if (response.isSuccessful()) {
+                    Log.d("Data","true");
+                    Log.d(TAG, "Home fagment: " + response.body().toString());
+//                    Log.i("Data:",response.body());
+                    JsonObject data = response.body();
+                    JsonArray list = data.getAsJsonArray("posts");
+                    List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                    Log.d("Data",listpost.toString());
+                    postnewfeed.setDate(listpost);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                t.printStackTrace();
+                Log.d("Data","false");
+                Log.e(TAG, t.toString());
+                Snackbar.make(frameLayout, "Fail to connect to server", Snackbar.LENGTH_LONG)
+                        .setAction("Retry", view -> {
+//                            createPost();
+                        })
+                        .show();
+            }
+        });
+        Log.d("Data","hi");
+
         postnewfeed.setContext((MainActivity) getContext());
 
         postnewfeed.setItemClickListener(new PostnewsfeedAdapterRecycle.ItemClickListener() {
             @Override
-            public void onItemClick(String postid) {
-                Intent intent=new Intent(getContext(), ViewPost.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("postid", postid);
-                intent.putExtras(bundle);
-                showToast(postid);
-                startActivityForResult(intent, 1122);
+            public void onItemClick(Integer postid) {
+                Log.i("postid",postid.toString());
 
             }
         });

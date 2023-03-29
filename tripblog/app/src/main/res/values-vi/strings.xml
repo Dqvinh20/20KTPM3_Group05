@@ -23,4 +23,9 @@
     <string name="privacy_setting">Quyền riêng tư</string>
     <string name="public_scope">Mọi người đều có thể truy cập bài viết của bạn</string>
     <string name="private_scope">Chỉ có bạn truy cập được bài viết</string>
+    <string name="reset_password">Đặt lại mật khẩu</string>
+    <string name="success">Thành công</string>
+    <string name="success_message">Đã gửi password mới</string>
+    <string name="failure">Thất bại</string>
+    <string name="failure_message">"reset password thất bại "</string>
 </resources>

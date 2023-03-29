@@ -2,6 +2,7 @@ package com.example.tripblog.api.services;
 
 import com.example.tripblog.model.Post;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.util.Date;
 import java.util.List;
@@ -16,8 +17,10 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface PostService {
+//    @GET("post")
+//    Call<JsonArray> getAllPost(@Query("page")Integer page, @Query("limit")Integer limit);
     @GET("post/")
-    Call<JsonArray> getAllPost(@Query("page")Integer page, @Query("limit")Integer limit);
+    Call<JsonObject> getAllPost(@Query("page")Integer page);
 
     @FormUrlEncoded
     @POST("post/create")

@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             displayCreatePostDialog();
         });
 
-//        logout();
+        logout();
     }
 
     private void displayCreatePostDialog() {

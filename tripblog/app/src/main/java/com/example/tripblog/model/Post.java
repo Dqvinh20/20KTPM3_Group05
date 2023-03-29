@@ -31,6 +31,17 @@ public class Post implements Serializable {
 
     private User author;
 
+    @SerializedName("is_liked_by_you")
+    private boolean isLikedByYou;
+
+    public boolean isLikedByYou() {
+        return isLikedByYou;
+    }
+
+    public void setLikedByYou(boolean likedByYou) {
+        isLikedByYou = likedByYou;
+    }
+
     @Override
     public String toString() {
         return "Post{" +

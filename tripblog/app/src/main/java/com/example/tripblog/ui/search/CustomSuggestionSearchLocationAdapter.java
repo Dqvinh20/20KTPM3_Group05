@@ -2,26 +2,27 @@ package com.example.tripblog.ui.search;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.example.tripblog.R;
+import com.example.tripblog.model.User;
 
-import java.util.Arrays;
+import java.util.List;
 
-public class CustomSuggestionSearchAdapter extends ArrayAdapter<String> {
+public class CustomSuggestionSearchLocationAdapter extends ArrayAdapter<String> {
     Context context ; Suggest_Search_Object[] list_suggestion;
-    public CustomSuggestionSearchAdapter(@NonNull Context context, int layoutToBeInflated ,Suggest_Search_Object[] list_suggestion ) {
-        super(context,R.layout.suggest_search_component,new String[list_suggestion.length]);
-        this.list_suggestion = list_suggestion;
+    List<User> userListBelow;
+
+    public CustomSuggestionSearchLocationAdapter(@NonNull Context context, int layoutToBeInflated , List<User> userListBelow ) {
+        super(context,R.layout.suggest_search_component,new String[userListBelow.size()]);
+        this.userListBelow = userListBelow;
 
         this.context = context;
     }
@@ -32,8 +33,10 @@ public class CustomSuggestionSearchAdapter extends ArrayAdapter<String> {
         TextView titleTextView = (TextView) row.findViewById(R.id.titleTextView);
         TextView subTiltleTextView = (TextView) row.findViewById(R.id.subTiltleTextView);
         ImageView icon_suggestion_search_imageview = ( ImageView ) row.findViewById(R.id.icon_suggestion_search_imageview);
-        titleTextView.setText(list_suggestion[position].getTitle());
-        subTiltleTextView.setText(list_suggestion[position].getSubtitle());
+
+        titleTextView.setText(userListBelow.get(position).getUserName());
+        subTiltleTextView.setText(userListBelow.get(position).getUserNameNonAccent());
+
 //        Toast.makeText(context, "Hi", Toast.LENGTH_LONG).show();
         System.out.println(list_suggestion[position]);
         if(list_suggestion[position].getType() == "Location"){

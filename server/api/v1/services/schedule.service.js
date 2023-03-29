@@ -38,11 +38,17 @@ const addLocation = async (schedule_id, location_id) => {
     throw new Error("Location already exists in schedule");
   }
 
-  await Promise.all([
+  const [[locationResult], scheduleResult] = await Promise.all([
     schedule.addLocation(location_id),
     schedule.increment("location_count", { by: 1 }),
   ]);
-  return await schedule.getLocations({ where: { id: location_id } });
+
+  locationResult.position = scheduleResult.location_count;
+  await locationResult.save();
+
+  return await schedule.getLocations({
+    where: { id: location_id },
+  });
 };
 
 const editLocationNote = async (schedule_id, location_id, note) => {
@@ -64,8 +70,36 @@ const editLocationNote = async (schedule_id, location_id, note) => {
 
 const removeLocation = async (schedule_id, location_id) => {
   const schedule = await Schedule.findByPk(schedule_id);
+  let currPosition = await schedule.getLocations({
+    where: { id: location_id },
+    through: { attributes: ["position"] },
+  });
+  if (currPosition.length !== 0) {
+    currPosition = currPosition[0].SchedulesLocations.position;
+  }
+
   const result = await schedule.removeLocation(location_id);
   await schedule.decrement("location_count", { by: result });
+
+  if (result === 1) {
+    const nextLocations = await schedule.getLocations({
+      through: {
+        where: {
+          position: {
+            [Op.gt]: currPosition,
+          },
+        },
+      },
+    });
+
+    await Promise.all(
+      nextLocations.map(async (location) => {
+        location.SchedulesLocations.position -= 1;
+        await location.SchedulesLocations.save();
+      })
+    );
+  }
+
   return result;
 };
 

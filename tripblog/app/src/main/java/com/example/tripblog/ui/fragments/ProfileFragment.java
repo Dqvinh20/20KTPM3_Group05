@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.databinding.FragmentProfileBinding;
+import com.example.tripblog.ui.adapter.PlanListAdapter;
 import com.example.tripblog.ui.ViewPagerAdapter;
 import com.example.tripblog.ui.login.LoginActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -92,17 +93,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         new TabLayoutMediator(tabLayout,viewPager, (tab, position) -> {
             switch(position) {
                 case 0:
-                    tab.setText("Private");
+                    tab.setText("Public");
                     break;
                 case 1:
-                    tab.setText("Public");
+                    tab.setText("Private");
                     break;
             }
         }).attach();
 
 
-//        ListView planList = (ListView) view.findViewById(R.id.userList);
-//        planList.setAdapter(new PlanListAdapter(getContext(), R.layout.plan_item, name, img));
 
     }
 

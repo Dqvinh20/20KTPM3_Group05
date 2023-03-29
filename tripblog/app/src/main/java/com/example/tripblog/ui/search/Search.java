@@ -7,28 +7,42 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+
 import androidx.appcompat.widget.SearchView;
 
 import com.example.tripblog.R;
+import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.api.services.SearchService;
 import com.example.tripblog.databinding.ActivitySearchBinding;
-import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.post.ViewPost;
+import com.example.tripblog.model.Post;
+import com.example.tripblog.model.User;
 import com.example.tripblog.ui.post.ViewSearchList;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
-import java.util.Random;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Search extends AppCompatActivity {
 
     ActivitySearchBinding binding ;
-    CustomSuggestionSearchAdapter arrayAdapterSuggest;
+    List<User> userList;
+    private static final String TAG = Search.class.getSimpleName();
+
+    CustomSuggestionSearchUserAdapter arrayUserAdapterSuggest;
     String [] model_data_search = {"China", "Wales", "Belgium", "Japan", "France", "America",
             "Germany", "Canada", "Spain", "Brazil", "South Africa", "Belgium", "India"};
     Suggest_Search_Object[] result = new Suggest_Search_Object[]{};
@@ -47,7 +61,7 @@ public class Search extends AppCompatActivity {
         setContentView(binding.getRoot());
         System.out.println("listsuggest");
 //        arrayAdapterSuggest = new CustomSuggestionSearchAdapter(Search.this,R.layout.suggest_search_component,listsuggest);
-        binding.suggestSearchLocation.setAdapter(arrayAdapterSuggest);
+        binding.suggestSearchLocation.setAdapter(arrayUserAdapterSuggest);
         binding.suggestSearchLocation.setBackgroundColor(Color.WHITE);
     }
 
@@ -84,6 +98,12 @@ public class Search extends AppCompatActivity {
 
             }
         });
+       binding.suggestSearchUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+           @Override
+           public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+               Log.i("data" ,userList.get(position).getId().toString());
+           }
+       });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -92,19 +112,43 @@ public class Search extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if(newText.isEmpty()) return false;
+                SearchService searchService = TripBlogApplication.createService(SearchService.class);
+                searchService.getUserFromText(newText).enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        if (response.isSuccessful()) {
+                            JsonObject data = response.body();
+                            JsonArray list = data.getAsJsonArray("users");
+                            userList = new Gson().fromJson(list, new TypeToken<List<User>>(){}.getType());
+                            if(userList.size()==0){
+                                binding.notificationNoResult.setText("We coundn't find any users or places matching "+"'"+searchView.getQuery()+"'");
+                            }
+                            else {
+                                binding.notificationNoResult.setText(null);
+                            }
+                            Log.d("Data",userList.toString());
+                            arrayUserAdapterSuggest = new CustomSuggestionSearchUserAdapter(Search.this,
+                                    R.layout.suggest_search_component,
+                                    userList);
+                            binding.suggestSearchUser.setAdapter(arrayUserAdapterSuggest);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+                        binding.notificationNoResult.setText("We coundn't find any users or places matching "+"'"+searchView.getQuery()+"'");
+                        t.printStackTrace();
+                        Log.d("Data","false");
+                        Log.e(TAG, t.toString());
+                        Snackbar.make(binding.getRoot(), "Fail to connect to server", Snackbar.LENGTH_LONG)
+                                .setAction("Retry", view -> {
+//                            createPost();
+                                })
+                                .show();
+                    }
+                });
 
-                // ToDo:query data search
-                int randomNum = ThreadLocalRandom.current().nextInt(0, 1 + 1);
-                if (listsuggest.length>0){
-                    result = listsuggest;
-                    binding.notificationNoResult.setText(null);
-                }
-                else{
-                    result = new Suggest_Search_Object[]{};
-                    binding.notificationNoResult.setText("We coundn't find any users or places matching "+"'"+searchView.getQuery()+"'");
-                }
-                arrayAdapterSuggest = new CustomSuggestionSearchAdapter(Search.this,R.layout.suggest_search_component,result);
-                binding.suggestSearchLocation.setAdapter(arrayAdapterSuggest);
+
                 return false;
             }
         });

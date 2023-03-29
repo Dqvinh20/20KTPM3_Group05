@@ -28,4 +28,6 @@
     <string name="success_message">Đã gửi password mới</string>
     <string name="failure">Thất bại</string>
     <string name="failure_message">"reset password thất bại "</string>
+    <string name="count_places">địa điểm</string>
+    <string name="add_note_hint">Thêm ghi chú</string>
 </resources>

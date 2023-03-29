@@ -44,13 +44,26 @@ const getPostById = async (id) => {
         },
         {
           association: "schedules",
-          include: [{ association: "locations", exclude: ["place_id"] }],
           separate: true,
+          include: [
+            {
+              association: "locations",
+              exclude: ["place_id"],
+              through: {},
+            },
+          ],
           order: [["date", "ASC"]],
         },
       ],
     })
   );
+
+  post.schedules.forEach((schedule) => {
+    schedule.locations.sort(
+      (a, b) => a.SchedulesLocations.position - b.SchedulesLocations.position
+    );
+  });
+
   return post;
 };
 
@@ -70,6 +83,8 @@ const createPost = async (post_data) => {
 };
 
 const updatePost = async (id, post) => {
+  const oldCoverImg = await Post.findByPk(id, { attributes: ["cover_img"] });
+  // console.log(oldCoverImg.cover_img);
   const result = await Post.update(
     post,
     common({
@@ -78,7 +93,12 @@ const updatePost = async (id, post) => {
       individualHooks: true,
     })
   );
-  return [result[0], [await getPostById(id)]];
+
+  // if (post.cover_img) {
+  //   cloudinary.destroy(oldCoverImg.cover_img);
+  // }
+
+  return [result[0], result[1][0]];
 };
 
 const deletePost = async (id) => {

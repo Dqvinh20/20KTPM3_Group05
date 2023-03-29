@@ -6,7 +6,7 @@
     tools:context=".ui.fragments.PublicPlanFragment">
 
     <ListView
-        android:id="@+id/userList"
+        android:id="@+id/planList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@color/black"
@@ -14,5 +14,14 @@
         >
 
     </ListView>
+    <TextView
+        android:id="@+id/noPlanTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/quantum_grey600"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        android:layout_marginTop="30dp"
+        />
 
 </FrameLayout>

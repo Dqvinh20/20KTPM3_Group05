@@ -15,7 +15,7 @@ public class RetrofitClient {
             .connectTimeout(2, TimeUnit.SECONDS);
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
-                    .baseUrl(BuildConfig.BASE_URL)
+                    .baseUrl(BuildConfig.IS_DEV_ENV == "true" ? BuildConfig.BASE_URL_LOCAL : BuildConfig.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create());
     private static Retrofit insRetrofit = null;
     private RetrofitClient() {}
@@ -32,13 +32,10 @@ public class RetrofitClient {
         if (TextUtils.isEmpty(token)) {
             return insRetrofit;
         }
-
         AuthenticationInterceptor authInterceptor = new AuthenticationInterceptor(token);
-        if(!httpClient.interceptors().contains(authInterceptor)) {
-            httpClient.addInterceptor(authInterceptor);
-            insRetrofit = builder.client(httpClient.build()).build();
-        }
-
+        httpClient.interceptors().clear();
+        httpClient.addInterceptor(authInterceptor);
+        insRetrofit = builder.client(httpClient.build()).build();
         return insRetrofit;
     }
 }

@@ -13,6 +13,11 @@ const SchedulesLocations = sequelize.define(
       primaryKey: true,
       allowNull: false,
     },
+    position: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     note: {
       type: DataTypes.TEXT,
       allowNull: true,

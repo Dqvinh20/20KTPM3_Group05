@@ -52,10 +52,12 @@ public class CustomResultSearchAdapter  extends ArrayAdapter<String> {
             @Override
             public void onClick(View v) {
                 if(fav_icon.getTag() == "liked"){
+                    // ToDO: request unliked to db
                     fav_icon.setTag("unliked");
                     fav_icon.setImageDrawable(context.getResources().getDrawable(R.drawable.favarite_icon));
                 }
                 else{
+                    // ToDO: request liked to db
                     fav_icon.setTag("liked");
                     fav_icon.setImageDrawable(context.getResources().getDrawable(R.drawable.favcorite_icon_red));
                 }

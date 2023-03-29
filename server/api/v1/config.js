@@ -12,8 +12,8 @@ const sequelize = new Sequelize(
         logging: false,
     }
 );
-
-// sequelize   //dưng xoa nhe an cat do
+// dung xoa nhe an cot do
+// sequelize
 //     .sync() // Create tables if they don't exist
 //     .then(() => console.log("Database & tables created!"));
 

@@ -12,4 +12,11 @@ router.post(
     RatingController.createRating
 );
 
+router.get(
+    "/get-all-rating/:post_id",
+    validateData,
+    Validation.validate,
+    RatingController.getAllRating
+);
+
 module.exports = router;

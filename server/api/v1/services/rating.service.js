@@ -1,7 +1,7 @@
 const Rating = require("../models/rating.model");
 const Post = require("../models/post.model");
 const sequelize = require("../config");
-
+const { Op } = require("sequelize");
 const getMethods = (obj) => {
     let properties = new Set();
     let currentObj = obj;
@@ -34,6 +34,22 @@ const createRating = async (ratingData) => {
     }
 };
 
+const getAllRating = async (post_id) => {
+    try {
+        console.log(post_id);
+        return await Rating.findAll({
+            where: {
+                post_id: {
+                    [Op.eq]: post_id,
+                },
+            },
+            attributes: ["id", "score", "content", "rating_user_id"],
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
 module.exports = {
     createRating,
+    getAllRating,
 };

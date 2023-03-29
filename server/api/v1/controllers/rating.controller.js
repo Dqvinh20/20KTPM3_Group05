@@ -1,4 +1,4 @@
-const RattingService = require("../services/rating.service");
+const RatingService = require("../services/rating.service");
 
 const createRating = async (req, res) => {
     try {
@@ -9,14 +9,22 @@ const createRating = async (req, res) => {
             post_id,
             rating_user_id: req.user.id,
         };
-        console.log(ratingData);
-        const rating = await RattingService.createRating(ratingData);
+        const rating = await RatingService.createRating(ratingData);
         res.json(rating);
     } catch (err) {
         res.json(err);
     }
 };
 
+const getAllRating = async (req, res) => {
+    try {
+        const ratings = await RatingService.getAllRating(req.params.post_id);
+        res.json(ratings);
+    } catch (err) {
+        res.json(err);
+    }
+};
 module.exports = {
     createRating,
+    getAllRating,
 };

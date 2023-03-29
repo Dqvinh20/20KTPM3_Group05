@@ -43,11 +43,4 @@ Post.belongsToMany(User, {
     await Rating.sync();
 })();
 
-// Post.belongsToMany(Ratting, {
-//     through: "posts_ratting",
-//     as: "ratting",
-//     foreignKey: "post_id",
-//     otherKey: "ratting_id",
-// });
-
 module.exports = Rating;

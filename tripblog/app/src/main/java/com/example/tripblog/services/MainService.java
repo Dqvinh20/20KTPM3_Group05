@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -69,22 +70,22 @@ public class MainService extends Service {
         myschedule_executor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-//                show_notifycation();
+                show_notifycation("");
                 Log.i(TAG,"2");
             }
         },1,5, TimeUnit.SECONDS);
 
         return START_STICKY;
     }
-    private void show_notifycation() {
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+    private void show_notifycation(String msg) {
+        Intent notificationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://tripblog.com?postId=18"));
 
         PendingIntent contentIntent = PendingIntent.getActivity(
                 this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification notification = new NotificationCompat.Builder(this, TripBlogApplication.CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.app_logo_transparent)
                 .setContentTitle("User followed Has new Post")
-                .setContentText("Hi 1234")
+                .setContentText("https://tripblog.com?postId=18")
                 .setContentIntent(contentIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)

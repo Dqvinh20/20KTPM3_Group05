@@ -76,17 +76,40 @@ const searchLocation = async (query, { limit }) => {
                 Location.sequelize.literal(
                     "_search @@ plainto_tsquery('english', :query)"
                 ),
-
-                Location.sequelize.where(
-                    Location.sequelize.fn(
-                        "lower",
-                        Location.sequelize.col("name")
-                    ),
-                    Op.like,
-                    Location.sequelize.fn("lower", `%${query}%`)
-                ),
+                {
+                    [Op.or]: [
+                        Location.sequelize.where(
+                            Location.sequelize.fn(
+                                "lower",
+                                Location.sequelize.col("name")
+                            ),
+                            Op.like,
+                            Location.sequelize.fn("lower", `%${query}%`)
+                        ),
+                        Location.sequelize.where(
+                            Location.sequelize.fn(
+                                "lower",
+                                Location.sequelize.col("name_non_accent")
+                            ),
+                            Op.like,
+                            Location.sequelize.fn("lower", `%${query}%`)
+                        ),
+                    ],
+                },
             ],
         },
+
+        attributes: [
+            "id",
+            "name",
+            "name_non_accent",
+            "geo",
+            "address",
+            "formatted_address",
+            "photo",
+            "createdAt",
+            "updatedAt",
+        ],
         replacements: { query },
     });
     return result;

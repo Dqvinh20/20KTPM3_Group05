@@ -138,7 +138,10 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     protected void fetchData() {
-        Bundle bundle = getIntent().getExtras();
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+
+
         if (bundle != null && bundle.containsKey("post")) {
             // Load from bundle
             currPost = (Post) bundle.getSerializable("post");

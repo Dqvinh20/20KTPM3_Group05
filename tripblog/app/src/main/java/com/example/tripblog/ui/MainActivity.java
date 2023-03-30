@@ -3,17 +3,29 @@ package com.example.tripblog.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.Manifest;
+import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,7 +38,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 import com.example.tripblog.R;
+import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.databinding.ActivityMainBinding;
+import com.example.tripblog.services.MainService;
 import com.example.tripblog.ui.dialog.ImagePreviewDialog;
 import com.example.tripblog.ui.fragments.HomeFragment;
 import com.example.tripblog.ui.fragments.CreateFragment;
@@ -38,11 +52,18 @@ import com.example.tripblog.ui.post.ViewPost;
 import com.example.tripblog.ui.search.Search;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
-public class MainActivity extends AppCompatActivity implements MainCallbacks{
+public class MainActivity extends AppCompatActivity implements MainCallbacks {
     ActivityMainBinding binding;
     private Integer currFragment = null;
     private long lastClickTime = 0;
+    private NotificationManagerCompat notificationManagerCompat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,23 +89,45 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
 
         binding.create.setOnClickListener((v) -> {
             // Prevent double click
-            if (SystemClock.elapsedRealtime() - lastClickTime < 1000){
+            if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
                 return;
             }
             lastClickTime = SystemClock.elapsedRealtime();
 
             // Open create post dialog
-                Intent intent = new Intent(MainActivity.this, EditablePostDetailActivity.class);
-                intent.putExtra("postId", 21);
-                startActivity(intent);
+            Intent intent = new Intent(MainActivity.this, EditablePostDetailActivity.class);
+            intent.putExtra("postId", 21);
+            startActivity(intent);
 //            displayCreatePostDialog();
 //            ImagePreviewDialog imagePreviewDialog = new ImagePreviewDialog(this);
 //            imagePreviewDialog.show();
 
         });
         binding.create.performClick();
+        notificationManagerCompat = NotificationManagerCompat.from(this);
+        Log.i("MainActivity","Check");
+        Intent Serviceintent = new Intent(this, MainService.class);
+        if (!isMyServiceRunning(MainService.class)) {
+            Log.i("MainActivity","Start service");
+            startService(Serviceintent);
+        }
+
 //        logout();
     }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i ("Service status", "Running");
+                return true;
+            }
+        }
+        Log.i ("Service status", "Not running");
+        return false;
+    }
+
+
 
     private void displayCreatePostDialog() {
         FragmentManager fragmentManager = getSupportFragmentManager();

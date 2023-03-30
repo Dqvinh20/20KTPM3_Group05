@@ -9,6 +9,8 @@
 
     <!--Dangerous
     Permissions-->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -24,6 +26,7 @@
         android:theme="@style/Theme.Tripblog"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <service android:name=".services.MainService"/>
         <activity
             android:name=".ui.resetpassword.ResetPassword"
             android:exported="false"
@@ -64,7 +67,9 @@
             android:exported="false"
             android:windowSoftInputMode="stateHidden|adjustPan"
             android:theme="@style/Theme.Tripblog.NoActionBar"
-            />
+            >
+
+        </activity>
 
         <activity
             android:name=".ui.post.EditablePostDetailActivity"
@@ -72,7 +77,20 @@
             android:windowSoftInputMode="stateHidden|adjustPan"
             android:theme="@style/Theme.Tripblog.NoActionBar"
             />
-
+        <activity android:name=".deeplinking.DeepLinking"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="tripblog.com"
+                    android:scheme="app" />
+                <data
+                    android:host="tripblog.com"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

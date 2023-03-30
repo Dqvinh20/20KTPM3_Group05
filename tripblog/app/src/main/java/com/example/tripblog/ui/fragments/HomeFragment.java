@@ -149,18 +149,10 @@ public class HomeFragment extends Fragment {
         ).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("Data","true");
-                Log.d("Data",Boolean.toString(response.isSuccessful()));
-                Log.d("Data",response.toString());
-
                 if (response.isSuccessful()) {
-                    Log.d("Data","true");
-                    Log.d(TAG, "Home fagment: " + response.body().toString());
-//                    Log.i("Data:",response.body());
                     JsonObject data = response.body();
                     JsonArray list = data.getAsJsonArray("posts");
                     List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
-                    Log.d("Data",listpost.toString());
                     postnewfeed.setDate(listpost);
                 }
             }
@@ -168,7 +160,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 t.printStackTrace();
-                Log.d("Data","false");
                 Log.e(TAG, t.toString());
                 Snackbar.make(frameLayout, "Fail to connect to server", Snackbar.LENGTH_LONG)
                         .setAction("Retry", view -> {

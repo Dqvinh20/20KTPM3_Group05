@@ -20,6 +20,8 @@ public class User implements Serializable {
     private Date createdAt;
     private Date updatedAt;
 
+
+
     @Override
     public String toString() {
         return "User{" +

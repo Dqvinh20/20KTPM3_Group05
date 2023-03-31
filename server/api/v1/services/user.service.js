@@ -162,6 +162,7 @@ const updateUser = async (user_id, user_name, avatar_url) => {
             where: {
                 id: user_id,
             },
+            returning: true,
         }
     );
 };

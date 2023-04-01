@@ -19,13 +19,12 @@ public interface UserService {
     @Multipart
     @PATCH("user/update")
     Call<JsonArray> updateUser(
-
             @Part("user_name") RequestBody userName,
             @Part MultipartBody.Part avatar_img
     );
 
 
     @GET("user/{user_id}")
-    static Call<User> getUserById(@Path("user_id") Integer userid);
+    Call<User> getUserById(@Path("user_id") Integer userid);
 
 }

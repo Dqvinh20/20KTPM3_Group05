@@ -19,8 +19,10 @@ import android.widget.Toast;
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.databinding.FragmentProfileBinding;
+import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.adapter.PlanListAdapter;
 import com.example.tripblog.ui.ViewPagerAdapter;
+import com.example.tripblog.ui.editprofile.EditProfile;
 import com.example.tripblog.ui.login.LoginActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.tabs.TabLayout;
@@ -73,9 +75,23 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                         TripBlogApplication.logout(getContext());
                         Intent loginPage = new Intent(getContext(), LoginActivity.class);
                         startActivity(loginPage);
+                        popupSetting.dismiss();
                         getActivity().finish();
                     }
                 });
+                Button editProfile =(Button) v.findViewById(R.id.editProfile);
+
+                editProfile.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), EditProfile.class);
+                        startActivity(intent);
+                        popupSetting.dismiss();
+//                        finishAfterTransition();
+                    }
+                });
+
+
             }
         });
 

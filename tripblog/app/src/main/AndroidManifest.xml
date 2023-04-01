@@ -71,6 +71,11 @@ Dangerous
             android:exported="false"
             android:theme="@style/Theme.Tripblog.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".ui.editprofile.EditProfile"
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            />
     </application>
 
 </manifest>

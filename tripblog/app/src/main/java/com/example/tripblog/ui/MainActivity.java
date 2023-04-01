@@ -2,44 +2,29 @@ package com.example.tripblog.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 
 import com.example.tripblog.R;
 import com.example.tripblog.databinding.ActivityMainBinding;
-import com.example.tripblog.ui.dialog.ImagePreviewDialog;
 import com.example.tripblog.ui.fragments.HomeFragment;
 import com.example.tripblog.ui.fragments.CreateFragment;
-import com.example.tripblog.ui.fragments.OverviewFragment;
 import com.example.tripblog.ui.fragments.ProfileFragment;
 import com.example.tripblog.ui.post.EditablePostDetailActivity;
-import com.example.tripblog.ui.post.PostDetailActivity;
-import com.example.tripblog.ui.post.ViewPost;
 import com.example.tripblog.ui.search.Search;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.tripblog.ui.editprofile.EditProfile;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks{
+    private String TAG = MainActivity.class.getSimpleName();
     ActivityMainBinding binding;
     private Integer currFragment = null;
     private long lastClickTime = 0;

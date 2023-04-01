@@ -17,6 +17,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
@@ -65,6 +68,19 @@ public class EditProfile extends AppCompatActivity {
         );
         currUser = TripBlogApplication.getInstance().getLoggedUser();
         loadData();
+
+
+        // Button btnSave = (Button) findViewById(R.id.saveButton);
+        // btnSave.setOnClickListener(new View.OnClickListener() {
+        //     @Override
+        //     public void onClick(View view) {
+        //         EditText nameTxt  = (EditText)  findViewById(R.id.nameEditText);
+        //         EditText userNameTxt  = (EditText)  findViewById(R.id.usernameEditText);
+
+        //         callUpdateApi(nameTxt,userNameTxt);
+
+        //     }
+        // });
     }
     private void onClickRequestPermission() {
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -167,6 +183,7 @@ public class EditProfile extends AppCompatActivity {
 
         userService.updateUser(
                         (RequestBody) properties.get("user_name"),
+                        (RequestBody) properties.get("name"),
                         (MultipartBody.Part) properties.get("avatar_img")
                 )
                 .enqueue(new Callback<JsonArray>() {
@@ -185,9 +202,11 @@ public class EditProfile extends AppCompatActivity {
                         JsonArray body = response.body();
                         // Update success
                         if (body.get(0).getAsInt() == 1) {
-//                            User updateUser = new Gson().fromJson(body.get(1).getAsJsonObject(), User.class);
-//                            currUser.setUserName(updateUser.getUserName());
-//                            loadData();
+                            User updateUser = new Gson().fromJson(body.get(1).getAsJsonObject(), User.class);
+                            currUser.setName(updateUser.getName());
+                            currUser.setUserName(updateUser.getUserName());
+                            currUser.setAvatar(updateUser.getAvatar());
+                            loadData();
                             Snackbar
                                     .make(binding.getRoot(), "Upload cover image successfully.", Snackbar.LENGTH_SHORT).show();
                         }
@@ -216,7 +235,7 @@ public class EditProfile extends AppCompatActivity {
 
         binding.emailText.setText(currUser.getEmail());
         binding.usernameEditText.setText(currUser.getUserName());
-        binding.nameEditText.setText(currUser.getUserNameNonAccent());
+        binding.nameEditText.setText(currUser.getName());
     }
 
 }

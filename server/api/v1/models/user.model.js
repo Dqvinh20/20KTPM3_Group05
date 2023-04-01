@@ -31,6 +31,11 @@ const User = sequelize.define(
                 this.setDataValue("password", encryptPassword(value));
             },
         },
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: "Name" + Math.floor(Math.random() * 1000000),
+        },
         user_name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -89,5 +94,9 @@ User.belongsToMany(User, {
 User.prototype.checkPassword = function (plainPass, hashPass) {
     return bcrypt.compareSync(plainPass, hashPass);
 };
+
+// (async () => {
+//     await User.sync({ alter: true });
+// })();
 
 module.exports = User;

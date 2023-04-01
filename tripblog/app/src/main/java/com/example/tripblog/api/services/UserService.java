@@ -20,6 +20,7 @@ public interface UserService {
     @PATCH("user/update")
     Call<JsonArray> updateUser(
             @Part("user_name") RequestBody userName,
+            @Part("name")  RequestBody name,
             @Part MultipartBody.Part avatar_img
     );
 

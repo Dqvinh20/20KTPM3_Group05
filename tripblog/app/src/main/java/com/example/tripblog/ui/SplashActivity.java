@@ -2,67 +2,68 @@ package com.example.tripblog.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivitySplashBinding;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.login.LoginActivity;
 import com.example.tripblog.utils.NetworkUtil;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
-    private Boolean isAlive = true;
-
-    private int countTry = 0;
-
+    private boolean isAlive = true;
     ActivitySplashBinding binding;
+
+    Runnable checkCredentialInBackground = () -> {
+        try{
+            Thread.sleep(2000);
+            if (isAlive) {
+                checkCredential();
+                finish();
+            }
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        if (NetworkUtil.isNetworkAvailable(this)) {
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    try{
-                        sleep(2000);
-                        if (isAlive) {
-                            checkCredential();
-                            finish();
-                        }
-                    }catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            thread.setDaemon(true);
-            thread.start();
-        }
-        else {
-            new AlertDialog.Builder(this)
-                    .setTitle("No internet")
-                    .setMessage("You don't have internet connection !")
-                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finish();
-                        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isAlive = true;
+
+        if (!NetworkUtil.isNetworkAvailable(this)) {
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(getString(R.string.error_title))
+                    .setMessage(getString(R.string.no_internet_description))
+                    .setPositiveButton(getString(R.string.try_again), (dialogInterface, i) -> {
+                        onStart();
                     })
-                    .create()
+                    .setNegativeButton(getString(R.string.exit), (dialogInterface, i) -> finish())
                     .show();
+            return;
         }
+
+        Thread thread = new Thread(checkCredentialInBackground);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     @Override
@@ -73,36 +74,37 @@ public class SplashActivity extends AppCompatActivity {
 
     private void checkCredential() {
         SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
-        Boolean isAuth = !sharedPreferences.getString("token", "").isEmpty();
+        String token = sharedPreferences.getString("token", "");
 
-        if (isAuth) {
-            TripBlogApplication.updateToken(sharedPreferences.getString("token", ""));
+        if (!token.isEmpty()) {
+            TripBlogApplication.updateToken(token);
             AuthService authService = TripBlogApplication.createService(AuthService.class);
+            Arrays.stream(authService.getClass().getInterfaces()).forEach(aClass -> {
+                Log.d(SplashActivity.class.getSimpleName(), aClass.getSimpleName());
+            });
+            char countTry = 0;
             while (countTry < 4) {
+
                 try {
                     Response<User> response = authService.retrieveLoggedUserInfo().execute();
-                    if (response.code() == 200)
+
+                    if (response.isSuccessful()) {
+                        // Save logged user info
                         TripBlogApplication.getInstance().setLoggedUser(response.body());
-                    else if (response.code() == 401) {
-                        goToLoginActivity();
-                        return;
+                        goToMainActivity();
                     }
-                    break;
+                    else {
+                        goToLoginActivity();
+                    }
+
+                    return;
                 } catch (IOException err) {
-                    Log.e("Connect err", err.getMessage());
                     countTry++;
                 }
             }
+        }
 
-            if (countTry == 4) {
-                goToLoginActivity();
-                return;
-            }
-            goToMainActivity();
-        }
-        else {
-            goToLoginActivity();
-        }
+        goToLoginActivity();
     }
 
     private void goToMainActivity() {

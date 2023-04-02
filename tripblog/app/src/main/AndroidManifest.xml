@@ -24,6 +24,7 @@
         android:theme="@style/Theme.Tripblog"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".ui.resetpassword.ResetPassword"
             android:exported="false"
@@ -63,14 +64,14 @@
             android:name=".ui.post.PostDetailActivity"
             android:exported="false"
             android:windowSoftInputMode="stateHidden|adjustPan"
-            android:theme="@style/Theme.Tripblog.NoActionBar"
+            android:theme="@style/Theme.Tripblog.PostDetail"
             />
 
         <activity
             android:name=".ui.post.EditablePostDetailActivity"
             android:exported="false"
             android:windowSoftInputMode="stateHidden|adjustPan"
-            android:theme="@style/Theme.Tripblog.NoActionBar"
+            android:theme="@style/Theme.Tripblog.PostDetail"
             />
 
     </application>

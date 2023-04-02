@@ -1,22 +1,16 @@
 package com.example.tripblog.adapter;
 
-import android.app.Dialog;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,7 +19,6 @@ import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
 import com.example.tripblog.model.Location;
 import com.example.tripblog.ui.dialog.ImagePreviewDialog;
-import com.example.tripblog.utils.ColorUtil;
 
 import java.util.Comparator;
 import java.util.List;

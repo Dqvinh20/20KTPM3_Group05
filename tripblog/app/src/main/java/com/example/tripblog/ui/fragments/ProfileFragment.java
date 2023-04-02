@@ -51,7 +51,6 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(false);
 
-
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
         return binding.getRoot();

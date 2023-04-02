@@ -1,6 +1,5 @@
 package com.example.tripblog.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +32,14 @@ public class ScheduleItemAdapter extends RecyclerView.Adapter<ScheduleItemAdapte
 
     public ScheduleItemAdapter(List<Schedule> scheduleList) {
         this.scheduleList = scheduleList;
+        loadScheduleColors();
+    }
+
+    private void loadScheduleColors() {
+        if (this.scheduleList == null) return;
+        this.scheduleList.forEach(schedule -> schedule.setMarkerColor(
+                ColorUtil.randomHexColor(schedule.getDate().toString()
+                )));
     }
 
     public ScheduleItemAdapter(List<Schedule> scheduleList, boolean isEditable) {
@@ -63,7 +70,7 @@ public class ScheduleItemAdapter extends RecyclerView.Adapter<ScheduleItemAdapte
         int isEditVisibility = isEditable ? View.VISIBLE : View.GONE;
         holder.mapRecycleView.setVisibility(currSchedule.getLocationCount() == 0 ? View.GONE : View.VISIBLE);
 
-        MapScheduleItemAdapter mapItemAdapter = new MapScheduleItemAdapter(currSchedule.getLocations(), ColorUtil.randomHexColor(currSchedule.getDate().toString()));
+        MapScheduleItemAdapter mapItemAdapter = new MapScheduleItemAdapter(currSchedule.getLocations(), currSchedule.getMarkerColor());
         mapItemAdapter.setEditable(isEditable);
         holder.mapRecycleView.setAdapter(mapItemAdapter);
 

@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
 
                 android:layout_weight="1"
-                android:text="Followers 0"
+                android:text="Followers 1 "
                 android:textAlignment="center"
                 android:textColor="@color/quantum_grey800"
                 android:textSize="15sp"

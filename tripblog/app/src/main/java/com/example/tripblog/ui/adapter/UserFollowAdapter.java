@@ -1,20 +1,33 @@
 package com.example.tripblog.ui.adapter;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.ButtonBarLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
+import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.model.User;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.UserFollowViewHolder> {
 
@@ -42,8 +55,60 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
                 .error(R.drawable.avatar)
                 .into(holder.avatar);
         holder.name.setText(currUser.getUserName());
-//        holder.followBtn.setText("Follow");
+        holder.followBtn.setOnClickListener(new View.OnClickListener() {
+            UserService userService = TripBlogApplication.createService(UserService.class);
+            @Override
+            public void onClick(View view) {
+                if(holder.followBtn.getText().toString().equals("Unfollow")){
+                    view.setBackgroundColor(Color.RED);
+                    holder.followBtn.setText("Follow");
+                    holder.followBtn.setTextColor(Color.WHITE);
+
+                    userService.unfollowUser(currUser.getId()).enqueue(new Callback<JsonArray>() {
+                        @Override
+                        public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                            if(response.isSuccessful()){
+                                Toast.makeText(view.getContext(), "Unfollow", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Toast.makeText(view.getContext(), " Not success", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonArray> call, Throwable t) {
+                            Toast.makeText(view.getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                            t.printStackTrace();
+                        }
+                    });
+                }
+                else{
+                    view.setBackgroundColor(Color.WHITE);
+                    holder.followBtn.setTextColor(Color.RED);
+                    holder.followBtn.setText("Unfollow");
+                    userService.followUser(currUser.getId()).enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                            if(response.isSuccessful()){
+                                Toast.makeText(view.getContext(), "Follow", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Toast.makeText(view.getContext(), " Not success", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) {
+                            Toast.makeText(view.getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                            t.printStackTrace();
+                        }
+                    });
+
+                }
+            }
+        });
     }
+
 
     @Override
     public int getItemViewType(int position) {

@@ -14,7 +14,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.tripblog.R;
+import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.databinding.DialogFollowBinding;
+import com.example.tripblog.model.User;
 import com.example.tripblog.ui.adapter.FollowViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -24,6 +26,7 @@ public class FollowDialogFragment extends DialogFragment {
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private FollowViewPagerAdapter followViewPagerAdapter;
+    private User loggedUser = TripBlogApplication.getInstance().getLoggedUser();
     public FollowDialogFragment() {
         // Required empty public constructor
     }
@@ -79,7 +82,7 @@ public class FollowDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
-
+        binding.nameTxt.setText(loggedUser.getUserName());
         return binding.getRoot();
     }
 }

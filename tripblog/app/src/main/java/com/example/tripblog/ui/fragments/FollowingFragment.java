@@ -70,7 +70,6 @@ public class FollowingFragment extends Fragment {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(getContext(), "Success", 0).show();
                     JsonArray rawData = response.body().getAsJsonArray();
                     JsonObject jsonObject = (JsonObject) rawData.get(0);
                     JsonArray followingJsonArray = jsonObject.getAsJsonArray("followings");

@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -14,9 +15,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,17 +28,23 @@ import android.widget.EditText;
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.ActivityUpdateProfileBinding;
+import com.example.tripblog.model.AuthResponse;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.SimpleLoadingDialog;
+import com.example.tripblog.ui.login.LoginActivity;
 import com.example.tripblog.utils.PathUtil;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
 import java.io.File;
 import java.util.Properties;
+
+import javax.xml.validation.Validator;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -44,9 +54,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EditProfile extends AppCompatActivity {
+
+    MaterialAlertDialogBuilder loading = null;
     private static final String TAG = EditProfile.class.getSimpleName();
     private static final int REQUEST_CODE = 1;
     protected final UserService userService = TripBlogApplication.createService(UserService.class);
+
     protected ActivityUpdateProfileBinding binding;
     private User currUser;
 
@@ -62,6 +75,10 @@ public class EditProfile extends AppCompatActivity {
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         actionBar.setTitle(null);
 
+        binding.saveButton.setOnClickListener(view -> {
+            save();
+        });
+
         binding.editAvatarButton.setOnClickListener(view -> {
             onClickRequestPermission();
                 }
@@ -69,19 +86,61 @@ public class EditProfile extends AppCompatActivity {
         currUser = TripBlogApplication.getInstance().getLoggedUser();
         loadData();
 
-
-        // Button btnSave = (Button) findViewById(R.id.saveButton);
-        // btnSave.setOnClickListener(new View.OnClickListener() {
-        //     @Override
-        //     public void onClick(View view) {
-        //         EditText nameTxt  = (EditText)  findViewById(R.id.nameEditText);
-        //         EditText userNameTxt  = (EditText)  findViewById(R.id.usernameEditText);
-
-        //         callUpdateApi(nameTxt,userNameTxt);
-
-        //     }
-        // });
+        binding.nameEditText.addTextChangedListener(new ValidationTextWatcher(binding.nameEditText));
+        binding.usernameEditText.addTextChangedListener(new ValidationTextWatcher(binding.usernameEditText));
     }
+
+
+    private void save()
+    {
+        String usernameEditText = binding.usernameEditText.getText().toString();
+        String nameEditText = binding.nameEditText.getText().toString();
+
+        if (loading == null) {
+            loading = new MaterialAlertDialogBuilder(EditProfile.this);
+            loading.setView(R.layout.loading);
+            loading.setBackground(getDrawable(android.R.color.transparent));
+            loading.setCancelable(false);
+        }
+//        String imageRealPath = PathUtil.getRealPath(this, imageUri);
+//        File coverImgFile = new File(imageRealPath);
+//        RequestBody coverImg = RequestBody.create(MediaType.parse("multipart/form-data"), coverImgFile);
+//        MultipartBody.Part multipartBodyCoverImg = MultipartBody.Part.createFormData("avatar_img", coverImgFile.getName(), coverImg);
+
+        RequestBody username= RequestBody.create(MediaType.parse("multipart/form-data"),usernameEditText);
+        RequestBody name= RequestBody.create(MediaType.parse("multipart/form-data"),nameEditText);
+
+        Properties data = new Properties();
+        data.put("user_name",username);
+        data.put("name",name);
+        callUpdateApi(data);
+
+
+
+
+    }
+    private class ValidationTextWatcher implements TextWatcher {
+        private View view;
+        private ValidationTextWatcher(View view) {
+            this.view = view;
+        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            switch (view.getId()) {
+                case R.id.usernameEditText:
+                    binding.usernameEditText.setError(null);
+                    break;
+                case R.id.nameEditText:
+                    binding.nameEditText.setError(null);
+                    break;
+            }
+        }
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+        public void afterTextChanged(Editable editable) {
+
+        }
+    }
+
     private void onClickRequestPermission() {
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -111,31 +170,7 @@ public class EditProfile extends AppCompatActivity {
     }
 
     private void fetchData() {
-//        Bundle bundle = getIntent().getExtras();
-//        if (bundle != null && bundle.containsKey("user")) {
-//            // Load from bundle
-//            currUser = (User) bundle.getSerializable("user");
-////            loadData();
-//        }
-//        else {
-//            // Load data from internet
-//            Integer userid = bundle.getInt("user_id");
-//            UserService service = TripBlogApplication.createService(UserService.class);
-//            service.getUserById(userid).enqueue(new Callback<User>() {
-//                @Override
-//                public void onResponse(Call<User> call, Response<User> response) {
-//                    currUser = response.body();
-////                    loadData();
-//                }
-//
-//                @Override
-//                public void onFailure(Call<User> call, Throwable t) {
-//                    Snackbar
-//                            .make(binding.getRoot(), "Can't connect to server", Snackbar.LENGTH_SHORT)
-//                            .show();
-//                }
-//            });
-//        }
+
     }
 
     protected void openGallery() {
@@ -151,7 +186,6 @@ public class EditProfile extends AppCompatActivity {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK  && result.getData() != null) {
-
                         final Uri imageUri = result.getData().getData();
                         updateCoverImg(imageUri);
                     }
@@ -179,8 +213,6 @@ public class EditProfile extends AppCompatActivity {
     };
 
     private void callUpdateApi(Properties properties) {
-//        RequestBody postId = RequestBody.create(MediaType.parse("multipart/form-data"), currPost.getId().toString());
-
         userService.updateUser(
                         (RequestBody) properties.get("user_name"),
                         (RequestBody) properties.get("name"),
@@ -211,7 +243,6 @@ public class EditProfile extends AppCompatActivity {
                                     .make(binding.getRoot(), "Upload cover image successfully.", Snackbar.LENGTH_SHORT).show();
                         }
                     }
-
                     @Override
                     public void onFailure(Call<JsonArray> call, Throwable t) {
                         if (properties.containsKey("imageRealPath")) {
@@ -224,6 +255,8 @@ public class EditProfile extends AppCompatActivity {
                     }
                 });
     }
+
+
     protected void loadData() {
         if (currUser == null) return;
 
@@ -233,6 +266,7 @@ public class EditProfile extends AppCompatActivity {
                 .centerCrop()
                 .into(binding.userAvatar);
 
+        Log.d("debug", String.valueOf(currUser));
         binding.emailText.setText(currUser.getEmail());
         binding.usernameEditText.setText(currUser.getUserName());
         binding.nameEditText.setText(currUser.getName());

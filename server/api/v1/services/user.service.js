@@ -152,24 +152,22 @@ const unlikePost = async (user_id, post_id) => {
     return existingLike.destroy();
 };
 
-const updateUser = async (user_id, user_name, name, avatar_url) => {
-    const result = await User.update(
-        {
-            user_name: user_name,
-            name: name,
-            avatar: avatar_url,
-        },
-        {
-            where: {
-                id: user_id,
-            },
-            returning: true,
-            individualHooks: true,
-        },
-        {
-            attributes: ["id", "user_name", "name", "email", "avatar"],
-        }
-    );
+const updateUser = async (user_id, user) => {
+    const result = await User.update(user, {
+        where: { id: user_id },
+        returning: true,
+        individualHooks: true,
+        attributes: [
+            "id",
+            "user_name",
+            "name",
+            "user_name_non_accent",
+            "email",
+            "avatar",
+            "followers_count",
+            "following_count",
+        ],
+    });
 
     return [result[0], result[1][0]];
 };

@@ -51,6 +51,7 @@ const likePost = async (req, res) => {
     const post_id = req.params.post_id;
     try {
         const post = await UserService.likePost(user_id, post_id);
+        console.log(post);
         res.json(post);
     } catch (error) {
         res.json(error);

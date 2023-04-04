@@ -2,22 +2,27 @@ package com.example.tripblog.ui.post;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 
@@ -26,6 +31,7 @@ import com.example.tripblog.model.Post;
 import com.example.tripblog.ui.SimpleLoadingDialog;
 import com.example.tripblog.utils.PathUtil;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -53,12 +59,27 @@ public class EditablePostDetailActivity extends PostDetailActivity {
             if (collapseToolbarHeight + verticalOffset < (2 * ViewCompat.getMinimumHeight(binding.collapseToolbarLayout))) {
                 binding.toolbar.getNavigationIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
                 binding.toolbar.getMenu().getItem(0).setVisible(false);
+                binding.toolbar.getMenu().getItem(1).setVisible(false);
+                binding.toolbar.getMenu().getItem(2).setVisible(false);
             }
             else {
                 binding.toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
                 binding.toolbar.getMenu().getItem(0).setVisible(true);
+                binding.toolbar.getMenu().getItem(1).setVisible(true);
+                binding.toolbar.getMenu().getItem(2).setVisible(true);
             }
         });
+    }
+
+    @Override
+    protected void loadData() {
+        super.loadData();
+        Drawable drawable = AppCompatResources.getDrawable(this, currPost.getPublic() ? R.drawable.ic_baseline_public_24 : R.drawable.ic_baseline_lock_24);
+        if(drawable != null) {
+            drawable.mutate();
+            drawable.setColorFilter(getColor(R.color.md_theme_light_background), PorterDuff.Mode.SRC_ATOP);
+        }
+        binding.toolbar.getMenu().getItem(1).setIcon(drawable);
     }
 
     @Override
@@ -77,6 +98,15 @@ public class EditablePostDetailActivity extends PostDetailActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.post_detail_menu, menu);
+
+        for(int i = 0; i < menu.size(); i++){
+            Drawable drawable = menu.getItem(i).getIcon();
+            if(drawable != null) {
+                drawable.mutate();
+                drawable.setColorFilter(getColor(R.color.md_theme_light_background), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+
         return true;
     }
 
@@ -89,32 +119,92 @@ public class EditablePostDetailActivity extends PostDetailActivity {
             case R.id.coverImgChooser:
                 onClickRequestPermission();
                 break;
+            case R.id.deletePost:
+                onDeletePost();
+                break;
+            case R.id.privacySetting:
+                onChangePrivacy();
+                break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void onClickRequestPermission() {
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            openGallery();
-        }
-        else {
-            String[] permissions = {
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-            };
-            requestPermissions(permissions, REQUEST_CODE);
-        }
+    private void onChangePrivacy() {
+        boolean isPublic = currPost.getPublic();
+
+        String title = String.format("%s %s (%s)",
+                "Are you sure you want to change post privacy to",
+                getString(isPublic ? R.string.private_txt : R.string.public_txt),
+                getString(isPublic ? R.string.private_scope : R.string.public_scope));
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.privacy_setting)
+                .setMessage(title)
+                .setNegativeButton(
+                        "No",
+                        (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        }
+                )
+                .setPositiveButton(
+                        "Yes",
+                        (dialogInterface, i) -> {
+                            Properties data = new Properties();
+                            RequestBody isPublicBody = RequestBody.create(MediaType.parse("multipart/form-data"), currPost.getPublic() ? "false" : "true");
+                            data.put("is_public", isPublicBody);
+                            callUpdateApi(data, "Update privacy successfully.", "Fail when update privacy!");
+                            dialogInterface.dismiss();
+                        }
+                )
+                .show();
     }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openGallery();
+
+    private void onDeletePost() {
+        String title =  String.join(" ",
+                getString(R.string.delete_post_title),
+                getTitle().subSequence(0, 30)
+        );
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(title)
+                .setMessage(getString(R.string.delete_post_message))
+                .setNegativeButton(
+                        "No, don't delete",
+                        (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        }
+                )
+                .setPositiveButton(
+                        "Yes, delete it",
+                        (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                            deletePost();
+                        }
+                )
+                .show();
+    }
+
+    private void deletePost() {
+        postService.delete(currPost.getId()).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful()) {
+                    finish();
+                }
             }
-        }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Snackbar
+                        .make(binding.getRoot(), "Can't delete post", Snackbar.LENGTH_SHORT)
+                        .setAction(
+                                "Retry",
+                                v -> {
+                                    deletePost();
+                                }
+                        ).show();
+            }
+        });
     }
 
     private View.OnFocusChangeListener onUpdateTripTitle() {
@@ -122,11 +212,14 @@ public class EditablePostDetailActivity extends PostDetailActivity {
             @Override
             public void onFocusChange(View view, boolean isFocus) {
                 if (isFocus) return;
+                InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
                 String titleTxt = binding.tripTitle.getText().toString().trim();
                 RequestBody title = RequestBody.create(MediaType.parse("multipart/form-data"), titleTxt);
                 Properties data = new Properties();
                 data.put("title", title);
-                callUpdateApi(data);
+                callUpdateApi(data, null, null);
             }
         };
     }
@@ -169,13 +262,13 @@ public class EditablePostDetailActivity extends PostDetailActivity {
             data.put("cover_img", multipartBodyCoverImg);
             data.put("imageRealPath", imageRealPath);
             data.put("loading", loadingDialog);
-            callUpdateApi(data);
+            callUpdateApi(data,"Upload cover image successfully.", "Can't upload cover image!");
         } catch (Exception err) {
             Log.e(TAG, err.toString());
         }
     }
 
-    private void callUpdateApi(Properties properties) {
+    private void callUpdateApi(Properties properties, String successMsg, String failureMsg) {
         RequestBody postId = RequestBody.create(MediaType.parse("multipart/form-data"), currPost.getId().toString());
         postService.updatePost(
                         postId,
@@ -208,8 +301,11 @@ public class EditablePostDetailActivity extends PostDetailActivity {
                             currPost.setUpdatedAt(updatedPost.getUpdatedAt());
 
                             loadData();
-                            Snackbar
-                                    .make(binding.getRoot(), "Upload cover image successfully.", Snackbar.LENGTH_SHORT).show();
+                            if (successMsg != null) {
+                                Snackbar
+                                    .make(binding.getRoot(), successMsg, Snackbar.LENGTH_SHORT)
+                                    .show();
+                            }
                         }
                     }
 
@@ -219,20 +315,43 @@ public class EditablePostDetailActivity extends PostDetailActivity {
                             ((SimpleLoadingDialog) properties.get("loading")).dismiss();
                             PathUtil.deleteTempFile(EditablePostDetailActivity.this, (String) properties.get("imageRealPath"));
                         }
-
-                        Snackbar
-                                .make(binding.getRoot(), "Can't upload cover image!", Snackbar.LENGTH_SHORT).show();
+                        if (failureMsg != null) {
+                            Snackbar
+                                    .make(binding.getRoot(), failureMsg, Snackbar.LENGTH_SHORT)
+                                    .show();
+                        }
                     }
                 });
     }
 
+    // Image chooser
     protected void openGallery() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         activityResultLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
-
+    private void onClickRequestPermission() {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            openGallery();
+        }
+        else {
+            String[] permissions = {
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            };
+            requestPermissions(permissions, REQUEST_CODE);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery();
+            }
+        }
+    }
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {

@@ -43,6 +43,10 @@
     <string name="error_title">Error occur</string>
     <string name="try_again">Try again</string>
     <string name="exit">Exit</string>
+    <string name="add_place_title">Add a place</string>
+    <string name="search_place_hint">Search by name</string>
+    <string name="delete_post_title">Delete</string>
+    <string name="delete_post_message">Are you sure yout want to delete this post?</string>
 
     <!--    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>-->
 </resources>

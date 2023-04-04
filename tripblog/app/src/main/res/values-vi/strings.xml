@@ -38,4 +38,8 @@
     <string name="error_title">Đã xảy ra lỗi</string>
     <string name="try_again">Thử lại</string>
     <string name="exit">Thoát</string>
+    <string name="add_place_title">Thêm địa điểm</string>
+    <string name="search_place_hint">Nhập tên địa điểm</string>
+    <string name="delete_post_title">Xoá</string>
+    <string name="delete_post_message">Bạn có chắc muốn xoá bài viết không</string>
 </resources>

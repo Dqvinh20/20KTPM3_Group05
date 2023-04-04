@@ -23,7 +23,7 @@ import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivityLoginBinding;
-import com.example.tripblog.model.AuthResponse;
+import com.example.tripblog.model.response.AuthResponse;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.resetpassword.ResetPassword;

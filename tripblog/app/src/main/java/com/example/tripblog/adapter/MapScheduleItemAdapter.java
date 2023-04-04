@@ -1,11 +1,14 @@
 package com.example.tripblog.adapter;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
 import com.example.tripblog.model.Location;
 import com.example.tripblog.ui.dialog.ImagePreviewDialog;
+import com.example.tripblog.ui.interfaces.IOnClickListener;
 
 import java.util.Comparator;
 import java.util.List;
@@ -28,6 +32,7 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private List<Location> locations;
     private int markerColor;
 
+    private IOnClickListener onClickListener;
     private boolean isEditable = false;
 
     private void sortByPosition() {
@@ -47,11 +52,12 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         notifyDataSetChanged();
     }
 
-    public MapScheduleItemAdapter(List<Location> locations, int markerColor) {
+    public MapScheduleItemAdapter(List<Location> locations, int markerColor, IOnClickListener onClickListener) {
         this.setHasStableIds(true);
 
         this.locations = locations;
         this.markerColor = markerColor;
+        this.onClickListener = onClickListener;
 //        sortByPosition();
     }
 
@@ -80,7 +86,7 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         MapScheduleItemViewHolder mapHolder = (MapScheduleItemViewHolder) holder;
 
         mapHolder.locationPosition.getBackground().setTint(markerColor);
-//        mapHolder.locationPosition.setText(currLocation.getPosition().toString());
+        mapHolder.locationPosition.setText(currLocation.getPosition().toString());
 
         mapHolder.locationName.setText(currLocation.getName());
         mapHolder.locationNote.setTextIsSelectable(isEditable && currLocation.isExpandable());
@@ -143,6 +149,14 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             viewOnMap = itemView.findViewById(R.id.viewOnMap);
             removeLocation = itemView.findViewById(R.id.removeLocation);
             expandableLayout = itemView.findViewById(R.id.expandableLayout);
+
+            removeLocation.setOnClickListener(view -> {
+                Bundle data = new Bundle();
+                data.putInt("locationPos", getBindingAdapterPosition());
+                data.putInt("locationId", (int) getItemId());
+                onClickListener.onClick("remove_location", data);
+            });
+
             itemView.setOnClickListener(v -> {
                 Location location = locations.get(getBindingAdapterPosition());
                 location.setExpandable(!location.isExpandable());
@@ -165,10 +179,18 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             locationNote.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {
-                    Log.d("Focus", String.valueOf(b));
                     Location location = locations.get(getBindingAdapterPosition());
                     String newNote = locationNote.getText().toString();
                     if (!b && !location.getNote().equals(newNote)) {
+                        // Hide keyboard
+                        InputMethodManager imm =  (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                        Bundle data = new Bundle();
+                        data.putInt("locationId", (int) getItemId());
+                        data.putInt("locationPos", getBindingAdapterPosition());
+                        data.putString("note", newNote);
+                        onClickListener.onClick("edit_note", data);
                         location.setNote(newNote);
                         notifyItemChanged(getBindingAdapterPosition());
                     }

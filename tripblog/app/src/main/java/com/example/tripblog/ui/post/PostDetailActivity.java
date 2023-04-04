@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,7 +66,7 @@ public class PostDetailActivity extends AppCompatActivity {
         binding.appbar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             int collapseToolbarHeight = binding.collapseToolbarLayout.getHeight();
             if (collapseToolbarHeight + verticalOffset < (2 * ViewCompat.getMinimumHeight(binding.collapseToolbarLayout))) {
-              binding.toolbar.getNavigationIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+                binding.toolbar.getNavigationIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
             }
             else {
                 binding.toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
@@ -76,6 +77,7 @@ public class PostDetailActivity extends AppCompatActivity {
 
         reloadEditableView();
     }
+
     protected void toggleEditable() {
         this.isEditable = !isEditable;
     }
@@ -186,7 +188,6 @@ public class PostDetailActivity extends AppCompatActivity {
                 .into(binding.authorAvatar);
 
     }
-
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {

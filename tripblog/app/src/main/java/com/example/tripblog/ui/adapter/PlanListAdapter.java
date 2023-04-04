@@ -55,12 +55,12 @@ public class PlanListAdapter extends ArrayAdapter<String> {
 
         return (row);
     }
-    public PlanListAdapter(@NonNull Context context, int layoutToBeInflated, String[] nameList, Integer[] picture) {
-        super(context, layoutToBeInflated, nameList);
-        this.context = context;
-        this.nameList = nameList;
-        this.picture = picture;
-    }
+//    public PlanListAdapter(@NonNull Context context, int layoutToBeInflated, String[] nameList, Integer[] picture) {
+//        super(context, layoutToBeInflated, nameList);
+//        this.context = context;
+//        this.nameList = nameList;
+//        this.picture = picture;
+//    }
     public void updateData(List<Post> list) {
         this.list.addAll(list);
         notifyDataSetChanged();

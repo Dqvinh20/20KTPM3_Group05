@@ -1,4 +1,4 @@
-package com.example.tripblog.ui;
+package com.example.tripblog.ui.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -6,14 +6,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.tripblog.ui.fragments.PrivatePlanFragment;
-import com.example.tripblog.ui.fragments.PublicPlanFragment;
+import com.example.tripblog.ui.fragments.FollowerFragment;
+import com.example.tripblog.ui.fragments.FollowingFragment;
 
 
-public class ViewPagerAdapter extends FragmentStateAdapter {
+public class FollowViewPagerAdapter extends FragmentStateAdapter {
 
-
-    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+    public FollowViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 
@@ -22,13 +21,12 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch(position) {
             case 0:
-                return new PublicPlanFragment();
+                return new FollowerFragment();
             case 1:
-                return new PrivatePlanFragment();
+                return new FollowingFragment();
             default:
-                return new PublicPlanFragment();
+                return new FollowerFragment();
         }
-
     }
 
     @Override

@@ -9,7 +9,7 @@
     <string name="password_hint">Password</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <!--    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>-->
     <string name="name_hint">Name</string>
     <string name="confirm_password_hint">Confirm your password</string>
     <string name="invalid_email_err">Invalid E-mail address</string>

@@ -12,6 +12,19 @@ const getAll = async (req, res) => {
   return res.json(result);
 };
 
+const getScheduleById = async (req, res) => {
+  const result = await ScheduleService.model.findAll({
+    include: [
+      {
+        association: "locations",
+        attributes: { exclude: ["place_id", "_search"] },
+      },
+    ],
+    where: { id: req.params.id },
+  });
+  return res.json(result);
+};
+
 const addLocation = async (req, res) => {
   try {
     let { schedule_id, location_id } = req.body;
@@ -61,4 +74,10 @@ const editLocationNote = async (req, res) => {
   }
 };
 
-module.exports = { getAll, addLocation, removeLocation, editLocationNote };
+module.exports = {
+  getAll,
+  getScheduleById,
+  addLocation,
+  removeLocation,
+  editLocationNote,
+};

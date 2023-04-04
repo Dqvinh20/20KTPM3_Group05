@@ -21,6 +21,8 @@ const requiredBodyValidator = [
 
 router.get("/", ScheduleController.getAll);
 
+router.get("/:id", ScheduleController.getScheduleById);
+
 router.post(
   "/add-location",
   requiredBodyValidator,

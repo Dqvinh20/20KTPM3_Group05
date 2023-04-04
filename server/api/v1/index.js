@@ -10,6 +10,7 @@ router.use("/user", Passport.isAuth, require("./routes/user"));
 router.use("/post", Passport.isAuth, require("./routes/post"));
 router.use("/schedule", Passport.isAuth, require("./routes/schedule"));
 router.use("/location", Passport.isAuth, require("./routes/location"));
+router.use("/rating", Passport.isAuth, require("./routes/rating"));
 
 // router.get("/test", (req, res) => {
 //   return res.send("test");

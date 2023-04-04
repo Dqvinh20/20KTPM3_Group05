@@ -57,6 +57,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // DEBUG ONLY
         binding.editEmail.setText("test@gmail.com");
         binding.editPassword.setText("123456");
+
+        binding.loginBtn.performClick();
     }
 
     @Override

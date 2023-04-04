@@ -17,4 +17,9 @@
 
     <!-- Map item -->
     <dimen name="location_name_margin_horizontal">10dp</dimen>
+
+
+    <!-- Edit user-->
+    <dimen name="edit_user_padding_horizontal">20dp</dimen>
+
 </resources>

@@ -1,6 +1,7 @@
 package com.example.tripblog;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.example.tripblog.api.RetrofitClient;
 import com.example.tripblog.model.User;
@@ -43,5 +44,10 @@ public class TripBlogApplication extends Application {
 
     public void setLoggedUser(User loggedUser) {
         this.loggedUser = loggedUser;
+    }
+
+    public static void logout(Context context) {
+        context.getSharedPreferences("auth", MODE_PRIVATE).edit().putString("token", "").commit();
+        getInstance().setLoggedUser(null);
     }
 }

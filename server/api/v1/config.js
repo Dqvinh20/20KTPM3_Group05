@@ -6,20 +6,20 @@ const prodConnectionString = `postgresql://${process.env.DB_USER_PROD}:${process
 
 const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(
-  isProduction ? prodConnectionString : connectionString,
-  {
-    ssl: isProduction,
-    logging: false,
-  }
+    isProduction ? prodConnectionString : connectionString,
+    {
+        ssl: isProduction,
+        logging: false,
+    }
 );
-
+// dung xoa nhe an cot do
 // sequelize
-//   .sync() // Create tables if they don't exist
-//   .then(() => console.log("Database & tables created!"));
+//     .sync() // Create tables if they don't exist
+//     .then(() => console.log("Database & tables created!"));
 
 sequelize
-  .authenticate()
-  .then(() => console.log("Connection has been established successfully."))
-  .catch((err) => console.error("Unable to connect to the database:", err));
+    .authenticate()
+    .then(() => console.log("Connection has been established successfully."))
+    .catch((err) => console.error("Unable to connect to the database:", err));
 
 module.exports = sequelize;

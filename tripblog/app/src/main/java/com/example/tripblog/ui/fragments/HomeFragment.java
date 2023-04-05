@@ -94,9 +94,12 @@ public class HomeFragment extends Fragment {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png"
     };
-
+    private boolean loading = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
     private RecyclerView listPostnewsFeed;
     private RecyclerView listPostnewest;
+    private int nextpageNewest, maxPage, currPage;
+//    private int currpageNewest;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -174,10 +177,14 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        postService.getNewestPost(1,10).enqueue(new Callback<JsonObject>() {
+        postService.getNewestPost(1,4).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 JsonObject data = response.body();
+                nextpageNewest = data.get("nextPage").getAsInt();
+                currPage = data.get("page").getAsInt();
+                maxPage = data.get("maxPage").getAsInt();
+
                 JsonArray list = data.getAsJsonArray("data");
                 List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
                 postNewest.setDate(listpost);
@@ -223,9 +230,60 @@ public class HomeFragment extends Fragment {
         listPostnewsFeed.setAdapter(postnewfeed);
         listPostnewest.setAdapter(postNewest);
 
+
+        listPostnewest.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dx > 0) { //check for scroll down
+                    visibleItemCount = linearLayoutManager1.getChildCount();
+                    totalItemCount = linearLayoutManager1.getItemCount();
+                    pastVisiblesItems = linearLayoutManager1.findFirstVisibleItemPosition();
+
+                    if (loading) {
+                        if (currPage != maxPage && (visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+                            loading = false;
+
+                            Log.v("...", "Last Item Wow !");
+                            // Do pagination.. i.e. fetch new data
+                            postService.getNewestPost(nextpageNewest,4).enqueue(new Callback<JsonObject>() {
+                                @Override
+                                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                                    JsonObject data = response.body();
+                                    nextpageNewest = data.get("nextPage").getAsInt();
+                                    currPage = data.get("page").getAsInt();
+                                    maxPage = data.get("maxPage").getAsInt();
+                                    Log.d(TAG, String.format("%s %s %s", currPage, nextpageNewest, maxPage));
+
+                                    JsonArray list = data.getAsJsonArray("data");
+                                    List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                                    postNewest.appendList(listpost);
+                                    loading = true;
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<JsonObject> call, Throwable t) {
+                                    t.printStackTrace();
+                                    Log.e(TAG, t.toString());
+                                    Snackbar.make(frameLayout, "Fail to connect to server", Snackbar.LENGTH_LONG)
+                                            .setAction("Retry", view -> {
+//                            createPost();
+                                            })
+                                            .show();
+                                }
+                            });
+
+                        }
+                    }
+                }
+            }
+        });
+
+
         return frameLayout;
     }
     private void showToast(String msg){
         Toast.makeText((MainActivity)getContext(), msg, Toast.LENGTH_SHORT).show();
     }
+
 }

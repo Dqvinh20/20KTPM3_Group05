@@ -64,4 +64,5 @@ public interface PostService {
     @GET("home/popular")
     Call<JsonArray> getPopularPost(  @Query("page")Integer page,@Query("limit")Integer limit);
 
+
 }

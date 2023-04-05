@@ -228,7 +228,7 @@ public class EditProfile extends AppCompatActivity {
 
                         if (!response.isSuccessful()) {
                             Snackbar
-                                    .make(binding.getRoot(), "Upload cover image unsuccessfully. - " + response.code(), Snackbar.LENGTH_SHORT).show();
+                                    .make(binding.getRoot(), "Upload  unsuccessfully. - " + response.code(), Snackbar.LENGTH_SHORT).show();
                             return;
                         }
                         JsonArray body = response.body();
@@ -240,7 +240,7 @@ public class EditProfile extends AppCompatActivity {
                             currUser.setAvatar(updateUser.getAvatar());
                             loadData();
                             Snackbar
-                                    .make(binding.getRoot(), "Upload cover image successfully.", Snackbar.LENGTH_SHORT).show();
+                                    .make(binding.getRoot(), "Upload successfully.", Snackbar.LENGTH_SHORT).show();
                         }
                     }
                     @Override
@@ -251,7 +251,7 @@ public class EditProfile extends AppCompatActivity {
                         }
 
                         Snackbar
-                                .make(binding.getRoot(), "Can't upload cover image!", Snackbar.LENGTH_SHORT).show();
+                                .make(binding.getRoot(), "Can't upload !", Snackbar.LENGTH_SHORT).show();
                     }
                 });
     }

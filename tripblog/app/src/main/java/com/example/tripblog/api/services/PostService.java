@@ -26,6 +26,8 @@ public interface PostService {
 //    Call<JsonArray> getAllPost(@Query("page")Integer page, @Query("limit")Integer limit);
     @GET("post/")
     Call<JsonObject> getAllPost(@Query("page")Integer page);
+    @GET("post/by-location/{id}")
+    Call<JsonArray> getPostByLocation(@Path("id")Integer loctionID);
 
     @GET("post/of-user/{id}")
     Call<JsonArray> getPostByUserId(@Path("id")Integer userId, @Query("is_public")Boolean isPublic);

@@ -161,7 +161,7 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     JsonArray list = response.body();
                     List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
-                    postnewfeed.setDate(listpost);
+                    postnewfeed.setDate(listpost);//1
                 }
             }
 

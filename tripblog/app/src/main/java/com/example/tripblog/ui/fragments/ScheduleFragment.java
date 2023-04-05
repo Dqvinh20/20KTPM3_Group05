@@ -3,31 +3,34 @@ package com.example.tripblog.ui.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.FragmentManager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.tripblog.R;
-import com.example.tripblog.adapter.PostItemAdapter;
+import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.adapter.ScheduleItemAdapter;
+import com.example.tripblog.api.services.ScheduleService;
 import com.example.tripblog.databinding.FragmentScheduleBinding;
-import com.example.tripblog.model.PostItem;
+import com.example.tripblog.model.Location;
 import com.example.tripblog.model.Schedule;
+import com.example.tripblog.ui.interfaces.IOnClickListener;
+import com.example.tripblog.ui.post.AddPlaceBottomSheet;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ScheduleFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ScheduleFragment extends Fragment {
-    FragmentScheduleBinding binding;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class ScheduleFragment extends Fragment implements IOnClickListener {
+    private static final String TAG = ScheduleFragment.class.getSimpleName();
+    private final ScheduleService scheduleService = TripBlogApplication.createService(ScheduleService.class);
     ScheduleItemAdapter adapter = null;
+    FragmentScheduleBinding binding;
 
     public ScheduleFragment() {
         // Required empty public constructor
@@ -35,8 +38,9 @@ public class ScheduleFragment extends Fragment {
 
     public static ScheduleFragment newInstance(Bundle args) {
         ScheduleFragment fragment = new ScheduleFragment();
-        if (args != null)
+        if (args != null) {
             fragment.setArguments(args);
+        }
         return fragment;
     }
 
@@ -47,7 +51,7 @@ public class ScheduleFragment extends Fragment {
             Bundle args =  getArguments();
             boolean isEditable = args.getBoolean("isEditable");
             List<Schedule> schedules = (List<Schedule>) args.getSerializable("schedules");
-            adapter = new ScheduleItemAdapter(schedules);
+            adapter = new ScheduleItemAdapter(schedules, this);
             adapter.setEditable(isEditable);
         }
     }
@@ -60,5 +64,129 @@ public class ScheduleFragment extends Fragment {
         if (adapter != null)
             binding.contentRecyclerView.setAdapter(adapter);
         return binding.getRoot();
+    }
+
+    // Handle item click in adapter
+    @Override
+    public void onClick(String action, Bundle data) {
+        switch (action) {
+            case "open_add_place":
+                final AddPlaceBottomSheet bottomSheet = new AddPlaceBottomSheet();
+                FragmentManager fragmentManager =
+                        getActivity().getSupportFragmentManager();
+
+                bottomSheet.setOnLocationClickListener(locationId -> {
+                    if (data != null) {
+                        int schedulePos = data.getInt("schedulePos");
+                        addNewLocation(schedulePos, locationId);
+                    }
+
+                    bottomSheet.dismiss();
+                });
+
+                bottomSheet.show(fragmentManager, AddPlaceBottomSheet.class.getSimpleName());
+                break;
+            case "remove_location":
+                if (data != null) {
+                    int locationPos = data.getInt("locationPos");
+                    int locationId = data.getInt("locationId");
+                    int schedulePos = data.getInt("schedulePos");
+                    removeLocation(schedulePos, locationId, locationPos);
+                }
+                break;
+            case "edit_note":
+                if (data != null) {
+                    int locationPos = data.getInt("locationPos");
+                    int locationId = data.getInt("locationId");
+                    int schedulePos = data.getInt("schedulePos");
+                    String note = data.getString("note");
+                    editNote(schedulePos, locationId, note, locationPos);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    // Call api
+    public void addNewLocation(int schedulePos, int locationId) {
+        int scheduleId = (int) adapter.getItemId(schedulePos);
+
+        scheduleService.addLocation(scheduleId, locationId)
+                .enqueue(new Callback<Location>() {
+                    @Override
+                    public void onResponse(Call<Location> call, Response<Location> response) {
+                        if (!response.isSuccessful()) {
+                            Snackbar
+                                    .make(binding.getRoot(), "Fail to add place", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            return;
+                        };
+                        Location location = response.body();
+                        adapter.addLocation(schedulePos, location);
+                    }
+                    @Override
+                    public void onFailure(Call<Location> call, Throwable t) {
+                        Snackbar
+                                .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_LONG)
+                                .show();
+                    }
+                });
+    }
+    public void removeLocation(int schedulePos, int locationId, int locationPos) {
+        int scheduleId = (int) adapter.getItemId(schedulePos);
+
+        scheduleService.removeLocation(scheduleId, locationId)
+                .enqueue(new Callback<Integer>() {
+                    @Override
+                    public void onResponse(Call<Integer> call, Response<Integer> response) {
+                        if (!response.isSuccessful()) {
+                            Snackbar
+                                    .make(binding.getRoot(), "Fail to remove place", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            return;
+                        };
+                        Integer isSuccess = response.body();
+                        if (isSuccess != null && isSuccess == 1) {
+                            adapter.removeLocation(schedulePos, locationPos);
+                        }
+                        Snackbar
+                                .make(binding.getRoot(), "Removed place", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    @Override
+                    public void onFailure(Call<Integer> call, Throwable t) {
+                        Snackbar
+                                .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                });
+    }
+    private void editNote(int schedulePos, int locationId, String note, int locationPos) {
+        int scheduleId = (int) adapter.getItemId(schedulePos);
+
+        scheduleService.editLocationNote(scheduleId, locationId, note)
+                .enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        if (!response.isSuccessful()) {
+                            Snackbar
+                                    .make(binding.getRoot(), "Fail to edit note", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            return;
+                        };
+
+                        JsonObject result = response.body();
+                        if (result == null && !result.has("note")) {
+                            adapter.editNoteLocation(schedulePos, locationPos, note);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+                        Snackbar
+                                .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                });
     }
 }

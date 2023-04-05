@@ -35,7 +35,6 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
     private AdapterView.OnItemClickListener listener;
     private ItemClickListener itemClickListener;
     public void setDate(List<Post> listPost){
-        Log.d("Data",listPost.toString());
         this.listPost= listPost;
         notifyDataSetChanged();
     }
@@ -56,7 +55,6 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
 
     @Override
     public void onBindViewHolder(@NonNull PostNewsFeedHolder holder, int position) {
-        Log.i("test",listPost.get(position).getTitle());
         if(listPost.size()==0){
             return;
         }

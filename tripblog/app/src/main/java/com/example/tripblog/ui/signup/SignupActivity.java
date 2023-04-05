@@ -23,7 +23,7 @@ import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivitySignupBinding;
-import com.example.tripblog.model.AuthResponse;
+import com.example.tripblog.model.response.AuthResponse;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 

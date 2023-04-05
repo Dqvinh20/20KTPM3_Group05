@@ -1,6 +1,6 @@
 package com.example.tripblog.api.services;
 
-import com.example.tripblog.model.AuthResponse;
+import com.example.tripblog.model.response.AuthResponse;
 import com.example.tripblog.model.User;
 
 import retrofit2.Call;

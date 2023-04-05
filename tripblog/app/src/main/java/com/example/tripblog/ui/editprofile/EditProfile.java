@@ -165,7 +165,7 @@ public class EditProfile extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        finish();
+        finishAfterTransition();
         return true;
     }
 

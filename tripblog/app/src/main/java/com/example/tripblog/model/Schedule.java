@@ -1,5 +1,7 @@
 package com.example.tripblog.model;
 
+import android.graphics.Color;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -22,6 +24,16 @@ public class Schedule implements Serializable {
     private Date createdAt;
     @SerializedName("updated_at")
     private Date updatedAt;
+
+    private int markerColor = Color.GREEN;
+
+    public int getMarkerColor() {
+        return markerColor;
+    }
+
+    public void setMarkerColor(int markerColor) {
+        this.markerColor = markerColor;
+    }
 
     public Schedule(Integer id, String title) {
         this.id = id;

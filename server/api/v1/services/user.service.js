@@ -96,15 +96,16 @@ const followUser = async (user_id, following_id) => {
         },
     });
     if (existingFollow) {
-        return { error: "User already followed" };
+        return { success: 0, error: "User already followed" };
     }
     increaseFollowing(user_id);
     increaseFollower(following_id);
 
-    return await sequelize.models.user_followers.create({
+    const result = await sequelize.models.user_followers.create({
         follower_id: user_id,
         following_id: following_id,
     });
+    return { success: 1, error: null, result };
 };
 
 const unfollowUser = async (user_id, following_id) => {
@@ -118,11 +119,12 @@ const unfollowUser = async (user_id, following_id) => {
         },
     });
     if (!existingFollow) {
-        return { error: "User already unfollowed" };
+        return { success: 0, error: "User already unfollowed" };
     }
     decreaseFollowing(user_id);
     decreaseFollower(following_id);
-    return existingFollow.destroy();
+    const result = existingFollow.destroy();
+    return { success: 1, error: null };
 };
 
 const likePost = async (user_id, post_id) => {
@@ -132,12 +134,13 @@ const likePost = async (user_id, post_id) => {
             post_id: post_id,
         },
     });
-    if (existingLike) return { error: "The user liked the post" };
+    if (existingLike) return { success: 0, error: "The user liked the post" };
     PostService.increaseLikePost(post_id);
-    return await sequelize.models.users_posts_like.create({
+    const result = await sequelize.models.users_posts_like.create({
         user_id: user_id,
         post_id: post_id,
     });
+    return { success: 1, error: null, result };
 };
 
 const unlikePost = async (user_id, post_id) => {
@@ -147,9 +150,11 @@ const unlikePost = async (user_id, post_id) => {
             post_id: post_id,
         },
     });
-    if (!existingLike) return { error: "The user not like the post" };
+    if (!existingLike)
+        return { success: 0, error: "The user not like the post" };
     PostService.decreaseLikePost(post_id);
-    return existingLike.destroy();
+    const result = existingLike.destroy();
+    return { success: 1, error: null };
 };
 
 const updateUser = async (user_id, user) => {

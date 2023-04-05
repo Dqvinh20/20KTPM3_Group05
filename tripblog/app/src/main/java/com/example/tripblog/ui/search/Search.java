@@ -127,8 +127,6 @@ public class Search extends AppCompatActivity {
                             JsonObject data = response.body();
                             JsonArray list = data.getAsJsonArray("users");
                             userList = new Gson().fromJson(list, new TypeToken<List<User>>(){}.getType());
-
-                            Log.d("Data",userList.toString());
                             arrayUserAdapterSuggest = new CustomSuggestionSearchUserAdapter(Search.this,
                                     R.layout.suggest_search_component,
                                     userList);

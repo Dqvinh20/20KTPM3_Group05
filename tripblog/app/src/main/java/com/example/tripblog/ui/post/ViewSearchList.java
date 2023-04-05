@@ -15,20 +15,40 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.example.tripblog.R;
+import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.api.services.PostService;
+import com.example.tripblog.api.services.SearchService;
 import com.example.tripblog.databinding.ActivitySearchBinding;
 import com.example.tripblog.databinding.ActivityViewSearchListBinding;
+import com.example.tripblog.model.Post;
 import com.example.tripblog.ui.MainActivity;
+import com.example.tripblog.ui.fragments.HomeFragment;
 import com.example.tripblog.ui.search.Search;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ViewSearchList extends AppCompatActivity {
     ActivityViewSearchListBinding binding;
+    private static final String TAG = ViewSearchList.class.getSimpleName();
+
     TextView hint_search;
+    List<Post> listpost;
+    CustomResultSearchAdapter postAdapter;
     private String [] id = {
             "1","2","3"
     };
@@ -62,13 +82,44 @@ public class ViewSearchList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityViewSearchListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        binding.listResultSearch.setAdapter(new CustomResultSearchAdapter(this,R.layout.post_search_list_component,
-                images,title,avatars,name,views,views));
+        Intent currIntent = getIntent();
+        Bundle currBundle = currIntent.getExtras();;
+        Integer locationId = currBundle.getInt("LocationId");
+        Log.d(TAG,locationId.toString());
+        PostService postService = TripBlogApplication.createService(PostService.class);
+        postService.getPostByLocation(locationId).enqueue(new Callback<JsonArray>() {
+            @Override
+            public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                JsonArray list = response.body();
+                Log.d(TAG,list.toString());
+                listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                Log.d(TAG,listpost.toString());
+                postAdapter = new CustomResultSearchAdapter(ViewSearchList.this, R.layout.post_search_list_component
+                        ,listpost);
+                binding.listResultSearch.setAdapter(postAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<JsonArray> call, Throwable t) {
+
+            }
+        });
+        binding.listResultSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(ViewSearchList.this, PostDetailActivity.class);
+                intent.putExtra("postId", listpost.get(position).getId());
+                startActivity(intent);
+            }
+        });
+
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+
         inflater.inflate(R.menu.menu_result_search_activity, menu);
         MenuItem menuItem = menu.findItem(R.id.hint_search_activity);
         SpannableString s = new SpannableString(menuItem.getTitle());
@@ -88,7 +139,7 @@ public class ViewSearchList extends AppCompatActivity {
         Intent currIntent = getIntent();
         Bundle currBundle = currIntent.getExtras();;
         hint_search.setText(currBundle.getString("title"));
-        Integer locationId = Integer.valueOf(currBundle.getString("locationId"));
+
         rootView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

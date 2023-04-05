@@ -31,7 +31,7 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.ActivityUpdateProfileBinding;
-import com.example.tripblog.model.AuthResponse;
+//import com.example.tripblog.model.AuthResponse;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.SimpleLoadingDialog;
 import com.example.tripblog.ui.login.LoginActivity;
@@ -114,10 +114,6 @@ public class EditProfile extends AppCompatActivity {
         data.put("user_name",username);
         data.put("name",name);
         callUpdateApi(data);
-
-
-
-
     }
     private class ValidationTextWatcher implements TextWatcher {
         private View view;
@@ -165,6 +161,11 @@ public class EditProfile extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
+        Intent result = new Intent();
+        Bundle data = new Bundle();
+        data.putSerializable("user", currUser);
+        result.putExtras(data);
+        setResult(1, result);
         finishAfterTransition();
         return true;
     }

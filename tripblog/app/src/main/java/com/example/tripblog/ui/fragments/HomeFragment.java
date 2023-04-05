@@ -96,6 +96,7 @@ public class HomeFragment extends Fragment {
     };
 
     private RecyclerView listPostnewsFeed;
+    private RecyclerView listPostnewest;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -140,21 +141,46 @@ public class HomeFragment extends Fragment {
         FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_home, container, false);
         listPostnewsFeed = frameLayout.findViewById(R.id.listPostnewsFeed);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),RecyclerView.HORIZONTAL,false);
+        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(getContext(),RecyclerView.HORIZONTAL,false);
         listPostnewsFeed.setLayoutManager(linearLayoutManager);
         PostnewsfeedAdapterRecycle postnewfeed = new PostnewsfeedAdapterRecycle();
 
+        listPostnewest = frameLayout.findViewById(R.id.listPostnewest);
+        listPostnewest.setLayoutManager(linearLayoutManager1);
+        PostnewsfeedAdapterRecycle postNewest = new PostnewsfeedAdapterRecycle();
+
         PostService postService = TripBlogApplication.createService(PostService.class);
-        postService.getAllPost(
-               1
-        ).enqueue(new Callback<JsonObject>() {
+        postService.getPopularPost(
+               1,10
+        ).enqueue(new Callback<JsonArray>() {
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if (response.isSuccessful()) {
-                    JsonObject data = response.body();
-                    JsonArray list = data.getAsJsonArray("posts");
+                    JsonArray list = response.body();
                     List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
                     postnewfeed.setDate(listpost);
                 }
+            }
+
+            @Override
+            public void onFailure(Call<JsonArray> call, Throwable t) {
+                t.printStackTrace();
+                Log.e(TAG, t.toString());
+                Snackbar.make(frameLayout, "Fail to connect to server", Snackbar.LENGTH_LONG)
+                        .setAction("Retry", view -> {
+//                            createPost();
+                        })
+                        .show();
+            }
+        });
+
+        postService.getNewestPost(1,10).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                JsonObject data = response.body();
+                JsonArray list = data.getAsJsonArray("data");
+                List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                postNewest.setDate(listpost);
             }
 
             @Override
@@ -168,9 +194,12 @@ public class HomeFragment extends Fragment {
                         .show();
             }
         });
+
+
         Log.d("Data","hi");
 
         postnewfeed.setContext((MainActivity) getContext());
+        postNewest.setContext((MainActivity) getContext());
 
         postnewfeed.setItemClickListener(new PostnewsfeedAdapterRecycle.ItemClickListener() {
             @Override
@@ -181,7 +210,18 @@ public class HomeFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        postNewest.setItemClickListener(new PostnewsfeedAdapterRecycle.ItemClickListener() {
+            @Override
+            public void onItemClick(Integer postid) {
+                Log.i("postid",postid.toString());
+                Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+                intent.putExtra("postId", postid);
+                startActivity(intent);
+            }
+        });
         listPostnewsFeed.setAdapter(postnewfeed);
+        listPostnewest.setAdapter(postNewest);
 
         return frameLayout;
     }

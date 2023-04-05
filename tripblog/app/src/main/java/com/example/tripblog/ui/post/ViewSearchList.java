@@ -88,6 +88,7 @@ public class ViewSearchList extends AppCompatActivity {
         Intent currIntent = getIntent();
         Bundle currBundle = currIntent.getExtras();;
         hint_search.setText(currBundle.getString("title"));
+        Integer locationId = Integer.valueOf(currBundle.getString("locationId"));
         rootView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

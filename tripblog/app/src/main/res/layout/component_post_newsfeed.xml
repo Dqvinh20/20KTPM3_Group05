@@ -40,6 +40,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:maxLines="1"
+        android:minLines="1"
         android:textFontWeight="1"
         android:textColor="@color/black"/>
 
@@ -49,6 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:maxLines="2"
+        android:minLines="2"
         android:maxLength="100"
         android:text="Tokyo resident since 2011."
         android:textSize="16sp" />

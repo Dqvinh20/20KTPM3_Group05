@@ -16,7 +16,10 @@ import androidx.annotation.NonNull;
 import com.example.tripblog.R;
 
 public class CustomResultSearchAdapter  extends ArrayAdapter<String> {
-    Context context ; String[] urlImgSrc; String[] title; String[] avatarSrc;  String[] name;  String[] like_count; String[] view_count;
+    Context context ; String[] urlImgSrc; String[] title;
+    String[] avatarSrc;  String[] name;  String[] like_count;
+    String[] view_count;
+
     public CustomResultSearchAdapter(@NonNull Context context, int layoutToBeInflated , String[] urlImgSrc,
                                      String[] title, String[] avatarSrc,  String[] name,  String[] like_count, String[] view_count ) {
         super(context, R.layout.post_search_list_component,title);

@@ -67,8 +67,6 @@
             android:theme="@style/Theme.Tripblog.PostDetail"
             />
 
-        </activity>
-
         <activity
             android:name=".ui.post.EditablePostDetailActivity"
             android:exported="false"

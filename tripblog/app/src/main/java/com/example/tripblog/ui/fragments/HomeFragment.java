@@ -153,7 +153,7 @@ public class HomeFragment extends Fragment {
                     JsonObject data = response.body();
                     JsonArray list = data.getAsJsonArray("posts");
                     List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
-                    postnewfeed.setDate(listpost);
+                    postnewfeed.setDate(listpost);//1
                 }
             }
 
@@ -170,7 +170,7 @@ public class HomeFragment extends Fragment {
         });
         Log.d("Data","hi");
 
-        postnewfeed.setContext((MainActivity) getContext());
+        postnewfeed.setContext((MainActivity) getContext());//2
 
         postnewfeed.setItemClickListener(new PostnewsfeedAdapterRecycle.ItemClickListener() {
             @Override
@@ -180,7 +180,7 @@ public class HomeFragment extends Fragment {
                 intent.putExtra("postId", postid);
                 startActivity(intent);
             }
-        });
+        });//3
         listPostnewsFeed.setAdapter(postnewfeed);
 
         return frameLayout;

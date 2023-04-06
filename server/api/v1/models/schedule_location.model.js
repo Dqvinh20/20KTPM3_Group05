@@ -31,13 +31,20 @@ const SchedulesLocations = sequelize.define(
 );
 
 Schedule.belongsToMany(Location, {
-  through: SchedulesLocations,
+  through: {
+    model: SchedulesLocations,
+    unique: false,
+  },
   foreignKey: "schedule_id",
+
   as: "locations",
 });
 
 Location.belongsToMany(Schedule, {
-  through: SchedulesLocations,
+  through: {
+    model: SchedulesLocations,
+    unique: false,
+  },
   foreignKey: "location_id",
   as: "schedules",
 });

@@ -32,14 +32,36 @@ router.post(
 
 router.delete(
   "/remove-location",
-  requiredBodyValidator,
+  body("schedule_id")
+    .notEmpty()
+    .withMessage("Schedule Id is required")
+    .bail()
+    .isInt()
+    .withMessage("Schedule Id must be an integer"),
+  body("location_pos")
+    .notEmpty()
+    .withMessage("Location position is required")
+    .bail()
+    .isInt()
+    .withMessage("Location position must be an integer"),
   Validation.validate,
   ScheduleController.removeLocation
 );
 
 router.patch(
   "/edit-location-note",
-  requiredBodyValidator,
+  body("schedule_id")
+    .notEmpty()
+    .withMessage("Schedule Id is required")
+    .bail()
+    .isInt()
+    .withMessage("Schedule Id must be an integer"),
+  body("location_pos")
+    .notEmpty()
+    .withMessage("Location position is required")
+    .bail()
+    .isInt()
+    .withMessage("Location position must be an integer"),
   body("note").notEmpty().withMessage("Note is required"),
   Validation.validate,
   ScheduleController.editLocationNote

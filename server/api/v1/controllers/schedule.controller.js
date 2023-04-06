@@ -43,12 +43,12 @@ const addLocation = async (req, res) => {
 
 const removeLocation = async (req, res) => {
   try {
-    let { schedule_id, location_id } = req.body;
-    location_id = Number(location_id);
+    let { schedule_id, location_pos } = req.body;
+    location_pos = Number(location_pos);
 
     const isSuccess = await ScheduleService.removeLocation(
       schedule_id,
-      location_id
+      location_pos
     );
 
     return res.json(isSuccess);
@@ -59,12 +59,12 @@ const removeLocation = async (req, res) => {
 
 const editLocationNote = async (req, res) => {
   try {
-    let { schedule_id, location_id, note } = req.body;
-    location_id = Number(location_id);
+    let { schedule_id, location_pos, note } = req.body;
+    location_pos = Number(location_pos);
 
     const result = await ScheduleService.editLocationNote(
       schedule_id,
-      location_id,
+      location_pos,
       note
     );
 

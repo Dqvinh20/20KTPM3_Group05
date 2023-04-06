@@ -191,6 +191,32 @@ const createExamplePost = async (req, res) => {
   }
 };
 
+const increaseView = async (req, res) => {
+  const { post_id } = req.body;
+  try {
+    const post = await PostService.getPostById(post_id);
+    await post.increment("view_count", { by: 1 });
+    return res.json(post);
+  } catch (error) {
+    return res.json({ error: error.message });
+  }
+};
+
+const decreaseView = async (req, res) => {
+  const { post_id } = req.body;
+  try {
+    const post = await PostService.getPostById(post_id);
+    if (post.view_count === 0) {
+      return res.json(post);
+    }
+
+    await post.decrement("view_count", { by: 1 });
+    return res.json(post);
+  } catch (error) {
+    return res.json({ error: error.message });
+  }
+};
+
 const updatePost = async (req, res) => {
   var cover_img = null;
   if (req.file) {
@@ -257,4 +283,6 @@ module.exports = {
   updatePost,
   deletePost,
   getPostByIdLocation,
+  increaseView,
+  decreaseView,
 };

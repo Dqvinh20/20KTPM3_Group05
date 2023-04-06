@@ -100,7 +100,7 @@ const updatePost = async (id, post) => {
   //   cloudinary.destroy(oldCoverImg.cover_img);
   // }
 
-  return [result[0], result[1][0]];
+  return [result[0], await getPostById(id)];
 };
 
 const deletePost = async (id) => {

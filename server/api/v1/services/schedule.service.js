@@ -144,42 +144,50 @@ const removeAllSchedules = async (post_id) => {
 };
 
 const changeScheduleRange = async (post_id, start, end) => {
-  try {
-    const post = await Post.findByPk(post_id, {
-      attributes: ["start_date", "end_date"],
-    });
+  const post = await Post.findByPk(post_id, {
+    attributes: ["start_date", "end_date"],
+  });
+  const newStart = new Date(start);
+  const newEnd = new Date(end);
+  const oldStart = new Date(post.start_date);
+  const oldEnd = new Date(post.end_date);
 
-    const newEnd = new Date(end);
-    const newStart = new Date(start);
-
-    if (newStart > newEnd) {
-      return;
-    }
-    await removeBetween(
-      post_id,
-      post.start_date,
-      dayjs(newStart).subtract(1, "day").toDate()
-    );
-    await removeBetween(
-      post_id,
-      dayjs(newEnd).add(1, "day").toDate(),
-      post.end_date
-    );
-    await addBetween(post_id, newStart, newEnd);
-    await Post.update(
-      {
-        start_date: newStart,
-        end_date: newEnd,
-      },
-      {
-        where: {
-          id: post_id,
-        },
-      }
-    );
-  } catch (e) {
-    throw e;
+  if (
+    newStart.getTime() === oldStart.getTime() &&
+    newEnd.getTime() === oldEnd.getTime()
+  ) {
+    return 0;
   }
+
+  if (newStart > newEnd) {
+    throw new Error("Start date must be before end date");
+  }
+
+  await removeBetween(
+    post_id,
+    post.start_date,
+    dayjs(newStart).subtract(1, "day").toDate()
+  );
+
+  await removeBetween(
+    post_id,
+    dayjs(newEnd).add(1, "day").toDate(),
+    post.end_date
+  );
+  await addBetween(post_id, newStart, newEnd);
+
+  const result = await Post.update(
+    {
+      start_date: newStart,
+      end_date: newEnd,
+    },
+    {
+      where: {
+        id: post_id,
+      },
+    }
+  );
+  return result[0];
 };
 
 const addBetween = async (post_id, start, end) => {
@@ -236,6 +244,5 @@ module.exports = {
   getScheduleById,
   removeAllSchedules,
   changeScheduleRange,
-  addBetween,
   model: Schedule,
 };

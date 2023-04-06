@@ -4,13 +4,31 @@ const upload = require("../utils/multer");
 const PostController = require("../controllers/post.controller");
 const PostService = require("../services/post.service");
 const Validation = require("../utils/validation");
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 
 router.get("/", PostController.getAll);
 
 router.get("/:post_id", PostController.getPostById);
 
 router.get("/of-user/:user_id", PostController.getPostsByUser);
+
+router.patch(
+  "/change-trip-dates/:post_id",
+  param("post_id")
+    .notEmpty()
+    .withMessage("Post Id is required")
+    .isInt()
+    .withMessage("Post Id must be an integer")
+    .custom((value) => {
+      return PostService.getPostById(value).then((post) => {
+        if (!post) {
+          return Promise.reject("Post not found");
+        }
+      });
+    }),
+  Validation.validate,
+  PostController.changeTripDates
+);
 
 router.patch(
   "/increase-view",
@@ -29,6 +47,7 @@ router.patch(
   Validation.validate,
   PostController.increaseView
 );
+
 router.patch(
   "/decrease-view",
   body("post_id")

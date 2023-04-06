@@ -1,6 +1,7 @@
 const dayjs = require("dayjs");
 
 const PostService = require("../services/post.service");
+const ScheduleService = require("../services/schedule.service");
 const cloudinary = require("../utils/cloudinary");
 const Converter = require("../utils/converter");
 
@@ -217,6 +218,21 @@ const decreaseView = async (req, res) => {
   }
 };
 
+const changeTripDates = async (req, res) => {
+  const post_id = req.params.post_id;
+  const { start_date, end_date } = req.body;
+  try {
+    const isUpdated = await ScheduleService.changeScheduleRange(
+      post_id,
+      start_date,
+      end_date
+    );
+    return res.json([isUpdated, await PostService.getPostById(post_id)]);
+  } catch (error) {
+    return res.json({ error: error.message });
+  }
+};
+
 const updatePost = async (req, res) => {
   var cover_img = null;
   if (req.file) {
@@ -280,6 +296,7 @@ module.exports = {
   getPostsByUser,
   createPost,
   createExamplePost,
+  changeTripDates,
   updatePost,
   deletePost,
   getPostByIdLocation,

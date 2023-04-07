@@ -28,7 +28,7 @@ const createRating = async (ratingData) => {
             (post.avg_rating * (post.rating_count - 1) + ratingData.score) /
             post.rating_count;
         await post.save();
-        return { success: 1, error: null, post };
+        return { success: 1, error: null, rating };
     } catch (error) {
         console.log(error);
         return { success: 0, error: "Can't create ratting" };
@@ -49,7 +49,7 @@ const getAllRating = async (post_id) => {
         return { success: 1, error: null, ratting };
     } catch (error) {
         console.log(error);
-        return { success: 0, error: "can't get all ratting" };
+        return { success: 0, error: "Can't get all ratting" };
     }
 };
 module.exports = {

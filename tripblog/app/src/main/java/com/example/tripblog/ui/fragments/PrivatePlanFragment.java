@@ -89,8 +89,6 @@ public class PrivatePlanFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_private_plan, container, false);
     }
-//    String[] name = {"Thailand Plan", "Trekking Plan", "Must-go Places", "Nevada Plan"};
-//    Integer[] img = {R.drawable.da_lat, R.drawable.da_lat, R.drawable.da_lat, R.drawable.da_lat};
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -98,21 +96,21 @@ public class PrivatePlanFragment extends Fragment {
 
         PostService postService = TripBlogApplication.createService(PostService.class);
 
-        postService.getPostByUserId(1, false).enqueue(new Callback<JsonArray>() {
+        postService.getPostByUserId(TripBlogApplication.getInstance().getLoggedUser().getId(), false).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
 
                 if(response.isSuccessful()) {
 
                     JsonArray postJsonArray = response.body().getAsJsonArray();
-//                    JsonObject rawData = response.body();
-//                    JsonArray postJsonArray = rawData.getAsJsonArray("posts");
                     Gson gson = new Gson();
                     Type postListType = new TypeToken<List<Post>>(){}.getType();
                     List<Post> postList = gson.fromJson(postJsonArray, postListType);
                     Log.d("Data in", postList.toString());
+
                     if(postList.size() != 0) {
-                        adapter = new PlanListAdapter(getActivity(), R.layout.plan_item, postList);
+
+                        adapter = new PlanListAdapter(getContext(), R.layout.plan_item, postList);
                         planList.setAdapter(adapter);
                     }
                     else{
@@ -120,7 +118,6 @@ public class PrivatePlanFragment extends Fragment {
                         noPlanTxt.setText("You haven't written any posts yet.");
                     }
 
-//                    adapter.updateData(postList);
                 }
             }
 

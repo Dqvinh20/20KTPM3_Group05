@@ -37,10 +37,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:text="Unfollow"
         android:textAllCaps="false"
-        android:textColor="@color/red"
-        android:backgroundTint="@color/white"
+        android:textColor="@color/white"
+        android:text="Follow"
+        android:backgroundTint="@color/red"
         app:cornerRadius="20dp" />
 
 </LinearLayout>

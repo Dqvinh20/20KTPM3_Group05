@@ -30,11 +30,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FollowingFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FollowingFragment extends Fragment {
 
     public FollowingFragment() {
@@ -77,8 +72,8 @@ public class FollowingFragment extends Fragment {
                     Type userListType = new TypeToken<List<User>>() {}.getType();
                     List<User> followingList = gson.fromJson(followingJsonArray, userListType);
                     Log.d("Data in", followingList.toString());
-                    if (followingList.size() != 0) {
 
+                    if (followingList.size() != 0) {
                         adapter = new UserFollowAdapter(followingList, false);
                         recyclerList.setAdapter(adapter);
                     }

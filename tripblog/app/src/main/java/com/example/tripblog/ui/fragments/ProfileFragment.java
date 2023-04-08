@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,14 +36,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
  */
 public class ProfileFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
@@ -52,21 +45,9 @@ public class ProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
+    public static ProfileFragment newInstance() {
         ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -75,8 +56,7 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
         ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(false);
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
@@ -113,10 +93,17 @@ public class ProfileFragment extends Fragment {
                 .error(R.drawable.da_lat)
                 .into(avatar);
 
+        TextView followerTxt = view.findViewById(R.id.followerTxt);
+        TextView followingTxt = view.findViewById(R.id.followingTxt);
+
+        followerTxt.setText(loggedUser.getFollowersCount().toString());
+        followingTxt.setText(loggedUser.getFollowingsCount().toString());
+
         viewPager = view.findViewById(R.id.pager);
         viewPager.setAdapter(new PostViewPagerAdapter(getActivity()));
 
-        TextView followingTxt = view.findViewById(R.id.followingTxt);
+        LinearLayout followersBtn = view.findViewById(R.id.followersCount);
+        LinearLayout followingBtn = view.findViewById(R.id.followingCount);
         tabLayout = view.findViewById(R.id.tab_layout);
 
         new TabLayoutMediator(tabLayout,viewPager, (tab, position) -> {
@@ -129,7 +116,18 @@ public class ProfileFragment extends Fragment {
                     break;
             }
         }).attach();
-        followingTxt.setOnClickListener(new View.OnClickListener() {
+        followingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FollowDialogFragment fragment = new FollowDialogFragment(1);
+                FragmentManager fragmentManager = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragment.show(fragmentTransaction, "Detail followers");
+//                fragmentTransaction.replace(R.id.frameLayout, fragment);
+//                fragmentTransaction.commit();
+            }
+        });
+        followersBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FollowDialogFragment fragment = new FollowDialogFragment();

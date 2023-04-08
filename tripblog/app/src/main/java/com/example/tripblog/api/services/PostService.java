@@ -12,6 +12,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -34,6 +35,7 @@ public interface PostService {
                              );
 
     @FormUrlEncoded
-    @DELETE("post/delete")
+//    @DELETE("post/delete")
+    @HTTP(method = "DELETE", path = "post/delete", hasBody = true)
     Call<Boolean> delete(@Field("post_id")Integer postId);
 }

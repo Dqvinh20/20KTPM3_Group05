@@ -27,8 +27,14 @@ public class FollowDialogFragment extends DialogFragment {
     private ViewPager2 viewPager;
     private FollowViewPagerAdapter followViewPagerAdapter;
     private User loggedUser = TripBlogApplication.getInstance().getLoggedUser();
+    private int tabPosition;
+
     public FollowDialogFragment() {
+
+    }
+    public FollowDialogFragment(int tabPosition) {
         // Required empty public constructor
+        this.tabPosition = tabPosition;
     }
 
     public static FollowDialogFragment newInstance() {
@@ -73,9 +79,12 @@ public class FollowDialogFragment extends DialogFragment {
             }
         }).attach();
 
-//        binding.tabLayout.getTabAt(1).select();
-        binding.tabLayout.setScrollPosition(1, 0, true);
 
+
+        if(tabPosition == 1){
+            binding.tabLayout.getTabAt(tabPosition).select();
+
+        }
         binding.backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

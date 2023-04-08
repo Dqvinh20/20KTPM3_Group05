@@ -3,7 +3,14 @@ const sequelize = require("../config");
 
 const queryAuthor = {
   association: "author",
-  attributes: ["id", "email", "avatar", "user_name", "user_name_non_accent"],
+  attributes: [
+    "id",
+    "email",
+    "avatar",
+    "user_name",
+    "user_name_non_accent",
+    "name",
+  ],
 };
 
 const common = (query) => {

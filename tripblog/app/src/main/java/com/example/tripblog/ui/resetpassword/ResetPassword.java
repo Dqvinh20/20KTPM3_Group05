@@ -22,12 +22,9 @@ import android.widget.EditText;
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
-import com.example.tripblog.databinding.ActivityLoginBinding;
 import com.example.tripblog.databinding.ActivityResetPasswordBinding;
-import com.example.tripblog.model.AuthResponse;
-import com.example.tripblog.ui.login.LoginActivity;
+import com.example.tripblog.model.response.AuthResponse;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.dialog.MaterialDialogs;
 import com.google.android.material.snackbar.Snackbar;
 
 import retrofit2.Call;

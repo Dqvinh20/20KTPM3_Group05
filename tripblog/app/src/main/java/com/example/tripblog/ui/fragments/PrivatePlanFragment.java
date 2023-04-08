@@ -21,7 +21,7 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.PostService;
 import com.example.tripblog.model.Post;
 import com.example.tripblog.ui.adapter.PlanListAdapter;
-import com.example.tripblog.ui.ViewPagerAdapter;
+import com.example.tripblog.ui.adapter.PostViewPagerAdapter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
@@ -49,7 +49,7 @@ public class PrivatePlanFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    ViewPagerAdapter viewPagerAdapter;
+    PostViewPagerAdapter postViewPagerAdapter;
     ViewPager2 viewPager;
 
 
@@ -83,7 +83,7 @@ public class PrivatePlanFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    PlanListAdapter adapter;
+    private PlanListAdapter adapter = null;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -97,12 +97,12 @@ public class PrivatePlanFragment extends Fragment {
         ListView planList = view.findViewById(R.id.planList);
 
         PostService postService = TripBlogApplication.createService(PostService.class);
-        Context fragmentContext = getContext();
-        postService.getPostByUserId(1, true).enqueue(new Callback<JsonArray>() {
+
+        postService.getPostByUserId(1, false).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if(response.isSuccessful()) {
-                    Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+
                     JsonArray postJsonArray = response.body().getAsJsonArray();
 //                    JsonObject rawData = response.body();
 //                    JsonArray postJsonArray = rawData.getAsJsonArray("posts");

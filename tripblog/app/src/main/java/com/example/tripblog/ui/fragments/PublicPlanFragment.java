@@ -91,7 +91,7 @@ public class PublicPlanFragment extends Fragment {
 //    String[] name = {"Da Lat Plan", "Vung Tau Plan"};
 //    Integer[] img = {R.drawable.da_lat, R.drawable.da_lat};
 
-    PlanListAdapter adapter;
+    private PlanListAdapter adapter = null;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -99,13 +99,11 @@ public class PublicPlanFragment extends Fragment {
         ListView planList = view.findViewById(R.id.planList);
 
         PostService postService = TripBlogApplication.createService(PostService.class);
-        Context fragmentContext = getContext();
-        postService.getPostByUserId(1, false).enqueue(new Callback<JsonArray>() {
+        postService.getPostByUserId(1, true).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
 
                 if(response.isSuccessful()) {
-                    Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
 
                     JsonArray postJsonArray = response.body().getAsJsonArray();
 //                    JsonObject rawData = response.body();

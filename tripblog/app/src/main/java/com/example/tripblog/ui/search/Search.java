@@ -20,8 +20,10 @@ import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.SearchService;
 import com.example.tripblog.databinding.ActivitySearchBinding;
+import com.example.tripblog.model.Location;
 import com.example.tripblog.model.Post;
 import com.example.tripblog.model.User;
+import com.example.tripblog.model.response.SearchResponse;
 import com.example.tripblog.ui.post.ViewSearchList;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -40,8 +42,9 @@ public class Search extends AppCompatActivity {
 
     ActivitySearchBinding binding ;
     List<User> userList;
+    List<Location> arrlocation;
     private static final String TAG = Search.class.getSimpleName();
-
+    CustomSuggestionSearchLocationAdapter arrayLocationSuggest;
     CustomSuggestionSearchUserAdapter arrayUserAdapterSuggest;
     String [] model_data_search = {"China", "Wales", "Belgium", "Japan", "France", "America",
             "Germany", "Canada", "Spain", "Brazil", "South Africa", "Belgium", "India"};
@@ -61,8 +64,8 @@ public class Search extends AppCompatActivity {
         setContentView(binding.getRoot());
         System.out.println("listsuggest");
 //        arrayAdapterSuggest = new CustomSuggestionSearchAdapter(Search.this,R.layout.suggest_search_component,listsuggest);
-        binding.suggestSearchLocation.setAdapter(arrayUserAdapterSuggest);
-        binding.suggestSearchLocation.setBackgroundColor(Color.WHITE);
+
+
     }
 
     @Override
@@ -86,15 +89,18 @@ public class Search extends AppCompatActivity {
         });
         SearchView searchView =(SearchView) menuItem.getActionView();
         searchView.setQueryHint("Type here to search");
+        binding.suggestSearchLocation.setAdapter(arrayLocationSuggest);
+        binding.suggestSearchLocation.setBackgroundColor(Color.WHITE);
 
        binding.suggestSearchLocation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent=new Intent(Search.this, ViewSearchList.class);
-                intent.putExtra("title",result[position].getTitle());
+                intent.putExtra("title", arrlocation.get(position).getName());
+                intent.putExtra("LocationId", arrlocation.get(position).getId());
                 intent.setAction(Intent.ACTION_VIEW);
                 startActivityForResult(intent, 1122);
-                searchView.setQuery(result[position].getTitle(),true);
+                searchView.setQuery(arrlocation.get(position).getName(),true);
 
             }
         });
@@ -121,13 +127,6 @@ public class Search extends AppCompatActivity {
                             JsonObject data = response.body();
                             JsonArray list = data.getAsJsonArray("users");
                             userList = new Gson().fromJson(list, new TypeToken<List<User>>(){}.getType());
-                            if(userList.size()==0){
-                                binding.notificationNoResult.setText("We coundn't find any users or places matching "+"'"+searchView.getQuery()+"'");
-                            }
-                            else {
-                                binding.notificationNoResult.setText(null);
-                            }
-                            Log.d("Data",userList.toString());
                             arrayUserAdapterSuggest = new CustomSuggestionSearchUserAdapter(Search.this,
                                     R.layout.suggest_search_component,
                                     userList);
@@ -136,7 +135,7 @@ public class Search extends AppCompatActivity {
                     }
                     @Override
                     public void onFailure(Call<JsonObject> call, Throwable t) {
-                        binding.notificationNoResult.setText("We coundn't find any users or places matching "+"'"+searchView.getQuery()+"'");
+//                        binding.notificationNoResult.setText("We coundn't find any users or places matching "+"'"+searchView.getQuery()+"'");
                         t.printStackTrace();
                         Log.d("Data","false");
                         Log.e(TAG, t.toString());
@@ -147,8 +146,35 @@ public class Search extends AppCompatActivity {
                                 .show();
                     }
                 });
+                searchService.searchPlaces(newText,5).enqueue(new Callback<SearchResponse>() {
+                    @Override
+                    public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                        arrlocation = response.body().getLocations();
+                        Log.d("Data",arrlocation.toString());
+                        arrayLocationSuggest = new CustomSuggestionSearchLocationAdapter(Search.this,
+                                R.layout.suggest_search_component,
+                                arrlocation);
+                        binding.suggestSearchLocation.setAdapter(arrayLocationSuggest);
+                    }
 
-
+                    @Override
+                    public void onFailure(Call<SearchResponse> call, Throwable t) {
+                        t.printStackTrace();
+                        Log.d("Data","false");
+                        Log.e(TAG, t.toString());
+                        Snackbar.make(binding.getRoot(), "Fail to connect to server", Snackbar.LENGTH_LONG)
+                                .setAction("Retry", view -> {
+//                            createPost();
+                                })
+                                .show();
+                    }
+                });
+                if(userList!= null&& arrlocation!=null && userList.size()==0 && arrlocation.size()==0){
+                    binding.notificationNoResult.setText("We coundn't find any users or places  matching "+"'"+searchView.getQuery()+"'");
+                }
+                else {
+                    binding.notificationNoResult.setText(null);
+                }
                 return false;
             }
         });

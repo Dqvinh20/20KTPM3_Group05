@@ -1,4 +1,4 @@
-package com.example.tripblog.model;
+package com.example.tripblog.model.response;
 
 import com.google.gson.JsonElement;
 

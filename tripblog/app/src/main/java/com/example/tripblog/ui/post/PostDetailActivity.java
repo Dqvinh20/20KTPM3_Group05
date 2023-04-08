@@ -1,25 +1,15 @@
 package com.example.tripblog.ui.post;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -34,22 +24,14 @@ import com.example.tripblog.adapter.PostDetailViewPaperAdapter;
 import com.example.tripblog.api.services.PostService;
 import com.example.tripblog.databinding.ActivityPostDetailBinding;
 import com.example.tripblog.model.Post;
-import com.example.tripblog.utils.PathUtil;
+import com.example.tripblog.utils.NumberUtil;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Properties;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,6 +46,14 @@ public class PostDetailActivity extends AppCompatActivity {
     protected PostDetailViewPaperAdapter contentViewPaperAdapter;
     protected final PostService postService = TripBlogApplication.createService(PostService.class);
     protected boolean isEditable = false;
+
+    private View.OnClickListener onLikeListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,15 +67,18 @@ public class PostDetailActivity extends AppCompatActivity {
         binding.appbar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             int collapseToolbarHeight = binding.collapseToolbarLayout.getHeight();
             if (collapseToolbarHeight + verticalOffset < (2 * ViewCompat.getMinimumHeight(binding.collapseToolbarLayout))) {
-              binding.toolbar.getNavigationIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+                binding.toolbar.getNavigationIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
             }
             else {
                 binding.toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
             }
         });
 
+        binding.likeBtn.setOnClickListener(onLikeListener);
+
         reloadEditableView();
     }
+
     protected void toggleEditable() {
         this.isEditable = !isEditable;
     }
@@ -110,6 +103,8 @@ public class PostDetailActivity extends AppCompatActivity {
 
         binding.tripTitle.setTextIsSelectable(isEditable);
         binding.tripTitle.setFocusable(isEditable);
+
+        binding.bottomAppBar.setVisibility(isEditable ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -124,7 +119,6 @@ public class PostDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     protected void setTripDatesText(Date startDate, Date endDate, String pattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(
                 pattern == null ? "dd/MM/yy" : pattern);
@@ -138,7 +132,10 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     protected void fetchData() {
-        Bundle bundle = getIntent().getExtras();
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+
+
         if (bundle != null && bundle.containsKey("post")) {
             // Load from bundle
             currPost = (Post) bundle.getSerializable("post");
@@ -173,6 +170,13 @@ public class PostDetailActivity extends AppCompatActivity {
         binding.tripTitle.setText(currPost.getTitle());
         binding.collapseToolbarLayout.setTitle(currPost.getTitle());
         setTripDatesText(currPost.getStartDate(), currPost.getEndDate(), "d/M/yy");
+
+        String formattedViewCount = NumberUtil.formatView(currPost.getViewCount());
+        binding.viewCountTxt.setText(String.join(" ",formattedViewCount , getString(R.string.view_txt)));
+
+        String formattedLikeCount = NumberUtil.formatView(currPost.getLikeCount());
+        binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
+        binding.likeBtn.setChecked(currPost.isLikedByYou());
 
         // Load cover img
         Glide.with(binding.getRoot())

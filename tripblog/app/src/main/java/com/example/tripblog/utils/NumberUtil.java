@@ -7,11 +7,11 @@ import android.icu.number.Precision;
 import android.icu.text.CompactDecimalFormat;
 import android.os.Build;
 
-import java.text.NumberFormat;
 import java.util.Locale;
 
 public class NumberUtil {
-    public static String formatView(int number) {
+    public static String formatShorter(int number) {
+        // Format number to short version. 1000 -> 1k
         Locale deviceLocale = Resources.getSystem().getConfiguration().getLocales().get(0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return NumberFormatter.with()

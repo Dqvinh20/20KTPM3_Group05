@@ -14,6 +14,8 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HEAD;
+import retrofit2.http.HTTP;
 import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
@@ -41,6 +43,13 @@ public interface PostService {
                              @Field("is_public") Boolean isPublic,
                              @Field("created_by") Integer userId
                              );
+    @FormUrlEncoded
+    @HTTP(method = "PATCH", path = "post/change-trip-dates/{postId}", hasBody = true)
+    Call<JsonArray> changeTripDates(
+            @Path("postId")Integer postId,
+            @Field("start_date") Date startDate,
+            @Field("end_date") Date endDate
+    );
 
     @Multipart
     @PATCH("post/update")
@@ -48,8 +57,6 @@ public interface PostService {
             @Part("post_id") RequestBody postId,
             @Part("title") RequestBody title,
             @Part("brief_description") RequestBody brief_description,
-            @Part("start_date")RequestBody startDate,
-            @Part("end_date") RequestBody endDate,
             @Part("is_public") RequestBody isPublic,
             @Part MultipartBody.Part coverImg
    );

@@ -3,13 +3,16 @@ package com.example.tripblog.ui.post;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,20 +31,21 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PostDetailActivity extends AppCompatActivity {
-    protected static final String TAG = PostDetailActivity.class.getSimpleName();
-    protected static final String D_M_YY = "d/M/yy";
-    protected static final int REQUEST_CODE = 1;
-    protected MaterialDatePicker tripDates;
+    private static final String TAG = PostDetailActivity.class.getSimpleName();
+    protected final String DATE_PATTERN = "MMM d"; // "d/M/yy"
     protected ActivityPostDetailBinding binding;
-    protected Post currPost;
+    protected MutableLiveData<Post> currPostLiveData = new MutableLiveData<>();
     protected PostDetailViewPaperAdapter contentViewPaperAdapter;
     protected final PostService postService = TripBlogApplication.createService(PostService.class);
     protected boolean isEditable = false;
@@ -53,14 +57,16 @@ public class PostDetailActivity extends AppCompatActivity {
         }
     };
 
+    public MutableLiveData<Post> getPostLiveData() {
+        return currPostLiveData;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityPostDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
-
-        fetchData();
 
         // Top app bar
         binding.appbar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
@@ -73,9 +79,34 @@ public class PostDetailActivity extends AppCompatActivity {
             }
         });
 
+
         binding.likeBtn.setOnClickListener(onLikeListener);
 
+        // Auto reload view
+        currPostLiveData.observe(this, new Observer<Post>() {
+            @Override
+            public void onChanged(Post post) {
+                loadData();
+            }
+        });
+        currPostLiveData.observe(this, new Observer<Post>() {
+            @Override
+            public void onChanged(Post post) {
+                Bundle data = new Bundle();
+                data.putString("briefDescription", post.getBriefDescription());
+                data.putInt("postId", post.getId());
+                data.putDouble("avgPoint", post.getAvgRating());
+                data.putInt("avgCount", post.getRatingCount());
+                contentViewPaperAdapter.refreshFragmentData(0, data);
+            }
+        });
+
+        fetchData();
         reloadEditableView();
+    }
+
+    public void onFragmentLoaded() {
+        contentViewPaperAdapter.setEditable(isEditable);
     }
 
     protected void toggleEditable() {
@@ -85,7 +116,6 @@ public class PostDetailActivity extends AppCompatActivity {
     protected void reloadEditableView() {
         // View pager
         contentViewPaperAdapter = new PostDetailViewPaperAdapter(PostDetailActivity.this);
-        contentViewPaperAdapter.setEditable(isEditable);
         binding.contentViewPaper.setAdapter(contentViewPaperAdapter);
         new TabLayoutMediator(binding.tabLayout, binding.contentViewPaper, (tab, position) -> {
             switch (position) {
@@ -102,7 +132,6 @@ public class PostDetailActivity extends AppCompatActivity {
 
         binding.tripTitle.setTextIsSelectable(isEditable);
         binding.tripTitle.setFocusable(isEditable);
-
         binding.bottomAppBar.setVisibility(isEditable ? View.GONE : View.VISIBLE);
     }
 
@@ -117,28 +146,38 @@ public class PostDetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
     protected void setTripDatesText(Date startDate, Date endDate, String pattern) {
-        SimpleDateFormat sdf = new SimpleDateFormat(
-                pattern == null ? "dd/MM/yy" : pattern);
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern == null ? "dd/MM/yy" : pattern, Locale.US);
+        Long today = MaterialDatePicker.todayInUtcMilliseconds();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(today);
+
+        int currYear = calendar.get(Calendar.YEAR);
+
+        calendar.setTime(startDate);
+        int startYear = calendar.get(Calendar.YEAR);
+        sdf.applyPattern(currYear == startYear ? pattern : pattern + ",yyyy");
+        String formatedStartDate = sdf.format(startDate);
+
+        calendar.setTime(endDate);
+        int endYear = calendar.get(Calendar.YEAR);
+        sdf.applyPattern(currYear == endYear ? pattern : pattern + ",yyyy");
+        String formatedEndDate = sdf.format(endDate);
 
         String tripDatesTxt = String.format("%s - %s",
-                sdf.format(startDate),
-                sdf.format(endDate)
+                formatedStartDate,
+                formatedEndDate
         );
 
         binding.tripDates.setText(tripDatesTxt);
     }
-
-    protected void fetchData() {
+    public void fetchData() {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
-
         if (bundle != null && bundle.containsKey("post")) {
             // Load from bundle
-            currPost = (Post) bundle.getSerializable("post");
-            loadData();
+            currPostLiveData.postValue((Post) bundle.getSerializable("post"));
         }
         else {
             // Load data from internet
@@ -146,8 +185,9 @@ public class PostDetailActivity extends AppCompatActivity {
             postService.getPostById(postId).enqueue(new Callback<Post>() {
                 @Override
                 public void onResponse(Call<Post> call, Response<Post> response) {
-                    currPost = response.body();
-                    loadData();
+                    Post post = response.body();
+                    if (post.getId() == null) return;
+                    currPostLiveData.postValue(post);
                 }
 
                 @Override
@@ -161,19 +201,23 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     protected void loadData() {
+        Post currPost = currPostLiveData.getValue();
         if (currPost == null) return;
 
-        if (currPost.getSchedules() != null)
-            contentViewPaperAdapter.onCreateScheduleFragment(currPost.getSchedules());
+        if (currPost.getSchedules() != null) {
+            Bundle args = new Bundle();
+            args.putSerializable("schedules",(Serializable) currPost.getSchedules());
+            contentViewPaperAdapter.refreshFragmentData(1, args);
+        }
 
         binding.tripTitle.setText(currPost.getTitle());
         binding.collapseToolbarLayout.setTitle(currPost.getTitle());
-        setTripDatesText(currPost.getStartDate(), currPost.getEndDate(), "d/M/yy");
+        setTripDatesText(currPost.getStartDate(), currPost.getEndDate(), DATE_PATTERN);
 
-        String formattedViewCount = NumberUtil.formatView(currPost.getViewCount());
+        String formattedViewCount = NumberUtil.formatShorter(currPost.getViewCount());
         binding.viewCountTxt.setText(String.join(" ",formattedViewCount , getString(R.string.view_txt)));
 
-        String formattedLikeCount = NumberUtil.formatView(currPost.getLikeCount());
+        String formattedLikeCount = NumberUtil.formatShorter(currPost.getLikeCount());
         binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
         binding.likeBtn.setChecked(currPost.isLikedByYou());
 
@@ -190,6 +234,7 @@ public class PostDetailActivity extends AppCompatActivity {
                 .centerCrop()
                 .into(binding.authorAvatar);
 
+        binding.contentViewPaper.setVisibility(View.VISIBLE);
     }
 
     @Override

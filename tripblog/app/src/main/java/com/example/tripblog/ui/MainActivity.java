@@ -44,12 +44,12 @@ import com.example.tripblog.ui.post.PostDetailActivity;
 import com.example.tripblog.ui.search.Search;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
+//import com.karumi.dexter.Dexter;
+//import com.karumi.dexter.PermissionToken;
+//import com.karumi.dexter.listener.PermissionDeniedResponse;
+//import com.karumi.dexter.listener.PermissionGrantedResponse;
+//import com.karumi.dexter.listener.PermissionRequest;
+//import com.karumi.dexter.listener.single.PermissionListener;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks{
     private String TAG = MainActivity.class.getSimpleName();
@@ -88,8 +88,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             lastClickTime = SystemClock.elapsedRealtime();
 
             // Open create post dialog
-                Intent intent = new Intent(MainActivity.this, PostDetailActivity.class);
-                intent.putExtra("postId", 21);
+                Intent intent = new Intent(MainActivity.this, EditablePostDetailActivity.class);
+                intent.putExtra("postId", 61);
                 startActivity(intent);
 //            displayCreatePostDialog();
 //            ImagePreviewDialog imagePreviewDialog = new ImagePreviewDialog(this);

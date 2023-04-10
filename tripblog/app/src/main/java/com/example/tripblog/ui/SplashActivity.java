@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
 
     Runnable checkCredentialInBackground = () -> {
         try{
-            Thread.sleep(2000);
+            Thread.sleep(500);
             if (isAlive) {
                 checkCredential();
                 finish();

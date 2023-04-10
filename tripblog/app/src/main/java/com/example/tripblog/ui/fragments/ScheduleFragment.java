@@ -2,9 +2,12 @@ package com.example.tripblog.ui.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +20,7 @@ import com.example.tripblog.model.Location;
 import com.example.tripblog.model.Schedule;
 import com.example.tripblog.ui.interfaces.IOnClickListener;
 import com.example.tripblog.ui.post.AddPlaceBottomSheet;
+import com.example.tripblog.ui.post.PostDetailActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.JsonObject;
 
@@ -29,7 +33,7 @@ import retrofit2.Response;
 public class ScheduleFragment extends Fragment implements IOnClickListener {
     private static final String TAG = ScheduleFragment.class.getSimpleName();
     private final ScheduleService scheduleService = TripBlogApplication.createService(ScheduleService.class);
-    ScheduleItemAdapter adapter = null;
+    ScheduleItemAdapter adapter = new ScheduleItemAdapter(this);
     FragmentScheduleBinding binding;
 
     public ScheduleFragment() {
@@ -45,24 +49,12 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            Bundle args =  getArguments();
-            boolean isEditable = args.getBoolean("isEditable");
-            List<Schedule> schedules = (List<Schedule>) args.getSerializable("schedules");
-            adapter = new ScheduleItemAdapter(schedules, this);
-            adapter.setEditable(isEditable);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentScheduleBinding.inflate(inflater, container, false);
-        if (adapter != null)
-            binding.contentRecyclerView.setAdapter(adapter);
+        binding.contentRecyclerView.setAdapter(adapter);
+        ((PostDetailActivity) getActivity()).onFragmentLoaded();
         return binding.getRoot();
     }
 
@@ -162,6 +154,7 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                     }
                 });
     }
+
     private void editNote(int schedulePos, int locationId, String note, int locationPos) {
         int scheduleId = (int) adapter.getItemId(schedulePos);
 
@@ -188,5 +181,17 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                                 .show();
                     }
                 });
+    }
+
+    public void setEditable(boolean editable) {
+        adapter.setEditable(editable);
+    }
+
+    public void refresh() {
+        if (getArguments() != null) {
+            Bundle args =  getArguments();
+            List<Schedule> schedules = (List<Schedule>) args.getSerializable("schedules");
+            adapter.setScheduleList(schedules);
+        }
     }
 }

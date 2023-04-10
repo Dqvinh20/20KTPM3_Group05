@@ -58,7 +58,6 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         this.locations = locations;
         this.markerColor = markerColor;
         this.onClickListener = onClickListener;
-//        sortByPosition();
     }
 
     @NonNull
@@ -74,7 +73,7 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public long getItemId(int position) {
         if (locations != null) {
-            return locations.get(position).getId();
+            return locations.get(position).getPosition();
         }
         return super.getItemId(position);
     }
@@ -82,7 +81,6 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Location currLocation = locations.get(position);
-        Log.d("onBindViewHolder", String.valueOf(currLocation.getId()));
         MapScheduleItemViewHolder mapHolder = (MapScheduleItemViewHolder) holder;
 
         mapHolder.locationPosition.getBackground().setTint(markerColor);
@@ -151,9 +149,10 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             expandableLayout = itemView.findViewById(R.id.expandableLayout);
 
             removeLocation.setOnClickListener(view -> {
+                Location location = locations.get(getBindingAdapterPosition());
                 Bundle data = new Bundle();
                 data.putInt("locationPos", getBindingAdapterPosition());
-                data.putInt("locationId", (int) getItemId());
+                data.putInt("locationId", location.getId());
                 onClickListener.onClick("remove_location", data);
             });
 
@@ -187,7 +186,7 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
                         Bundle data = new Bundle();
-                        data.putInt("locationId", (int) getItemId());
+                        data.putInt("locationId", location.getId());
                         data.putInt("locationPos", getBindingAdapterPosition());
                         data.putString("note", newNote);
                         onClickListener.onClick("edit_note", data);

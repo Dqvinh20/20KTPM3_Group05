@@ -47,6 +47,8 @@
     <string name="search_place_hint">Search by name</string>
     <string name="delete_post_title">Delete</string>
     <string name="delete_post_message">Are you sure yout want to delete this post?</string>
+    <string name="brief_description_hint">Enter a brief description about your lovely trip...</string>
+    <string name="content_rating_hint">Write your thoughts about the trip...</string>
 
     <!--    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>-->
 </resources>

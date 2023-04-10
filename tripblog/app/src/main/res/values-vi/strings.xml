@@ -42,4 +42,6 @@
     <string name="search_place_hint">Nhập tên địa điểm</string>
     <string name="delete_post_title">Xoá</string>
     <string name="delete_post_message">Bạn có chắc muốn xoá bài viết không</string>
+    <string name="brief_description_hint">Mô tả ngắn ngọn về chuyến đi của bạn...</string>
+    <string name="content_rating_hint">Bạn đánh giá như thế nào về chuyến đi...</string>
 </resources>

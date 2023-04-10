@@ -15,10 +15,11 @@ public class ColorUtil {
         sum %= 16777215;
 
         Random random = new Random();
-        int nextInt = random.nextInt(0xffffff + 1);
+        int upperColor = 0xf54646;
+        int lowerColor = 0xde46f5;
+        int nextInt = random.nextInt( upperColor - (lowerColor + 1)) + lowerColor;
         String colorCode = String.format("#%06x", nextInt + sum);
 
-        Log.d("TAG", colorCode);
         return Color.parseColor(colorCode);
     }
 }

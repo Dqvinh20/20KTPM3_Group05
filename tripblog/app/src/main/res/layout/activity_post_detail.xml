@@ -157,20 +157,27 @@
             />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/contentViewPaper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:fillViewport="true"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:layout_marginBottom="?minTouchTargetSize"
+        android:visibility="gone"
+        />
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/contentViewPaper"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
 
-    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="vertical"-->
+<!--        android:fillViewport="true"-->
+<!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">-->
+
+<!--        -->
+
+<!--    </LinearLayout>-->
 
     <View
         android:layout_width="match_parent"

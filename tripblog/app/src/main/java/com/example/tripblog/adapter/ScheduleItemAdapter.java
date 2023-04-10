@@ -27,6 +27,8 @@ import com.google.android.material.divider.MaterialDivider;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Executors;
 
 public class ScheduleItemAdapter
         extends RecyclerView.Adapter<ScheduleItemAdapter.ScheduleItemViewHolder>
@@ -34,24 +36,35 @@ public class ScheduleItemAdapter
     private List<Schedule> scheduleList;
     private boolean isEditable = false;
     private IOnClickListener onClickListener;
+    private boolean isColorLoaded = false;
 
     public void setEditable(boolean isEditable) {
         this.isEditable = isEditable;
         notifyDataSetChanged();
     }
 
-    public ScheduleItemAdapter(List<Schedule> scheduleList, IOnClickListener onClickListener) {
+    public ScheduleItemAdapter(IOnClickListener onClickListener) {
         setHasStableIds(true);
-        this.scheduleList = scheduleList;
         this.onClickListener = onClickListener;
-        loadScheduleColors();
+    }
+
+    public void setScheduleList(List<Schedule> scheduleList) {
+        this.scheduleList = scheduleList;
+        if (!isColorLoaded) {
+            loadScheduleColors();
+        }
+        notifyDataSetChanged();
     }
 
     private void loadScheduleColors() {
-        if (this.scheduleList == null) return;
-        this.scheduleList.forEach(schedule -> schedule.setMarkerColor(
-                ColorUtil.randomHexColor(schedule.getDate().toString()
-                )));
+        Executors.newSingleThreadExecutor().execute(() -> {
+            if (this.scheduleList == null) return;
+            this.scheduleList.forEach(schedule -> schedule.setMarkerColor(
+                    ColorUtil.randomHexColor(schedule.getDate().toString()
+                    )));
+            isColorLoaded = true;
+        });
+
     }
 
     public ScheduleItemAdapter(List<Schedule> scheduleList, boolean isEditable) {
@@ -80,7 +93,7 @@ public class ScheduleItemAdapter
         holder.title.setText(currSchedule.getTitle());
         holder.dateText.setText(formatDate(currSchedule.getDate()));
         holder.countPlaces.setText(String.join(" ",
-                String.valueOf(currSchedule.getLocations().size()),
+                String.valueOf(currSchedule.getLocationCount()),
                 holder.itemView.getResources().getString(R.string.count_places)
         ));
 
@@ -124,24 +137,29 @@ public class ScheduleItemAdapter
     }
 
     public String formatDate(Date date) {
-        return new SimpleDateFormat("dd/MM/yyyy").format(date);
+        return new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date);
     }
 
     public void addLocation(int schedulePos, Location location) {
-        scheduleList.get(schedulePos).getLocations().add(location);
+        Schedule currSchedule = scheduleList.get(schedulePos);
+        currSchedule.getLocations().add(location);
+        currSchedule.setLocationCount(currSchedule.getLocationCount() + 1);
         notifyItemChanged(schedulePos);
     }
 
     public void removeLocation(int schedulePos, int locationPos) {
-        List<Location> locations = scheduleList.get(schedulePos).getLocations();
+        Schedule currSchedule = scheduleList.get(schedulePos);
+
+        List<Location> locations = currSchedule.getLocations();
         locations.remove(locationPos);
         locations.stream().skip(locationPos).forEach(location -> {
             location.setPosition(location.getPosition() - 1);
         });
+
+        currSchedule.setLocationCount(currSchedule.getLocationCount() - 1);
         notifyItemChanged(schedulePos);
     }
     public void editNoteLocation(int schedulePos, int locationPos, String newNote) {
-        Log.d("editNoteLocation", newNote);
         scheduleList.get(schedulePos).getLocations().get(locationPos).setNote(newNote);
         notifyItemChanged(schedulePos);
     }

@@ -125,4 +125,9 @@
         <item name="iconSize">40dp</item>
         <item name="elevation">1dp</item>
     </style>
+
+    <style name="Widget.Tripblog.GoldenRatingBar" parent="Widget.AppCompat.RatingBar.Indicator">
+        <item name="android:progressTint">@color/quantum_yellow</item>
+        <item name="android:secondaryProgressTint">@android:color/transparent</item>
+    </style>
 </resources>

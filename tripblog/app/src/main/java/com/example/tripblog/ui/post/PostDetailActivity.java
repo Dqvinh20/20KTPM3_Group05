@@ -45,7 +45,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PostDetailActivity extends AppCompatActivity {
+public class PostDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = PostDetailActivity.class.getSimpleName();
     protected final String DATE_PATTERN = "MMM d"; // "d/M/yy"
     protected ActivityPostDetailBinding binding;
@@ -53,49 +53,11 @@ public class PostDetailActivity extends AppCompatActivity {
     protected PostDetailViewPaperAdapter contentViewPaperAdapter;
     protected final PostService postService = TripBlogApplication.createService(PostService.class);
     protected boolean isEditable = false;
-
-    private View.OnClickListener onLikeButtonClickListener = new View.OnClickListener() {
-        private boolean isLoading = false;
-        @Override
-        public void onClick(View view) {
-            if (isLoading) return;
-
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            UserService userService = TripBlogApplication.createService(UserService.class);
-            Post post = currPostLiveData.getValue();
-            int likedCount = post.getLikeCount();
-            boolean isLiked = post.isLikedByYou();
-
-            if (isLiked) {
-                executorService.execute(() -> {
-                    try {
-                        userService.unlikePost(post.getId()).execute();
-                        isLoading = false;
-                    } catch (IOException e) {}
-                });
-            }
-            else {
-                executorService.execute(() -> {
-                    try {
-                        userService.likePost(post.getId()).execute();
-                        isLoading = false;
-                    } catch (IOException e) {}
-                });
-            }
-            executorService.shutdown();
-            post.setLikedByYou(!isLiked);
-            post.setLikeCount(likedCount + (!isLiked ? 1 : -1));
-
-            // Update like button text
-            String formattedLikeCount = NumberUtil.formatShorter(post.getLikeCount());
-            binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
-        }
-    };
+    private boolean isLoading = false;
 
     public MutableLiveData<Post> getPostLiveData() {
         return currPostLiveData;
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,7 +95,8 @@ public class PostDetailActivity extends AppCompatActivity {
             }
         });
 
-        binding.likeBtn.setOnClickListener(onLikeButtonClickListener);
+        binding.likeBtn.setOnClickListener(this);
+        binding.shareBtn.setOnClickListener(this);
 
         // Auto reload view
         currPostLiveData.observe(this, new Observer<Post>() {
@@ -281,7 +244,6 @@ public class PostDetailActivity extends AppCompatActivity {
 
         binding.contentViewPaper.setVisibility(View.VISIBLE);
     }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -297,5 +259,44 @@ public class PostDetailActivity extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent( event );
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.likeBtn) {
+            if (isLoading) return;
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            UserService userService = TripBlogApplication.createService(UserService.class);
+            Post post = currPostLiveData.getValue();
+            int likedCount = post.getLikeCount();
+            boolean isLiked = post.isLikedByYou();
+
+            if (isLiked) {
+                executorService.execute(() -> {
+                    try {
+                        userService.unlikePost(post.getId()).execute();
+                        isLoading = false;
+                    } catch (IOException e) {}
+                });
+            }
+            else {
+                executorService.execute(() -> {
+                    try {
+                        userService.likePost(post.getId()).execute();
+                        isLoading = false;
+                    } catch (IOException e) {}
+                });
+            }
+            executorService.shutdown();
+            post.setLikedByYou(!isLiked);
+            post.setLikeCount(likedCount + (!isLiked ? 1 : -1));
+
+            // Update like button text
+            String formattedLikeCount = NumberUtil.formatShorter(post.getLikeCount());
+            binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
+        }
+        else if (view.getId() == R.id.shareBtn) {
+
+        }
     }
 }

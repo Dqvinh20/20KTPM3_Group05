@@ -27,7 +27,7 @@
         android:theme="@style/Theme.Tripblog"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <service android:name=".services.MainService"/>
+        <service android:name=".services.MainService" />
         <activity
             android:name=".ui.resetpassword.ResetPassword"
             android:exported="false" />
@@ -65,7 +65,7 @@
             android:exported="false"
             android:windowSoftInputMode="stateHidden|adjustPan"
             android:theme="@style/Theme.Tripblog.PostDetail"
-            />
+        />
 
         <activity
             android:name=".ui.post.EditablePostDetailActivity"
@@ -76,9 +76,9 @@
             android:name=".ui.editprofile.EditProfile"
             android:exported="false"
             android:windowSoftInputMode="stateHidden|adjustPan"
-            />
+        />
         <activity android:name=".deeplinking.DeepLinking"
-                android:exported="true">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

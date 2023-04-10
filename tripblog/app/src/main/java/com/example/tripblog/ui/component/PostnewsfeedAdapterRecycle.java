@@ -35,8 +35,16 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
     private AdapterView.OnItemClickListener listener;
     private ItemClickListener itemClickListener;
     public void setDate(List<Post> listPost){
-        this.listPost= listPost;
+        this.listPost = listPost;
         notifyDataSetChanged();
+    }
+
+    public void appendList(List<Post> listPost) {
+        if (listPost != null) {
+            int lastPos = this.listPost.size() - 1;
+            this.listPost.addAll(listPost);
+            notifyItemChanged(lastPos);
+        }
     }
 
     public  void setItemClickListener(ItemClickListener itemClickListener){

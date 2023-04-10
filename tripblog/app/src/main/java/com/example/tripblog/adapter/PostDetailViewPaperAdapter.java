@@ -38,9 +38,6 @@ public class PostDetailViewPaperAdapter extends FragmentStateAdapter {
     }
 
     public void refreshFragmentData(int position, Bundle args) {
-        Log.e(TAG + "2 " + position, String.valueOf(isEditable));
-
-
         if (position == 1) {
             scheduleFragment.setArguments(args);
             scheduleFragment.refresh();

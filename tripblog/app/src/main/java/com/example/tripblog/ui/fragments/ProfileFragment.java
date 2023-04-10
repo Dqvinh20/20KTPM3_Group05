@@ -1,10 +1,16 @@
 package com.example.tripblog.ui.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.media.Image;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,7 +48,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private PostViewPagerAdapter postViewPagerAdapter;
-    private User loggedUser = TripBlogApplication.getInstance().getLoggedUser();
+    private User loggedUser;
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -96,8 +102,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View view) {
                         popupSetting.dismiss();
+
                         Intent intent = new Intent(getActivity(), EditProfile.class);
-                        startActivity(intent);
+                        activityResultLauncher.launch(intent);
+//                        startActivity(intent);
 //                        finishAfterTransition();
                     }
                 });
@@ -112,20 +120,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        TextView username = view.findViewById(R.id.usernameTxt);
-        username.setText(loggedUser.getUserName());
-        ImageView avatar = view.findViewById(R.id.avatar);
-//        Glide.with()
-//                .load(list.get(position).getCoverImg())
-//                .placeholder(R.drawable.da_lat)
-//                .error(R.drawable.da_lat)
-//                .into(img);
-        Glide.with(view)
-                .load(loggedUser.getAvatar())
-                .placeholder(R.drawable.da_lat)
-                .error(R.drawable.da_lat)
-                .into(avatar);
+        loadData();
 
         viewPager = view.findViewById(R.id.pager);
         viewPager.setAdapter(new PostViewPagerAdapter(getActivity()));
@@ -143,6 +138,23 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     break;
             }
         }).attach();
+
+//        TextView username = view.findViewById(R.id.usernameTxt);
+//        ImageView avatar = view.findViewById(R.id.avatar);
+//
+//        username.setText(loggedUser.getUserName());
+////        Glide.with()
+////                .load(list.get(position).getCoverImg())
+////                .placeholder(R.drawable.da_lat)
+////                .error(R.drawable.da_lat)
+////                .into(img);
+//        Glide.with(view)
+//                .load(loggedUser.getAvatar())
+//                .placeholder(R.drawable.da_lat)
+//                .error(R.drawable.da_lat)
+//                .into(avatar);
+
+
         followingTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -154,6 +166,16 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 //                fragmentTransaction.commit();
             }
         });
+    }
+
+    private void loadData() {
+        loggedUser = TripBlogApplication.getInstance().getLoggedUser();
+        binding.usernameTxt.setText(loggedUser.getUserName());
+        Glide.with(binding.getRoot())
+                .load(loggedUser.getAvatar())
+                .placeholder(R.drawable.da_lat)
+                .error(R.drawable.da_lat)
+                .into(binding.avatar);
     }
 
     public void updateUserData(User newUserData) {
@@ -172,4 +194,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         if (view.getId() == R.id.logout) {
         }
     }
+
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == 1 && result.getData() != null) {
+                        Bundle data = result.getData().getExtras();
+                        User user = (User) data.getSerializable("user");
+                        TripBlogApplication.getInstance().setLoggedUser(user);
+                        loadData();
+                    }
+                }
+            }
+    );
 }

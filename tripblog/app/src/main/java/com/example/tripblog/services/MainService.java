@@ -70,7 +70,7 @@ public class MainService extends Service {
         myschedule_executor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                show_notifycation("");
+//                show_notifycation("");
                 Log.i(TAG,"2");
             }
         },1,5, TimeUnit.SECONDS);

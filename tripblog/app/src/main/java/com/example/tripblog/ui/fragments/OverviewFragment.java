@@ -24,6 +24,7 @@ import com.example.tripblog.model.Post;
 import com.example.tripblog.model.Rating;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.dialog.RatePostDialog;
+import com.example.tripblog.ui.post.EditablePostDetailActivity;
 import com.example.tripblog.ui.post.PostDetailActivity;
 import com.example.tripblog.utils.NumberUtil;
 import com.google.android.material.snackbar.Snackbar;
@@ -46,14 +47,11 @@ public class OverviewFragment extends Fragment {
     private final RatingItemAdapter ratingItemAdapter = new RatingItemAdapter();
     private final RatingService ratingService = TripBlogApplication.createService(RatingService.class);
     FragmentOverviewBinding binding;
-
     private boolean isEditable = false;
-
     private Integer postId;
     private String briefDescription;
     private float avgPoint;
     private int avgCount;
-
     private boolean isExpanded = false;
 
     // Pagination ratings list
@@ -297,7 +295,8 @@ public class OverviewFragment extends Fragment {
                 // Update success
                 if (body.get(0).getAsInt() == 1) {
                     Post updatedPost = new Gson().fromJson(body.get(1).getAsJsonObject(), Post.class);
-                    ((PostDetailActivity) getActivity()).getPostLiveData().postValue(updatedPost);
+                    briefDescription = updatedPost.getBriefDescription();
+                    ((EditablePostDetailActivity) getActivity()).getPostLiveData().getValue().setBriefDescription(updatedPost.getBriefDescription());
                 }
             }
 

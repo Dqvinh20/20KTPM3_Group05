@@ -6,8 +6,11 @@ import androidx.core.view.ViewCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -37,6 +40,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -105,9 +109,11 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                 loadData();
             }
         });
+
         currPostLiveData.observe(this, new Observer<Post>() {
             @Override
             public void onChanged(Post post) {
+                Log.e(TAG, "onChanged");
                 Bundle data = new Bundle();
                 data.putString("briefDescription", post.getBriefDescription());
                 data.putInt("postId", post.getId());
@@ -218,6 +224,8 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             contentViewPaperAdapter.refreshFragmentData(1, args);
         }
 
+
+
         binding.tripTitle.setText(currPost.getTitle());
         binding.collapseToolbarLayout.setTitle(currPost.getTitle());
         setTripDatesText(currPost.getStartDate(), currPost.getEndDate(), DATE_PATTERN);
@@ -296,7 +304,15 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
         }
         else if (view.getId() == R.id.shareBtn) {
+            String link = "https://tripblog.com?postId=" + currPostLiveData.getValue().getId();
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, link);
+            sendIntent.putExtra(Intent.EXTRA_TITLE, "Share this trip");
+            sendIntent.setType("text/plain");
 
+            Intent shareIntent = Intent.createChooser(sendIntent, null);
+            startActivity(shareIntent);
         }
     }
 }

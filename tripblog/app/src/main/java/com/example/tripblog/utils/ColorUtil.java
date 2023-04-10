@@ -3,15 +3,29 @@ package com.example.tripblog.utils;
 import android.graphics.Color;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 public class ColorUtil {
-    public static int randomHexColor(String text) {
-        Random random = new Random();
-        int upperColor = 0xf54646; // From #f54646
-        int lowerColor = 0xde46f5; // To #de46f5
-        int nextInt = random.nextInt( upperColor - lowerColor) + lowerColor;
-        String colorCode = String.format("#%06x", nextInt);
-        return Color.parseColor(colorCode);
+    public static int randomHexColor() {
+        Random rnd = new Random();
+        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+    }
+
+    public static List<Integer> generateMapMarkerColors(int size) {
+        List<Integer> markerColors = new ArrayList<>();
+        int color= randomHexColor();
+
+        while (markerColors.size() < size) {
+            if (markerColors.size() != 0) {
+                while (markerColors.contains(color)) {
+                    color = randomHexColor();
+                }
+            }
+            markerColors.add(color);
+        }
+        return markerColors;
     }
 }

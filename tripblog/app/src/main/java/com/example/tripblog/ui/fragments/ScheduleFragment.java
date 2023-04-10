@@ -154,7 +154,6 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                     }
                 });
     }
-
     private void editNote(int schedulePos, int locationId, String note, int locationPos) {
         int scheduleId = (int) adapter.getItemId(schedulePos);
 

@@ -1,12 +1,11 @@
 package com.example.tripblog.api.services;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
+//import com.example.tripblog.model.AuthResponse;
 import com.example.tripblog.model.Post;
 import com.example.tripblog.model.User;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import java.util.Properties;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -40,6 +39,15 @@ public interface UserService {
             @Part("name")  RequestBody name,
             @Part MultipartBody.Part avatar_img
     );
+
+    @Multipart
+    @PATCH("user/update")
+    Call<JsonArray> updateNameUser(
+            @Part("user_name") RequestBody userName,
+            @Part("name")  RequestBody name
+
+    );
+
 
     @GET("user/{user_id}")
     Call<User> getUserById(@Path("user_id") Integer userid);

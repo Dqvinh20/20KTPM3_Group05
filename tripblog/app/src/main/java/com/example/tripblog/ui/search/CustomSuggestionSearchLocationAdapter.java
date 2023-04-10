@@ -11,18 +11,20 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
+import com.example.tripblog.model.Location;
 import com.example.tripblog.model.User;
 
 import java.util.List;
 
 public class CustomSuggestionSearchLocationAdapter extends ArrayAdapter<String> {
     Context context ; Suggest_Search_Object[] list_suggestion;
-    List<User> userListBelow;
+    List<Location> listLocation;
 
-    public CustomSuggestionSearchLocationAdapter(@NonNull Context context, int layoutToBeInflated , List<User> userListBelow ) {
-        super(context,R.layout.suggest_search_component,new String[userListBelow.size()]);
-        this.userListBelow = userListBelow;
+    public CustomSuggestionSearchLocationAdapter(@NonNull Context context, int layoutToBeInflated , List<Location> listLocation ) {
+        super(context,R.layout.suggest_search_component,new String[listLocation.size()]);
+        this.listLocation = listLocation;
 
         this.context = context;
     }
@@ -34,20 +36,10 @@ public class CustomSuggestionSearchLocationAdapter extends ArrayAdapter<String> 
         TextView subTiltleTextView = (TextView) row.findViewById(R.id.subTiltleTextView);
         ImageView icon_suggestion_search_imageview = ( ImageView ) row.findViewById(R.id.icon_suggestion_search_imageview);
 
-        titleTextView.setText(userListBelow.get(position).getUserName());
-        subTiltleTextView.setText(userListBelow.get(position).getUserNameNonAccent());
+        titleTextView.setText(listLocation.get(position).getName());
+        subTiltleTextView.setText(listLocation.get(position).getFormattedAddress());
 
-//        Toast.makeText(context, "Hi", Toast.LENGTH_LONG).show();
-        System.out.println(list_suggestion[position]);
-        if(list_suggestion[position].getType() == "Location"){
-            icon_suggestion_search_imageview.setImageResource(R.drawable.market_location);
-        }
-        else {
-            icon_suggestion_search_imageview.setImageResource(R.drawable.logo_user);
-        }
-//        Log.i("size",Integer.toString(list_suggestion.length));
-//        for(int i = 0;i<list_suggestion.length;i++)
-//            Log.i("data",list_suggestion[i].toString());
+        icon_suggestion_search_imageview.setImageResource(R.drawable.market_location);
 
         return(row);
     }

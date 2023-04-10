@@ -26,9 +26,11 @@ import com.google.android.material.divider.MaterialDivider;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
 
 public class ScheduleItemAdapter
         extends RecyclerView.Adapter<ScheduleItemAdapter.ScheduleItemViewHolder>
@@ -45,29 +47,24 @@ public class ScheduleItemAdapter
 
     public ScheduleItemAdapter(IOnClickListener onClickListener) {
         setHasStableIds(true);
+        isColorLoaded = false;
         this.onClickListener = onClickListener;
     }
 
     public void setScheduleList(List<Schedule> scheduleList) {
         this.scheduleList = scheduleList;
-        if (!isColorLoaded) {
-            loadScheduleColors();
-        }
-        notifyDataSetChanged();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Integer> markerColors = ColorUtil.generateMapMarkerColors(this.scheduleList.size());
+            IntStream.range(0, this.scheduleList.size()).forEach(idx -> {
+                this.scheduleList.get(idx).setMarkerColor(markerColors.get(idx));
+            });
+
+            notifyDataSetChanged();
+        });
     }
 
     private void loadScheduleColors() {
         if (this.scheduleList == null) return;
-        this.scheduleList.forEach(schedule -> schedule.setMarkerColor(
-                ColorUtil.randomHexColor(schedule.getDate().toString()
-                )));
-        isColorLoaded = true;
-        notifyDataSetChanged();
-    }
-
-    public ScheduleItemAdapter(List<Schedule> scheduleList, boolean isEditable) {
-        this.scheduleList = scheduleList;
-        this.isEditable = isEditable;
     }
 
     @NonNull
@@ -103,7 +100,6 @@ public class ScheduleItemAdapter
 
         int isEditVisibility = isEditable ? View.VISIBLE : View.GONE;
         holder.mapRecycleView.setVisibility(currSchedule.getLocationCount() == 0 ? View.GONE : View.VISIBLE);
-
         MapScheduleItemAdapter mapItemAdapter = new MapScheduleItemAdapter(
                 currSchedule.getLocations(),
                 currSchedule.getMarkerColor(),

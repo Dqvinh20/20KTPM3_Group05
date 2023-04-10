@@ -84,7 +84,6 @@ public class EditablePostDetailActivity extends PostDetailActivity {
                 currPostLiveData.removeObservers(EditablePostDetailActivity.this);
                 // Auto reload date on update currPostLiveData value
                 currPostLiveData.observeForever(post1 -> {
-                    Log.d(TAG, "onChanged");
                     loadData();
                 });
             }
@@ -427,7 +426,7 @@ public class EditablePostDetailActivity extends PostDetailActivity {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 if (response.isSuccessful()) {
-                    finish();
+                    finishAffinity();
                 }
             }
 

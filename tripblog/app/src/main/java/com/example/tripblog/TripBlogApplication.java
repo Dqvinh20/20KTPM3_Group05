@@ -27,10 +27,8 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import retrofit2.Retrofit;
 
 public class TripBlogApplication extends Application {
-
     public static final String TAG = TripBlogApplication.class.getSimpleName();
     public static final String CHANNEL_1_ID = "channel1";
-
     private static TripBlogApplication ins;
     private static Retrofit retrofitClient;
     private User loggedUser = null;

@@ -28,10 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
     private List<Location> locations;
     private int markerColor;
-
     private IOnClickListener onClickListener;
     private boolean isEditable = false;
 

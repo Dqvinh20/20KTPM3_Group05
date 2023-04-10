@@ -94,8 +94,12 @@ public class HomeFragment extends Fragment {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png"
     };
-
+    private boolean loading = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
     private RecyclerView listPostnewsFeed;
+    private RecyclerView listPostnewest;
+    private int nextpageNewest, maxPage, currPage;
+//    private int currpageNewest;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -140,21 +144,50 @@ public class HomeFragment extends Fragment {
         FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_home, container, false);
         listPostnewsFeed = frameLayout.findViewById(R.id.listPostnewsFeed);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),RecyclerView.HORIZONTAL,false);
+        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(getContext(),RecyclerView.HORIZONTAL,false);
         listPostnewsFeed.setLayoutManager(linearLayoutManager);
         PostnewsfeedAdapterRecycle postnewfeed = new PostnewsfeedAdapterRecycle();
 
+        listPostnewest = frameLayout.findViewById(R.id.listPostnewest);
+        listPostnewest.setLayoutManager(linearLayoutManager1);
+        PostnewsfeedAdapterRecycle postNewest = new PostnewsfeedAdapterRecycle();
+
         PostService postService = TripBlogApplication.createService(PostService.class);
-        postService.getAllPost(
-               1
-        ).enqueue(new Callback<JsonObject>() {
+        postService.getPopularPost(
+               1,10
+        ).enqueue(new Callback<JsonArray>() {
+            @Override
+            public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                if (response.isSuccessful()) {
+                    JsonArray list = response.body();
+                    List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                    postnewfeed.setDate(listpost);//1
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonArray> call, Throwable t) {
+                t.printStackTrace();
+                Log.e(TAG, t.toString());
+                Snackbar.make(frameLayout, "Fail to connect to server", Snackbar.LENGTH_LONG)
+                        .setAction("Retry", view -> {
+//                            createPost();
+                        })
+                        .show();
+            }
+        });
+
+        postService.getNewestPost(1,4).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful()) {
-                    JsonObject data = response.body();
-                    JsonArray list = data.getAsJsonArray("posts");
-                    List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
-                    postnewfeed.setDate(listpost);
-                }
+                JsonObject data = response.body();
+                nextpageNewest = data.get("nextPage").getAsInt();
+                currPage = data.get("page").getAsInt();
+                maxPage = data.get("maxPage").getAsInt();
+
+                JsonArray list = data.getAsJsonArray("data");
+                List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                postNewest.setDate(listpost);
             }
 
             @Override
@@ -168,9 +201,12 @@ public class HomeFragment extends Fragment {
                         .show();
             }
         });
+
+
         Log.d("Data","hi");
 
         postnewfeed.setContext((MainActivity) getContext());
+        postNewest.setContext((MainActivity) getContext());
 
         postnewfeed.setItemClickListener(new PostnewsfeedAdapterRecycle.ItemClickListener() {
             @Override
@@ -181,11 +217,73 @@ public class HomeFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        postNewest.setItemClickListener(new PostnewsfeedAdapterRecycle.ItemClickListener() {
+            @Override
+            public void onItemClick(Integer postid) {
+                Log.i("postid",postid.toString());
+                Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+                intent.putExtra("postId", postid);
+                startActivity(intent);
+            }
+        });
         listPostnewsFeed.setAdapter(postnewfeed);
+        listPostnewest.setAdapter(postNewest);
+
+
+        listPostnewest.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dx > 0) { //check for scroll down
+                    visibleItemCount = linearLayoutManager1.getChildCount();
+                    totalItemCount = linearLayoutManager1.getItemCount();
+                    pastVisiblesItems = linearLayoutManager1.findFirstVisibleItemPosition();
+
+                    if (loading) {
+                        if (currPage != maxPage && (visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+                            loading = false;
+
+                            Log.v("...", "Last Item Wow !");
+                            // Do pagination.. i.e. fetch new data
+                            postService.getNewestPost(nextpageNewest,4).enqueue(new Callback<JsonObject>() {
+                                @Override
+                                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                                    JsonObject data = response.body();
+                                    nextpageNewest = data.get("nextPage").getAsInt();
+                                    currPage = data.get("page").getAsInt();
+                                    maxPage = data.get("maxPage").getAsInt();
+                                    Log.d(TAG, String.format("%s %s %s", currPage, nextpageNewest, maxPage));
+
+                                    JsonArray list = data.getAsJsonArray("data");
+                                    List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                                    postNewest.appendList(listpost);
+                                    loading = true;
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<JsonObject> call, Throwable t) {
+                                    t.printStackTrace();
+                                    Log.e(TAG, t.toString());
+                                    Snackbar.make(frameLayout, "Fail to connect to server", Snackbar.LENGTH_LONG)
+                                            .setAction("Retry", view -> {
+//                            createPost();
+                                            })
+                                            .show();
+                                }
+                            });
+
+                        }
+                    }
+                }
+            }
+        });
+
 
         return frameLayout;
     }
     private void showToast(String msg){
         Toast.makeText((MainActivity)getContext(), msg, Toast.LENGTH_SHORT).show();
     }
+
 }

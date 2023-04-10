@@ -41,8 +41,12 @@ public interface UserService {
             @Part MultipartBody.Part avatar_img
     );
 
-
     @GET("user/{user_id}")
     Call<User> getUserById(@Path("user_id") Integer userid);
 
+    @POST("user/like/{postId}")
+    Call<JsonObject> likePost(@Path("postId") Integer postId);
+
+    @DELETE("user/unlike/{postId}")
+    Call<JsonObject> unlikePost(@Path("postId") Integer postId);
 }

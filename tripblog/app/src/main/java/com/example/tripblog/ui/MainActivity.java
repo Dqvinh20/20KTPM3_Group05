@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             lastClickTime = SystemClock.elapsedRealtime();
 
             // Open create post dialog
-                Intent intent = new Intent(MainActivity.this, EditablePostDetailActivity.class);
+                Intent intent = new Intent(MainActivity.this, PostDetailActivity.class);
                 intent.putExtra("postId", 61);
                 startActivity(intent);
 //            displayCreatePostDialog();

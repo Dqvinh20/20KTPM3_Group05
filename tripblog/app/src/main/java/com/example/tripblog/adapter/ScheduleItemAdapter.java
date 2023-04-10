@@ -57,14 +57,12 @@ public class ScheduleItemAdapter
     }
 
     private void loadScheduleColors() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            if (this.scheduleList == null) return;
-            this.scheduleList.forEach(schedule -> schedule.setMarkerColor(
-                    ColorUtil.randomHexColor(schedule.getDate().toString()
-                    )));
-            isColorLoaded = true;
-        });
-
+        if (this.scheduleList == null) return;
+        this.scheduleList.forEach(schedule -> schedule.setMarkerColor(
+                ColorUtil.randomHexColor(schedule.getDate().toString()
+                )));
+        isColorLoaded = true;
+        notifyDataSetChanged();
     }
 
     public ScheduleItemAdapter(List<Schedule> scheduleList, boolean isEditable) {

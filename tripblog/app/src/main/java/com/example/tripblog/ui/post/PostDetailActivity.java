@@ -24,6 +24,7 @@ import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.adapter.PostDetailViewPaperAdapter;
 import com.example.tripblog.api.services.PostService;
+import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.ActivityPostDetailBinding;
 import com.example.tripblog.model.Post;
 import com.example.tripblog.utils.NumberUtil;
@@ -31,11 +32,14 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,10 +54,41 @@ public class PostDetailActivity extends AppCompatActivity {
     protected final PostService postService = TripBlogApplication.createService(PostService.class);
     protected boolean isEditable = false;
 
-    private View.OnClickListener onLikeListener = new View.OnClickListener() {
+    private View.OnClickListener onLikeButtonClickListener = new View.OnClickListener() {
+        private boolean isLoading = false;
         @Override
         public void onClick(View view) {
+            if (isLoading) return;
 
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            UserService userService = TripBlogApplication.createService(UserService.class);
+            Post post = currPostLiveData.getValue();
+            int likedCount = post.getLikeCount();
+            boolean isLiked = post.isLikedByYou();
+
+            if (isLiked) {
+                executorService.execute(() -> {
+                    try {
+                        userService.unlikePost(post.getId()).execute();
+                        isLoading = false;
+                    } catch (IOException e) {}
+                });
+            }
+            else {
+                executorService.execute(() -> {
+                    try {
+                        userService.likePost(post.getId()).execute();
+                        isLoading = false;
+                    } catch (IOException e) {}
+                });
+            }
+            executorService.shutdown();
+            post.setLikedByYou(!isLiked);
+            post.setLikeCount(likedCount + (!isLiked ? 1 : -1));
+
+            // Update like button text
+            String formattedLikeCount = NumberUtil.formatShorter(post.getLikeCount());
+            binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
         }
     };
 
@@ -98,8 +133,7 @@ public class PostDetailActivity extends AppCompatActivity {
             }
         });
 
-
-        binding.likeBtn.setOnClickListener(onLikeListener);
+        binding.likeBtn.setOnClickListener(onLikeButtonClickListener);
 
         // Auto reload view
         currPostLiveData.observe(this, new Observer<Post>() {
@@ -123,15 +157,9 @@ public class PostDetailActivity extends AppCompatActivity {
         fetchData();
         reloadEditableView();
     }
-
     public void onFragmentLoaded() {
         contentViewPaperAdapter.setEditable(isEditable);
     }
-
-    protected void toggleEditable() {
-        this.isEditable = !isEditable;
-    }
-
     protected void reloadEditableView() {
         // View pager
         contentViewPaperAdapter = new PostDetailViewPaperAdapter(PostDetailActivity.this);
@@ -153,7 +181,6 @@ public class PostDetailActivity extends AppCompatActivity {
         binding.tripTitle.setFocusable(isEditable);
         binding.bottomAppBar.setVisibility(isEditable ? View.GONE : View.VISIBLE);
     }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -218,7 +245,6 @@ public class PostDetailActivity extends AppCompatActivity {
             });
         }
     }
-
     protected void loadData() {
         Post currPost = currPostLiveData.getValue();
         if (currPost == null) return;

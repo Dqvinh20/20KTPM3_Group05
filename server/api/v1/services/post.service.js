@@ -52,27 +52,26 @@ const getPostById = async (id) => {
         {
           association: "schedules",
           separate: true,
-          include: [
-            {
-              association: "locations",
-              exclude: ["place_id"],
-              through: {},
-            },
-          ],
           order: [["date", "ASC"]],
         },
       ],
     })
   );
+  await Promise.all(
+    post.schedules.map(async (schedule) => {
+      const locations = await schedule.getLocations({
+        attributes: {
+          exclude: ["place_id", "_search"],
+        },
+      });
+      locations.sort((a, b) => {
+        a.SchedulesLocations.position - b.SchedulesLocations.position;
+      });
+      await schedule.setDataValue("locations", locations);
+    })
+  );
 
-  if (post) {
-    post.schedules.forEach((schedule) => {
-      schedule.locations.sort(
-        (a, b) => a.SchedulesLocations.position - b.SchedulesLocations.position
-      );
-    });
-  }
-
+  return post;
   return post;
 };
 

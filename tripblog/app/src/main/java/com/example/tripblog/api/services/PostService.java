@@ -64,4 +64,8 @@ public interface PostService {
     @FormUrlEncoded
     @DELETE("post/delete")
     Call<Boolean> delete(@Field("post_id")Integer postId);
+
+    @FormUrlEncoded
+    @HTTP(method = "PATCH", path = "post/increase-view", hasBody = true)
+    Call<Post> increaseView(@Field("post_id") Integer postId);
 }

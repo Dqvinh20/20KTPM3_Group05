@@ -86,7 +86,7 @@ public class PublicPlanFragment extends Fragment {
                     Gson gson = new Gson();
                     Type postListType = new TypeToken<List<Post>>(){}.getType();
                     List<Post> postList = gson.fromJson(postJsonArray, postListType);
-                    Log.d("Data in", postList.toString());
+                    Log.d("Data in public", postList.toString());
 
 //                    if(postList != null) Log.d("post list", getActivity().toString());
                     if(postList.size() != 0) {

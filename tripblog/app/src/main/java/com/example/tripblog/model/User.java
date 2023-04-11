@@ -10,6 +10,8 @@ public class User implements Serializable {
     private String email;
     @SerializedName("user_name")
     private String userName;
+    @SerializedName("name")
+    private  String name;
     @SerializedName("user_name_non_accent")
     private String userNameNonAccent;
     @SerializedName("followers_count")
@@ -34,6 +36,7 @@ public class User implements Serializable {
                 ", avatar='" + avatar + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", name=" +name+
                 '}';
     }
 
@@ -56,6 +59,7 @@ public class User implements Serializable {
     public String getUserNameNonAccent() {
         return userNameNonAccent;
     }
+    public String getName(){ return name;}
 
     public void setUserNameNonAccent(String userNameNonAccent) {
         this.userNameNonAccent = userNameNonAccent;
@@ -84,6 +88,7 @@ public class User implements Serializable {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+    public void setName(String name) {this.name= name;}
 
     public String getAvatar() {
         return avatar;

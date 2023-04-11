@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
     >
-    <item android:id="@+id/coverImgChooser" android:title="@null" android:icon="@drawable/ic_baseline_photo_size_select_actual_24" app:showAsAction="always"/>
+    <item
+        android:id="@+id/coverImgChooser"
+        android:title="@null"
+        android:icon="@drawable/ic_baseline_photo_size_select_actual_24"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/privacySetting"
+        android:title="@null"
+        android:icon="@drawable/ic_baseline_public_24"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/deletePost"
+        android:title="@null"
+        android:icon="@drawable/ic_baseline_delete_outline_24"
+        app:showAsAction="always"/>
 </menu>

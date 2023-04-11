@@ -7,35 +7,62 @@ const SchedulesLocations = require("../models/schedule_location.model");
 const Converter = require("../utils/converter");
 const LocationService = require("../services/location.service");
 
-const getAllLocations = async (schedule_id) => {
+const commonSchedule = (opts) => {
+  return {
+    attributes: {
+      exclude: ["post_id"],
+    },
+    include: [
+      {
+        association: "locations",
+        attributes: {
+          exclude: ["place_id", "_search"],
+        },
+      },
+    ],
+    ...opts,
+  };
+};
+
+const getAllLocationsInSchedule = async (schedule_id) => {
   const schedule = await Schedule.findByPk(schedule_id);
   return await schedule.getLocations();
 };
 
-const addLocation = async (schedule_id, location_id, newLocation) => {
+const addLocation = async (schedule_id, location_id) => {
   const schedule = await Schedule.findByPk(schedule_id);
   const location = await LocationService.getLocationById(location_id);
   if (!location) {
-    await Promise.all([
-      schedule.createLocation(newLocation),
-      schedule.increment("location_count", { by: 1 }),
-    ]);
-  } else if (!(await schedule.hasLocation(location_id))) {
-    await Promise.all([
-      schedule.addLocation(location_id),
-      schedule.increment("location_count", { by: 1 }),
-    ]);
+    throw new Error("Location does not exist");
+  } else if (await schedule.hasLocation(location_id)) {
+    throw new Error("Location already exists in schedule");
   }
-  return schedule;
+
+  const [[locationResult], scheduleResult] = await Promise.all([
+    schedule.addLocation(location_id),
+    schedule.increment("location_count", { by: 1 }),
+  ]);
+
+  locationResult.position = scheduleResult.location_count;
+  await locationResult.save();
+
+  return await schedule.getLocations({
+    where: { id: location_id },
+  });
 };
 
-const addLocationNote = async (schedule_id, location_id, note) => {
+const editLocationNote = async (schedule_id, location_id, note) => {
   const locationInSchedule = await SchedulesLocations.findOne({
     where: {
       schedule_id: schedule_id,
       location_id: location_id,
     },
   });
+
+  if (!locationInSchedule) {
+    throw new Error("Location does not exist in schedule");
+  }
+
   locationInSchedule.note = note;
   await locationInSchedule.save();
   return locationInSchedule;
@@ -43,9 +70,48 @@ const addLocationNote = async (schedule_id, location_id, note) => {
 
 const removeLocation = async (schedule_id, location_id) => {
   const schedule = await Schedule.findByPk(schedule_id);
+  let currPosition = await schedule.getLocations({
+    where: { id: location_id },
+    through: { attributes: ["position"] },
+  });
+  if (currPosition.length !== 0) {
+    currPosition = currPosition[0].SchedulesLocations.position;
+  }
+
   const result = await schedule.removeLocation(location_id);
   await schedule.decrement("location_count", { by: result });
-  return schedule;
+
+  if (result === 1) {
+    const nextLocations = await schedule.getLocations({
+      through: {
+        where: {
+          position: {
+            [Op.gt]: currPosition,
+          },
+        },
+      },
+    });
+
+    await Promise.all(
+      nextLocations.map(async (location) => {
+        location.SchedulesLocations.position -= 1;
+        await location.SchedulesLocations.save();
+      })
+    );
+  }
+
+  return result;
+};
+
+const getAllSchedulesInPost = async (post_id) => {
+  const result = await Schedule.findAll(
+    commonSchedule({
+      where: {
+        post_id: post_id,
+      },
+    })
+  );
+  return result;
 };
 
 const getScheduleById = async (id) => {
@@ -141,12 +207,14 @@ const removeBetween = async (post_id, start, end) => {
 };
 
 module.exports = {
-  getAllLocations,
-  addLocationNote,
+  getAllLocationsInSchedule,
+  editLocationNote,
   addLocation,
   removeLocation,
+  getAllSchedulesInPost,
   getScheduleById,
   removeAllSchedules,
   changeScheduleRange,
   addBetween,
+  model: Schedule,
 };

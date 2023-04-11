@@ -23,9 +23,10 @@ import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivityLoginBinding;
-import com.example.tripblog.model.AuthResponse;
+import com.example.tripblog.model.response.AuthResponse;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.MainActivity;
+import com.example.tripblog.ui.resetpassword.ResetPassword;
 import com.example.tripblog.ui.signup.SignupActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -56,6 +57,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // DEBUG ONLY
         binding.editEmail.setText("test@gmail.com");
         binding.editPassword.setText("123456");
+
+        binding.loginBtn.performClick();
     }
 
     @Override
@@ -139,11 +142,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         AlertDialog loadingDialog = loading.show();
-
         AuthService authService = TripBlogApplication.createService(AuthService.class);
         Log.d(TAG, "OnLoginButton Press");
         Log.d(TAG, "Waiting response");
-
         authService.login(email, password).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
@@ -175,10 +176,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 Log.d(TAG, "Saved token");
                 String token = body.getData().getAsJsonObject().get("token").getAsString();
-                TripBlogApplication.updateToken(token); // Save token for next req
-
                 SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
                 sharedPreferences.edit().putString("token", token).commit();
+                TripBlogApplication.updateToken(token); // Save token for next req
 
                 loadingDialog.dismiss();
 
@@ -205,6 +205,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void goToForgotPassword() {
         // TODO: Implement go to forgot password activity
+        Intent reset = new Intent(LoginActivity.this, ResetPassword.class);
+        startActivity(reset);
     }
 
     private void goToSignup() {

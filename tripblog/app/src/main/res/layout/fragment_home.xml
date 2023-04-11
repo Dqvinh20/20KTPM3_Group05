@@ -53,10 +53,37 @@
 
                     android:paddingHorizontal="10dp"
                     android:clipToPadding="false"
-                    />
+                    >
+
+                </androidx.recyclerview.widget.RecyclerView>
+                <TextView
+                    android:layout_marginLeft="20sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Latest post"
+                    android:textSize="29sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/listPostnewest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+
+                    android:paddingHorizontal="10dp"
+                    android:clipToPadding="false"
+                    >
+
+                </androidx.recyclerview.widget.RecyclerView>
                 <!--            </LinearLayout>-->
                 <!--        </HorizontalScrollView>-->
             </LinearLayout>
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
 
         </LinearLayout>
     </ScrollView>

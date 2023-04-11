@@ -51,6 +51,7 @@ const likePost = async (req, res) => {
     const post_id = req.params.post_id;
     try {
         const post = await UserService.likePost(user_id, post_id);
+        console.log(post);
         res.json(post);
     } catch (error) {
         res.json(error);
@@ -67,29 +68,28 @@ const unlikePost = async (req, res) => {
     }
 };
 const updateUser = async (req, res) => {
-    const user_id = req.user.id;
-    const { user_name } = req.body;
-    console.log(req.body);
     var avatar_img_url = null;
-
+    const user_id = req.user.id;
     if (req.file) {
         const upload_img = await Promise.resolve(
             cloudinary.uploadStream(req.file.buffer, {
                 folder: "avatar/" + req.user.id,
             })
         );
+
         avatar_img_url = upload_img.url;
     }
 
+    const { ...data } = req.body;
+
+    avatar_img_url ? (data.avatar = avatar_img_url) : null;
+    console.log(data);
+
     try {
-        const update = await UserService.updateUser(
-            user_id,
-            user_name,
-            avatar_img_url
-        );
-        res.json(update);
+        const user = await UserService.updateUser(user_id, data);
+        return res.json(user);
     } catch (error) {
-        res.json(error);
+        return res.json(error);
     }
 };
 

@@ -3,6 +3,9 @@ package com.example.tripblog.ui.component;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,32 +17,36 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
+import com.example.tripblog.model.Post;
 import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.post.ViewPost;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<PostnewsfeedAdapterRecycle.PostNewsFeedHolder>{
-    private String[] avatars; String[] images; String[] name; String[] tilte; String[] brief_des;String[] views; String[] id;
+    private List<Post> listPost;
     private Context context;
     private AdapterView.OnItemClickListener listener;
     private ItemClickListener itemClickListener;
-    public void setDate(String[] id,
-                        String[] name,
-                        String[] tilte,
-                        String[] brief_des,
-                        String[] views,
-                        String[] avatars,
-                        String[] images){
-        this.id= id;
-        this.avatars = avatars;
-        this.name = name;
-        this.tilte = tilte;
-        this.brief_des = brief_des;
-        this.views = views;
-        this.images = images;
-
+    public void setDate(List<Post> listPost){
+        this.listPost = listPost;
         notifyDataSetChanged();
     }
+
+    public void appendList(List<Post> listPost) {
+        if (listPost != null) {
+            int lastPos = this.listPost.size() - 1;
+            this.listPost.addAll(listPost);
+            notifyItemChanged(lastPos);
+        }
+    }
+
     public  void setItemClickListener(ItemClickListener itemClickListener){
         this.itemClickListener = itemClickListener;
     }
@@ -56,19 +63,41 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
 
     @Override
     public void onBindViewHolder(@NonNull PostNewsFeedHolder holder, int position) {
-        if(name.length==0){
+        if(listPost.size()==0){
             return;
         }
 
-        holder.namelb.setText(name[position]);
-        holder.tiltelb.setText(tilte[position]);
-        holder.briefDeslb.setText(brief_des[position]);
-        holder.viewlb.setText(views[position]);
-        holder.icon.setImageResource(R.drawable.app_logo_transparent);
-        holder.imageView.setImageResource(R.drawable.japan);
-        String urldisplay = avatars[position];
+        holder.namelb.setText(listPost.get(position).getAuthor().getUserName());
+        holder.tiltelb.setText(listPost.get(position).getTitle());
+        holder.briefDeslb.setText(listPost.get(position).getBriefDescription());
+        holder.viewlb.setText(listPost.get(position).getViewCount().toString()+" views");
+
+        Glide.with(holder.itemView)
+                .load(listPost.get(position).getCoverImg())
+                .placeholder(R.drawable.japan)
+                .error(R.drawable.japan)
+                .into(holder.imageView);
+        Glide.with(holder.itemView)
+                .load(listPost.get(position).getAuthor().getAvatar())
+                .placeholder(R.drawable.app_logo_transparent)
+                .error(R.drawable.app_logo_transparent)
+                .into(holder.icon);
+//        URL url = null;
+//        try {
+//            Log.i("url",listPost.get(position).getCoverImg());
+//            url = new URL(listPost.get(position).getCoverImg());
+//            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+//            holder.imageView.setImageBitmap(bmp);
+//        } catch (MalformedURLException e) {
+//            holder.imageView.setImageResource(R.drawable.japan);
+//            throw new RuntimeException(e);
+//        } catch (IOException e) {
+//            holder.imageView.setImageResource(R.drawable.japan);
+//            throw new RuntimeException(e);
+//        }
+
         holder.itemView.setOnClickListener(view -> {
-            itemClickListener.onItemClick(id[position]);
+            itemClickListener.onItemClick(listPost.get(position).getId());
         });
         holder.itemView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -98,11 +127,11 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
 
     @Override
     public int getItemCount() {
-        if(name != null) return name.length;
+        if(listPost!=null && !listPost.isEmpty()) return listPost.size();
         return 0;
     }
     public interface ItemClickListener{
-        void onItemClick(String postid);
+        void onItemClick(Integer postid);
     }
     public class PostNewsFeedHolder extends RecyclerView.ViewHolder{
         private TextView namelb ;

@@ -99,7 +99,6 @@ public class PrivatePlanFragment extends Fragment {
         postService.getPostByUserId(TripBlogApplication.getInstance().getLoggedUser().getId(), false).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
-
                 if(response.isSuccessful()) {
 
                     JsonArray postJsonArray = response.body().getAsJsonArray();

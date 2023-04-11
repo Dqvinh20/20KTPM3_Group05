@@ -1,6 +1,6 @@
 package com.example.tripblog.api.services;
 
-import com.example.tripblog.model.AuthResponse;
+import com.example.tripblog.model.response.AuthResponse;
 import com.example.tripblog.model.User;
 
 import retrofit2.Call;
@@ -20,4 +20,9 @@ public interface AuthService {
 
     @GET("auth/logged-user")
     Call<User> retrieveLoggedUserInfo();
+
+    @FormUrlEncoded
+    @POST("auth/reset-password")
+    Call<AuthResponse> resetPassword(@Field("email") String email);
 }
+

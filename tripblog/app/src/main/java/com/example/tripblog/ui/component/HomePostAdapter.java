@@ -2,10 +2,6 @@ package com.example.tripblog.ui.component;
 
 
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,21 +16,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
 import com.example.tripblog.model.Post;
-import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.post.ViewPost;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
-public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<PostnewsfeedAdapterRecycle.PostNewsFeedHolder>{
+public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.HomePostViewHolder>{
+    private int layoutOrientation;
     private List<Post> listPost;
-    private Context context;
-    private AdapterView.OnItemClickListener listener;
     private ItemClickListener itemClickListener;
-    public void setDate(List<Post> listPost){
+
+    public HomePostAdapter(@NonNull int layoutOrientation) {
+        this.layoutOrientation = layoutOrientation;
+    }
+
+    public void setListPost(List<Post> listPost){
         this.listPost = listPost;
         notifyDataSetChanged();
     }
@@ -46,27 +40,27 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
             notifyItemChanged(lastPos);
         }
     }
-
     public  void setItemClickListener(ItemClickListener itemClickListener){
         this.itemClickListener = itemClickListener;
     }
-    public  void setContext(Context context){
-        this.context =  context;
-    }
     @NonNull
     @Override
-    public PostNewsFeedHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.component_post_newsfeed,parent,false);
-
-        return new PostNewsFeedHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull PostNewsFeedHolder holder, int position) {
-        if(listPost.size()==0){
-            return;
+    public HomePostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (layoutOrientation == RecyclerView.VERTICAL) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.component_post_vertical, parent,false);
+            return new HomePostViewHolder(view);
         }
 
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.component_post_newsfeed, parent,false);
+        return new HomePostViewHolder(view);
+    }
+
+
+    @Override
+    public void onBindViewHolder(@NonNull HomePostViewHolder holder, int position) {
+        if(listPost.size() == 0){
+            return;
+        }
         holder.namelb.setText(listPost.get(position).getAuthor().getUserName());
         holder.tiltelb.setText(listPost.get(position).getTitle());
         holder.briefDeslb.setText(listPost.get(position).getBriefDescription());
@@ -74,13 +68,14 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
 
         Glide.with(holder.itemView)
                 .load(listPost.get(position).getCoverImg())
-                .placeholder(R.drawable.japan)
-                .error(R.drawable.japan)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.ic_baseline_broken_image_24)
                 .into(holder.imageView);
+
         Glide.with(holder.itemView)
                 .load(listPost.get(position).getAuthor().getAvatar())
-                .placeholder(R.drawable.app_logo_transparent)
-                .error(R.drawable.app_logo_transparent)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.ic_baseline_broken_image_24)
                 .into(holder.icon);
 //        URL url = null;
 //        try {
@@ -99,6 +94,7 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
         holder.itemView.setOnClickListener(view -> {
             itemClickListener.onItemClick(listPost.get(position).getId());
         });
+
         holder.itemView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -121,27 +117,25 @@ public class PostnewsfeedAdapterRecycle extends RecyclerView.Adapter<Postnewsfee
                 return false;
             }
         });
-
     }
-
-
     @Override
     public int getItemCount() {
-        if(listPost!=null && !listPost.isEmpty()) return listPost.size();
+        if(listPost != null) return listPost.size();
         return 0;
     }
+
     public interface ItemClickListener{
         void onItemClick(Integer postid);
     }
-    public class PostNewsFeedHolder extends RecyclerView.ViewHolder{
+
+    public class HomePostViewHolder extends RecyclerView.ViewHolder{
         private TextView namelb ;
         private TextView tiltelb ;
         private TextView briefDeslb ;
         private TextView viewlb ;
         private ImageView icon ;
         private ImageView imageView ;
-        public PostNewsFeedHolder(@NonNull View itemView) {
-
+        public HomePostViewHolder(@NonNull View itemView) {
             super(itemView);
             namelb = (TextView) itemView.findViewById(R.id.nameTextView);
             tiltelb = (TextView) itemView.findViewById(R.id.TitleTextView);

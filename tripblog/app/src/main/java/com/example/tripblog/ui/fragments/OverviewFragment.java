@@ -250,7 +250,7 @@ public class OverviewFragment extends Fragment {
 
     private void loadDataToView() {
         if (isResumed()) {
-            if (!isEditable && briefDescription.isEmpty()) {
+            if (!isEditable && (briefDescription == null || briefDescription.isEmpty())) {
                 binding.briefDescription.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                 binding.briefDescription.setText("No description about this trip.");
             }

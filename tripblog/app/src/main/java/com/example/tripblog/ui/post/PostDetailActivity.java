@@ -72,23 +72,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Load data from internet
-        Integer postId = getIntent().getExtras().getInt("postId");
-        // Increase view
-        if (!isEditable) {
-            // View only
-            postService.increaseView(postId).enqueue(new Callback<Post>() {
-                @Override
-                public void onResponse(Call<Post> call, Response<Post> response) {
-                    if (response.isSuccessful()) {
-                        currPostLiveData.postValue(response.body());
-                    }
-                }
-                @Override
-                public void onFailure(Call<Post> call, Throwable t) {}
-            });
-        }
-
         binding = ActivityPostDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
@@ -214,6 +197,22 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         else {
             // Load data from internet
             Integer postId = bundle.getInt("postId");
+
+            // Increase view
+            if (!isEditable) {
+                // View only
+                postService.increaseView(postId).enqueue(new Callback<Post>() {
+                    @Override
+                    public void onResponse(Call<Post> call, Response<Post> response) {
+                        if (response.isSuccessful()) {
+                            currPostLiveData.postValue(response.body());
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Post> call, Throwable t) {}
+                });
+            }
+
             postService.getPostById(postId).enqueue(new Callback<Post>() {
                 @Override
                 public void onResponse(Call<Post> call, Response<Post> response) {

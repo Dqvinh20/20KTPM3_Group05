@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/Theme.Tripblog.NoActionBar"
-    android:padding="@dimen/auth_layout_padding"
+    android:padding="@dimen/margin_padding_size_medium"
     android:focusableInTouchMode="true"
     android:background="@android:color/white"
     tools:context=".ui.fragments.CreateFragment">
@@ -18,7 +18,7 @@
             android:id="@+id/titleLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="@dimen/margin_padding_size_xxlarge"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             >
@@ -32,13 +32,14 @@
             app:strokeColor="@null"
             app:icon="@drawable/ic_baseline_close_24"
             app:iconTint="@color/gray_ic_155"
-            app:iconSize="26dp"
+            app:iconSize="@dimen/icon_small"
             app:elevation="0dp"
             app:rippleColor="@color/gray"
             app:backgroundTint="@color/gray_bg"
             />
         <TextView
-            style="@style/MainTitleText"
+            style="?attr/textAppearanceHeadlineMedium"
+            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -54,17 +55,19 @@
             android:layout_below="@id/titleLayout"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-            style="@style/FormInputBox"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:background="@drawable/form_border"
+
             >
             <TextView
                 android:id="@+id/subhead1"
-                style="@style/SubHeading"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginVertical="4dp"
+                android:layout_marginTop="@dimen/margin_padding_size_small"
                 android:text="@string/edit_trip_title"
                 />
             <EditText
@@ -74,7 +77,7 @@
                 android:layout_below="@+id/subhead1"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginVertical="4dp"
+                android:layout_marginVertical="@dimen/margin_padding_size_small"
                 android:background="@android:color/transparent"
                 android:hint="@string/edit_trip_title_hint"
                 android:maxLines="8"
@@ -86,11 +89,11 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:layout_marginTop="@dimen/margin_padding_size_medium"
             android:id="@+id/tripDatesLayout"
             android:layout_below="@+id/destinationLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="10dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:background="@drawable/form_border"
@@ -98,16 +101,17 @@
             >
 
             <TextView
+                android:layout_marginTop="@dimen/margin_padding_size_small"
                 android:id="@+id/subhead2"
-                style="@style/SubHeading"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
                 android:clickable="false"
                 android:focusable="false"
                 android:text="@string/trip_dates"/>
 
             <LinearLayout
+                android:layout_marginVertical="@dimen/margin_padding_size_small"
                 android:id="@+id/tripDates"
                 android:layout_below="@id/subhead2"
                 android:layout_width="match_parent"
@@ -149,28 +153,33 @@
         </RelativeLayout>
 
         <com.google.android.material.button.MaterialButton
+            android:layout_marginTop="@dimen/margin_padding_size_small"
             android:id="@+id/privacySetting"
             style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_below="@+id/tripDatesLayout"
             android:layout_alignParentEnd="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/default_text_size"
             android:textColor="@color/gray_ic_155"
+            app:rippleColor="@color/gray_200"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
             android:drawableLeft="@drawable/ic_baseline_public_24"
             android:drawableRight="@drawable/ic_baseline_arrow_drop_down_24"
             android:text="@string/public_txt"
-            app:rippleColor="@color/gray_200"
+            app:iconPadding="@dimen/margin_padding_size_small"
             />
 
         <Button
+            android:layout_marginTop="@dimen/margin_padding_size_small"
             android:id="@+id/createPost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/privacySetting"
             android:layout_centerHorizontal="true"
             android:text="@string/create_post_title"
-            style="@style/RoundButton"
+            android:paddingVertical="@dimen/margin_padding_size_medium"
+            android:paddingHorizontal="@dimen/margin_padding_size_xxlarge"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
             />
 
     </RelativeLayout>

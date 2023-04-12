@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        replaceFragment(new HomeFragment());
+        HomeFragment homeFragment = new HomeFragment();
+        ProfileFragment profileFragment = new ProfileFragment();
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if (currFragment != null && item.getItemId() == currFragment) {
@@ -52,15 +53,15 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             }
 
             if (item.getItemId() == R.id.home) {
-                replaceFragment(new HomeFragment());
+                replaceFragment(homeFragment);
             } else if (item.getItemId() == R.id.profile) {
-                replaceFragment(new ProfileFragment());
+                replaceFragment(profileFragment);
             }
 
             currFragment = item.getItemId();
             return true;
         });
-
+        binding.bottomNavigationView.setSelectedItemId(R.id.home);
         binding.create.setOnClickListener((v) -> {
             // Prevent double click
             if (SystemClock.elapsedRealtime() - lastClickTime < 1000) {
@@ -94,8 +95,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         return false;
     }
 
-
-
     private void displayCreatePostDialog() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -127,23 +126,24 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void logout() {
-        // Use to logout when debug
-        SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
-        sharedPreferences.edit().putString("token", "").commit();
-    }
-
     @Override
     public void onBackPressed() {
-//        moveTaskToBack(true);
-        finish();
+        moveTaskToBack(true);
+//        finish();
     }
     private void replaceFragment(Fragment fragment) {
+        String backStateName = fragment.getClass().getSimpleName();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout, fragment);
-//        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        boolean fragmentPopped = fragmentManager.popBackStackImmediate(backStateName, 0);
+
+        if (!fragmentPopped){ //fragment not in back stack, create it.
+            FragmentTransaction fragmentTransaction = fragmentManager
+                    .beginTransaction();
+            fragmentTransaction.replace(R.id.frameLayout, fragment);
+            fragmentTransaction.addToBackStack(backStateName);
+            fragmentTransaction.commit();
+        }
+
     }
 
     @Override

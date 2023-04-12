@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/auth_layout_padding"
+    android:paddingHorizontal="@dimen/margin_padding_size_large"
+    android:paddingVertical="@dimen/margin_padding_size_xxlarge"
     tools:context=".ui.login.LoginActivity"
     >
 
@@ -23,31 +24,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/logo"
-        android:layout_marginBottom="@dimen/auth_title_margin_bottom"
-        style="@style/MainTitleText"
+        style="?attr/textAppearanceHeadlineMedium"
         android:textAllCaps="true"
+        android:textStyle="bold"
         android:text="@string/login_title"
+        android:layout_marginVertical="@dimen/margin_padding_size_small"
         />
 
     <LinearLayout
         android:id="@+id/formLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_below="@+id/title"
+        android:orientation="vertical"
         >
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editEmailLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/auth_item_margin_bottom"
             app:errorEnabled="true"
             app:hintEnabled="true"
             app:hintAnimationEnabled="true"
             app:startIconDrawable="@drawable/ic_baseline_email_24"
             app:endIconMode="clear_text"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -65,13 +67,13 @@
             android:id="@+id/editPasswordLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/auth_item_margin_bottom"
             app:errorEnabled="true"
             app:hintEnabled="true"
             app:hintAnimationEnabled="true"
             app:passwordToggleEnabled="true"
             app:startIconDrawable="@drawable/ic_baseline_lock_24"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
             >
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editPassword"
@@ -89,11 +91,14 @@
         android:id="@+id/loginBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/login_btn_padding_vertical"
         android:layout_below="@id/formLayout"
-        android:text="@string/login_title" />
+        android:text="@string/login_title"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:paddingVertical="@dimen/margin_padding_size_medium"
+        />
 
     <Button
+        android:stateListAnimator="@animator/button_scale_animator"
         android:id="@+id/forgotPasswordBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -101,10 +106,10 @@
         android:layout_alignParentEnd="true"
         android:textColor="@color/hyper_link"
         android:text="@string/forgot_password"
-        android:textSize="@dimen/default_text_size"
         app:rippleColor="@android:color/transparent"
         style="@style/Widget.Material3.Button.TextButton"
         />
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -121,6 +126,7 @@
             android:text="@string/no_account" />
 
         <Button
+            android:stateListAnimator="@animator/button_scale_animator"
             android:id="@+id/signupBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -130,7 +136,6 @@
             app:rippleColor="@android:color/transparent"
             style="@style/Widget.Material3.Button.TextButton"
             android:text="@string/signup_title"
-            android:textSize="@dimen/default_text_size"
             />
     </RelativeLayout>
 </RelativeLayout>

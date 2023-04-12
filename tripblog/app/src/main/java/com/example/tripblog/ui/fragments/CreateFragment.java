@@ -3,7 +3,6 @@ package com.example.tripblog.ui.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.example.tripblog.R;
@@ -26,16 +24,18 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.PostService;
 import com.example.tripblog.databinding.FragmentCreateBinding;
 import com.example.tripblog.model.Post;
+import com.example.tripblog.ui.post.EditablePostDetailActivity;
 import com.example.tripblog.ui.post.PostDetailActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,15 +73,6 @@ public class CreateFragment extends DialogFragment {
         if (getArguments() != null) {
         }
         setStyle(STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_NoActionBar);
-
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-//        outState.putString("place_to_go", placeToGo);
-//        outState.putSerializable("start_date", startDate);
-//        outState.putSerializable("end_date", endDate);
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -93,7 +84,6 @@ public class CreateFragment extends DialogFragment {
         binding.tripDatesLayout.setOnClickListener(view -> onTripDatesPicker());
         binding.privacySetting.setOnClickListener(view -> openPrivacySettingBottomSheet());
         binding.createPost.setOnClickListener(view -> {
-            // TODO: Validate post input
             hideKeyboard(view);
             if (validateInput()) {
                 createPost();
@@ -101,7 +91,6 @@ public class CreateFragment extends DialogFragment {
         });
 
         if (savedInstanceState != null) {
-            Log.e("Create", savedInstanceState.toString());
             title = savedInstanceState.getString("title");
             startDate = (Date) savedInstanceState.getSerializable("start_date");
             endDate = (Date) savedInstanceState.getSerializable("end_date");
@@ -132,8 +121,30 @@ public class CreateFragment extends DialogFragment {
 
     private void onTripDatesPicker() {
         if (tripDates == null) {
-            tripDates = MaterialDatePicker.Builder.dateRangePicker()
-                    .setTitleText("Trip dates")
+            CalendarConstraints.Builder constraintBuilder = new CalendarConstraints.Builder();
+            constraintBuilder.setFirstDayOfWeek(Calendar.MONDAY);
+            Long today = MaterialDatePicker.todayInUtcMilliseconds();
+
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            calendar.clear();
+            calendar.setTimeInMillis(today);
+
+            // Set calendar constraint to date range picker
+            // Can only select +-1 year from now
+            int currYear = calendar.get(Calendar.YEAR);
+            calendar.set(Calendar.YEAR, currYear - 1);
+            constraintBuilder.setStart(calendar.getTimeInMillis());
+
+            calendar.set(Calendar.YEAR, currYear + 5);
+            constraintBuilder.setEnd(calendar.getTimeInMillis());
+
+            constraintBuilder.setOpenAt(today);
+            tripDates = MaterialDatePicker.Builder
+                    .dateRangePicker()
+                    .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
+                    .setTheme(com.google.android.material.R.style.ThemeOverlay_Material3_MaterialCalendar)
+                    .setCalendarConstraints(constraintBuilder.build())
+                    .setTitleText("Chose your trip dates")
                     .build();
 
             tripDates.addOnPositiveButtonClickListener((selection -> {
@@ -178,9 +189,9 @@ public class CreateFragment extends DialogFragment {
         });
     }
 
-    private void openPostDetail(Post post) {
-        Intent postDetail = new Intent(getActivity(), PostDetailActivity.class);
-        postDetail.putExtra("post", post);
+    private void openEditPostDetail(Integer postId) {
+        Intent postDetail = new Intent(getActivity(), EditablePostDetailActivity.class);
+        postDetail.putExtra("postId", postId);
         startActivity(postDetail);
         dismiss();
     }
@@ -201,12 +212,10 @@ public class CreateFragment extends DialogFragment {
                     .show();
             return false;
         }
-
         return true;
     }
 
     private void createPost() {
-        // TODO: Implement create new post, call post service
         PostService postService = TripBlogApplication.createService(PostService.class);
         postService.createNewPost(
                 binding.editTripTitle.getText().toString(),
@@ -218,15 +227,13 @@ public class CreateFragment extends DialogFragment {
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "Create post: " + response.body().toString());
-                    openPostDetail(response.body());
+                    Post newPost = response.body();
+                    Log.d(TAG, "Created post: " + newPost.toString());
+                    openEditPostDetail(newPost.getId());
                 }
             }
-
             @Override
             public void onFailure(Call<Post> call, Throwable t) {
-                t.printStackTrace();
-                Log.e(TAG, t.toString());
                 Snackbar
                         .make(binding.getRoot(), "Fail to connect to server", Snackbar.LENGTH_LONG)
                         .setAction("Retry", view -> {
@@ -235,7 +242,5 @@ public class CreateFragment extends DialogFragment {
                         .show();
             }
         });
-
     }
-
 }

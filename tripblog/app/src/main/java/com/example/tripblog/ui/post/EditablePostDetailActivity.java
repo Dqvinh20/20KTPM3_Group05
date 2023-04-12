@@ -138,7 +138,7 @@ public class EditablePostDetailActivity extends PostDetailActivity {
         calendar.set(Calendar.YEAR, currYear - 1);
         constraintBuilder.setStart(calendar.getTimeInMillis());
 
-        calendar.set(Calendar.YEAR, currYear + 1);
+        calendar.set(Calendar.YEAR, currYear + 5);
         constraintBuilder.setEnd(calendar.getTimeInMillis());
 
         // Get start and end time from post

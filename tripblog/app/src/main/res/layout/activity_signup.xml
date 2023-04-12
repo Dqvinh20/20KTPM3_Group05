@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/auth_layout_padding"
+    android:paddingHorizontal="@dimen/margin_padding_size_large"
+    android:paddingVertical="@dimen/margin_padding_size_xxlarge"
     tools:context=".ui.signup.SignupActivity"
     >
     <ImageView
@@ -24,9 +25,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/logo"
-        android:layout_marginBottom="@dimen/auth_title_margin_bottom"
-        style="@style/MainTitleText"
+        android:layout_marginVertical="@dimen/margin_padding_size_small"
+        style="?attr/textAppearanceHeadlineMedium"
         android:textAllCaps="true"
+        android:textStyle="bold"
         android:text="@string/signup_title"
         />
     <LinearLayout
@@ -41,7 +43,7 @@
             android:id="@+id/editEmailLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/auth_item_margin_bottom"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
             app:errorEnabled="true"
             app:hintEnabled="true"
             app:hintAnimationEnabled="true"
@@ -65,7 +67,7 @@
             android:id="@+id/editPasswordLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/auth_item_margin_bottom"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
             app:errorEnabled="true"
             app:hintEnabled="true"
             app:hintAnimationEnabled="true"
@@ -87,7 +89,7 @@
             android:id="@+id/editConfirmPasswordLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/auth_item_margin_bottom"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
             app:errorEnabled="true"
             app:hintEnabled="true"
             app:hintAnimationEnabled="true"
@@ -104,13 +106,14 @@
                 android:hint="@string/confirm_password_hint"
                 />
         </com.google.android.material.textfield.TextInputLayout>
-
     </LinearLayout>
     <Button
         android:id="@+id/signupBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/login_btn_padding_vertical"
         android:layout_below="@id/formLayout"
-        android:text="@string/signup_title" />
+        android:text="@string/signup_title"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:paddingVertical="@dimen/margin_padding_size_medium"
+        />
 </RelativeLayout>

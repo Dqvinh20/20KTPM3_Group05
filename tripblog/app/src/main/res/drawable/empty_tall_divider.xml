@@ -2,6 +2,6 @@
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <size
-        android:height="8dp"
+        android:height="@dimen/margin_padding_size_small"
         android:width="0dp"/>
 </shape>

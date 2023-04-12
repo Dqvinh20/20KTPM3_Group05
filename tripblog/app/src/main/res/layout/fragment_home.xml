@@ -1,93 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.fragments.HomeFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".ui.fragments.HomeFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <ScrollView
+    android:layout_height="wrap_content"
+    >
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <FrameLayout
+            android:id="@+id/infornewsfeed"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <FrameLayout
-                android:id="@+id/infornewsfeed"
+            android:layout_height="wrap_content"
+            />
+        <LinearLayout
+            android:layout_below="@id/infornewsfeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/margin_padding_size_medium"
+            >
+            <TextView
+                android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-            <LinearLayout
-                android:layout_marginTop="20dp"
+                android:text="Featured guides from users"
+                android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/margin_padding_size_medium"
+                android:layout_marginBottom="@dimen/margin_padding_size_small"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listPostnewsFeed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/component_post_newsfeed"
+                >
+
+            </androidx.recyclerview.widget.RecyclerView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Latest post"
+                android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/margin_padding_size_medium"
+                android:layout_marginBottom="@dimen/margin_padding_size_small"
+                />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listPostnewest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
                 android:orientation="vertical"
-                android:layout_weight="1">
-                <TextView
-                    android:layout_marginLeft="20sp"
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Featured guides from users"
-                    android:textSize="29sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"/>
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/component_post_vertical"
+                android:layout_marginEnd="@dimen/margin_padding_size_medium"
+                android:nestedScrollingEnabled="false"
+                >
 
-                <!--        <HorizontalScrollView-->
-                <!--            android:layout_width="match_parent"-->
-                <!--            android:layout_height="wrap_content">-->
-
-                <!--            <LinearLayout-->
-                <!--                android:layout_width="match_parent"-->
-                <!--                android:layout_height="wrap_content"-->
-                <!--                android:orientation="horizontal">-->
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/listPostnewsFeed"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="1"
-
-                    android:paddingHorizontal="10dp"
-                    android:clipToPadding="false"
-                    >
-
-                </androidx.recyclerview.widget.RecyclerView>
-                <TextView
-                    android:layout_marginLeft="20sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Latest post"
-                    android:textSize="29sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/listPostnewest"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="1"
-
-                    android:paddingHorizontal="10dp"
-                    android:clipToPadding="false"
-                    >
-
-                </androidx.recyclerview.widget.RecyclerView>
-                <!--            </LinearLayout>-->
-                <!--        </HorizontalScrollView>-->
-            </LinearLayout>
-
-            <View
-                android:id="@+id/view"
-                android:layout_width="match_parent"
-                android:layout_height="100dp" />
-
+            </androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
-    </ScrollView>
-
-
-
-</FrameLayout>
+    </RelativeLayout>
+</ScrollView>

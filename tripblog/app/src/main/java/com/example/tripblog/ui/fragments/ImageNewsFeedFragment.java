@@ -26,6 +26,7 @@ public class ImageNewsFeedFragment extends Fragment {
         fragment.setArguments(bundle);
         return fragment;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);

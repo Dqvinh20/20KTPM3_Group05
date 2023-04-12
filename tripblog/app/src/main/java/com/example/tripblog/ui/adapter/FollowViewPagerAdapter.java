@@ -12,8 +12,10 @@ import com.example.tripblog.ui.fragments.FollowingFragment;
 
 public class FollowViewPagerAdapter extends FragmentStateAdapter {
 
-    public FollowViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+    private int currUserId;
+    public FollowViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, int currUserId) {
         super(fragmentActivity);
+        this.currUserId = currUserId;
     }
 
     @NonNull
@@ -21,11 +23,11 @@ public class FollowViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch(position) {
             case 0:
-                return new FollowerFragment();
+                return FollowerFragment.newInstance(currUserId);
             case 1:
-                return new FollowingFragment();
+                return FollowingFragment.newInstance(currUserId);
             default:
-                return new FollowerFragment();
+                return FollowerFragment.newInstance(currUserId);
         }
     }
 

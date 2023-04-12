@@ -20,6 +20,7 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.api.services.PostService;
 import com.example.tripblog.model.Post;
+import com.example.tripblog.model.User;
 import com.example.tripblog.ui.adapter.PlanListAdapter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -33,32 +34,30 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PublicPlanFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class PublicPlanFragment extends Fragment {
 
 
-
+    private static final String ARG_PARAM1 = "param1";
+    private int currUserId;
+    private boolean isEditable = true;
+    private User loggedUser = TripBlogApplication.getInstance().getLoggedUser();
 
     public PublicPlanFragment() {
         // Required empty public constructor
     }
 
-    public static PublicPlanFragment newInstance() {
+    public static PublicPlanFragment newInstance(int param1) {
         PublicPlanFragment fragment = new PublicPlanFragment();
-
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, param1);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -73,10 +72,13 @@ public class PublicPlanFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (getArguments() != null) {
+            currUserId = getArguments().getInt(ARG_PARAM1);
+        }
         ListView planList = view.findViewById(R.id.planList);
 
         PostService postService = TripBlogApplication.createService(PostService.class);
-        postService.getPostByUserId(TripBlogApplication.getInstance().getLoggedUser().getId(), true).enqueue(new Callback<JsonArray>() {
+        postService.getPostByUserId(currUserId, true).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
 
@@ -90,7 +92,11 @@ public class PublicPlanFragment extends Fragment {
 
 //                    if(postList != null) Log.d("post list", getActivity().toString());
                     if(postList.size() != 0) {
-                        adapter = new PlanListAdapter(getActivity(), R.layout.plan_item, postList);
+                        if(currUserId == loggedUser.getId())
+                            isEditable = true;
+                        else
+                            isEditable = false;
+                        adapter = new PlanListAdapter(getActivity(), R.layout.plan_item, postList, isEditable);
                         planList.setAdapter(adapter);
                     }
                     else{

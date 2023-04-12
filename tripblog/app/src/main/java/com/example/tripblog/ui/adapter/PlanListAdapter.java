@@ -40,10 +40,12 @@ import retrofit2.Response;
 public class PlanListAdapter extends ArrayAdapter<String> {
     Context context;
     List<Post> list;
-    public PlanListAdapter(@NonNull Context context, int layoutToBeInflated, List<Post> list) {
+    private boolean isEditable;
+    public PlanListAdapter(@NonNull Context context, int layoutToBeInflated, List<Post> list, boolean isEditable) {
         super(context, layoutToBeInflated, new String[list.size()]);
         this.context = context;
         this.list = list;
+        this.isEditable = isEditable;
     }
 
     @NonNull
@@ -55,6 +57,7 @@ public class PlanListAdapter extends ArrayAdapter<String> {
         ImageView img = (ImageView) row.findViewById(R.id.imgView);
         TextView likeCount = (TextView) row.findViewById(R.id.likeCountTxt);
         TextView viewCount = (TextView) row.findViewById(R.id.viewCountTxt);
+        ImageView moreBtn = row.findViewById(R.id.more);
 
         nameTxt.setText(list.get(position).getTitle() );
         likeCount.setText(list.get(position).getLikeCount().toString());
@@ -64,8 +67,12 @@ public class PlanListAdapter extends ArrayAdapter<String> {
                 .placeholder(R.drawable.da_lat)
                 .error(R.drawable.da_lat)
                 .into(img);
-        ImageView more = row.findViewById(R.id.more);
-        more.setOnClickListener(new View.OnClickListener() {
+        if(isEditable != true)
+            moreBtn.setVisibility(View.GONE);
+        else
+            moreBtn.setVisibility(View.VISIBLE);
+
+        moreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 View v = inflater.inflate(R.layout.setting_post_layout, null);

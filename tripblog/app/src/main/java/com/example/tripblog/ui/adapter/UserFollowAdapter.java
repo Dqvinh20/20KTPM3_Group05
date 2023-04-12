@@ -21,6 +21,7 @@ import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.model.User;
+import com.example.tripblog.ui.component.PostnewsfeedAdapterRecycle;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -37,10 +38,12 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
 
     private List<User> userList;
     private boolean isFollowerFragment;
+    private ItemClickListener listener;
 
-    public UserFollowAdapter(List<User> userList, boolean isFollowerFragment) {
+    public UserFollowAdapter(List<User> userList, boolean isFollowerFragment, ItemClickListener listener) {
         this.userList = userList;
         this.isFollowerFragment = isFollowerFragment;
+        this.listener = listener;
     }
 
     @NonNull
@@ -52,7 +55,6 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
     private List<User> followingList = null;
     @Override
     public void onBindViewHolder(@NonNull UserFollowAdapter.UserFollowViewHolder holder, int position) {
-        Log.d("Holder", "Bind");
         User currUser = userList.get(position);
         Log.d("Position", Integer.toString(position));
         Glide.with(holder.itemView)
@@ -62,6 +64,14 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
                 .into(holder.avatar);
         holder.name.setText(currUser.getUserName());
         Log.d("service", "call");
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onItemClick(currUser.getId());
+            }
+        });
+
         userService.getUserFollowing(TripBlogApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
@@ -90,12 +100,7 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
 
 
                     }
-//                    if(followingList.contains(currUser)) {
-//
-//                    }
-//                    else{
-//
-//                    }
+
                 }
             }
 
@@ -175,7 +180,9 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
         }
         return 0;
     }
-
+    public interface ItemClickListener {
+        void onItemClick(int userId);
+    }
     public class UserFollowViewHolder extends RecyclerView.ViewHolder {
         private ImageView avatar;
         private TextView name;

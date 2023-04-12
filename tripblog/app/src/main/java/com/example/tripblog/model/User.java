@@ -22,7 +22,25 @@ public class User implements Serializable {
     private Date createdAt;
     private Date updatedAt;
 
+    public User(User user) {
+        this(user.getUserName(), user.getId(), user.getName(), user.getAvatar(), user.getUserNameNonAccent(), user.getFollowersCount(), user.getFollowingsCount(), user.getEmail(), user.getCreatedAt(), user.getUpdatedAt());
+    }
 
+    public User(String userName, Integer id, String name, String avatar, String userNameNonAccent, Integer followersCount, Integer followingsCount, String email, Date createdAt, Date updatedAt) {
+        this.userName = userName;
+        this.id = id;
+        this.name = name;
+        this.avatar = avatar;
+        this.userNameNonAccent = userNameNonAccent;
+        this.followersCount = followersCount;
+        this.followingsCount = followingsCount;
+        this.email = email;
+        if(createdAt != null && updatedAt != null) {
+            this.createdAt = new Date(createdAt.getTime());
+            this.updatedAt = new Date(updatedAt.getTime());
+        }
+
+    }
 
     @Override
     public String toString() {

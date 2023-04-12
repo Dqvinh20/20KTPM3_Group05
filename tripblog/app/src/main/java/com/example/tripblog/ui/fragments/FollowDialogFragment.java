@@ -23,32 +23,35 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 public class FollowDialogFragment extends DialogFragment {
     DialogFollowBinding binding;
+    private static final String ARG_PARAM1 = "param1";
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private FollowViewPagerAdapter followViewPagerAdapter;
     private User loggedUser = TripBlogApplication.getInstance().getLoggedUser();
     private int tabPosition;
+    private int currUserId;
+    private String currUserName;
 
     public FollowDialogFragment() {
 
     }
-    public FollowDialogFragment(int tabPosition) {
+    public FollowDialogFragment(String currUserName, int tabPosition) {
         // Required empty public constructor
         this.tabPosition = tabPosition;
+        this.currUserName = currUserName;
     }
 
-    public static FollowDialogFragment newInstance() {
-        FollowDialogFragment fragment = new FollowDialogFragment();
+    public static FollowDialogFragment newInstance(int currUserId, String currUserName, int tabPosition) {
+        FollowDialogFragment fragment = new FollowDialogFragment(currUserName, tabPosition);
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, currUserId);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
-
         setStyle(STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_NoActionBar);
 
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(true);
@@ -66,8 +69,11 @@ public class FollowDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        if (getArguments() != null) {
+            currUserId = getArguments().getInt(ARG_PARAM1);
+        }
         binding = DialogFollowBinding.inflate(inflater, container, false);
-        binding.pager.setAdapter(new FollowViewPagerAdapter(getActivity()));
+        binding.pager.setAdapter(new FollowViewPagerAdapter(getActivity(), currUserId));
         new TabLayoutMediator(binding.tabLayout, binding.pager, (tab, position) -> {
             switch(position) {
                 case 0:
@@ -91,7 +97,7 @@ public class FollowDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
-        binding.nameTxt.setText(loggedUser.getUserName());
+        binding.nameTxt.setText(currUserName);
         return binding.getRoot();
     }
 }

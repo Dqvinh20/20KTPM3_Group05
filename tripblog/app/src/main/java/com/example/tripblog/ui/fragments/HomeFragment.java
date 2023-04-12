@@ -153,9 +153,7 @@ public class HomeFragment extends Fragment {
         PostnewsfeedAdapterRecycle postNewest = new PostnewsfeedAdapterRecycle();
 
         PostService postService = TripBlogApplication.createService(PostService.class);
-        postService.getPopularPost(
-               1,10
-        ).enqueue(new Callback<JsonArray>() {
+        postService.getPopularPost(1,10).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if (response.isSuccessful()) {

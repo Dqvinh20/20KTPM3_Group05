@@ -12,9 +12,10 @@ import com.example.tripblog.ui.fragments.PublicPlanFragment;
 
 public class PostViewPagerAdapter extends FragmentStateAdapter {
 
-
-    public PostViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+    private int currUserId;
+    public PostViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, int currUserId) {
         super(fragmentActivity);
+        this.currUserId = currUserId;
     }
 
     @NonNull
@@ -22,11 +23,11 @@ public class PostViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch(position) {
             case 0:
-                return new PublicPlanFragment();
+                return PublicPlanFragment.newInstance(currUserId);
             case 1:
-                return new PrivatePlanFragment();
+                return PrivatePlanFragment.newInstance(currUserId);
             default:
-                return new PublicPlanFragment();
+                return PublicPlanFragment.newInstance(currUserId);
         }
 
     }

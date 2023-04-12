@@ -104,7 +104,7 @@
     </style>
 
     <!-- Widget.Tripblog.BottomAppBar -->
-
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar"></style>
     <style name="Widget.Tripblog.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="labelVisibilityMode">unlabeled</item>
         <item name="compatShadowEnabled">true</item>

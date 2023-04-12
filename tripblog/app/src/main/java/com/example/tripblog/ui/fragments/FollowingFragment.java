@@ -3,6 +3,8 @@ package com.example.tripblog.ui.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +19,7 @@ import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.model.User;
+import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.adapter.UserFollowAdapter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -32,22 +35,25 @@ import retrofit2.Response;
 
 public class FollowingFragment extends Fragment {
 
+    private static final String ARG_PARAM1 = "param1";
+    private int currUserId;
     public FollowingFragment() {
         // Required empty public constructor
     }
 
 
-    public static FollowingFragment newInstance() {
+    public static FollowingFragment newInstance(int currUserId) {
         FollowingFragment fragment = new FollowingFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, currUserId);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
 
-        }
     }
     private UserFollowAdapter adapter;
     @Override
@@ -56,12 +62,15 @@ public class FollowingFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View rootView = inflater.inflate(R.layout.fragment_following, container, false);
-
         RecyclerView recyclerList = rootView.findViewById(R.id.followingRecycler);
         recyclerList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
+        if (getArguments() != null) {
+            currUserId = getArguments().getInt(ARG_PARAM1);
+        }
+
         UserService userService = TripBlogApplication.createService(UserService.class);
-        userService.getUserFollowing(TripBlogApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
+        userService.getUserFollowing(currUserId).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if (response.isSuccessful()) {
@@ -74,7 +83,16 @@ public class FollowingFragment extends Fragment {
                     Log.d("Data in", followingList.toString());
 
                     if (followingList.size() != 0) {
-                        adapter = new UserFollowAdapter(followingList, false);
+                        adapter = new UserFollowAdapter(followingList, false, new UserFollowAdapter.ItemClickListener() {
+                            @Override
+                            public void onItemClick(int userId) {
+
+                                Fragment fragment = ProfileFragment.newInstance(userId);
+                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                transaction.replace(R.id.frameLayout, fragment);
+                                transaction.commit();
+                            }
+                        });
                         recyclerList.setAdapter(adapter);
                     }
                     else {

@@ -398,10 +398,23 @@ public class EditablePostDetailActivity extends PostDetailActivity {
     }
 
     private void onDeletePost() {
-        String title =  String.join(" ",
-                getString(R.string.delete_post_title),
-                getTitle().subSequence(0, 30)
-        );
+        String postTitle = currPostLiveData.getValue().getTitle();
+
+        String title = "";
+        if (postTitle.length() <= 25) {
+            title = String.join(" ",
+                    getString(R.string.delete_post_title),
+                    postTitle
+            );
+        }
+        else {
+            title = String.join(" ",
+                    getString(R.string.delete_post_title),
+                    postTitle.substring(0, 25)
+            );
+            title += "...";
+        }
+
         new MaterialAlertDialogBuilder(this)
                 .setTitle(title)
                 .setMessage(getString(R.string.delete_post_message))
@@ -414,24 +427,24 @@ public class EditablePostDetailActivity extends PostDetailActivity {
                 .setPositiveButton(
                         "Yes, delete it",
                         (dialogInterface, i) -> {
-                            dialogInterface.dismiss();
                             deletePost();
+                            dialogInterface.dismiss();
                         }
                 )
                 .show();
     }
 
     private void deletePost() {
-        postService.delete(currPostLiveData.getValue().getId()).enqueue(new Callback<Boolean>() {
+        postService.delete(currPostLiveData.getValue().getId()).enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
                 if (response.isSuccessful()) {
-                    finishAffinity();
+                    finish();
                 }
             }
 
             @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
+            public void onFailure(Call<Integer> call, Throwable t) {
                 Snackbar
                         .make(binding.getRoot(), "Can't delete post", Snackbar.LENGTH_SHORT)
                         .setAction(

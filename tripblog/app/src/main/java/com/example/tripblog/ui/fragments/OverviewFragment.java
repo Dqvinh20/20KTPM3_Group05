@@ -42,7 +42,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class OverviewFragment extends Fragment {
-    private final String TAG = OverviewFragment.class.getSimpleName();
     private final short LIMIT_RATING_PER_REQ = 5;
     private final RatingItemAdapter ratingItemAdapter = new RatingItemAdapter();
     private final RatingService ratingService = TripBlogApplication.createService(RatingService.class);
@@ -70,10 +69,8 @@ public class OverviewFragment extends Fragment {
 
     public void setEditable(boolean editable) {
         isEditable = editable;
-        if (isEditable) {
-            initEditableView();
-        }
-        else {
+        initEditableView();
+        if (!isEditable) {
             fetchReviews();
         }
     }
@@ -142,8 +139,9 @@ public class OverviewFragment extends Fragment {
     }
 
     private void initEditableView() {
-        binding.reviewLayout.setVisibility(isEditable ? View.GONE : View.VISIBLE);
+        if(isResumed()) return;
 
+        binding.reviewLayout.setVisibility(isEditable ? View.GONE : View.VISIBLE);
         binding.briefDescription.setTextIsSelectable(isEditable);
         binding.briefDescription.setFocusableInTouchMode(isEditable);
         binding.briefDescription.setCursorVisible(isEditable);
@@ -193,7 +191,6 @@ public class OverviewFragment extends Fragment {
                                     ratingItemAdapter.addAll(parseResponseData(response));
                                     ratingItemAdapter.notifyDataSetChanged();
                                     isLoading = false;
-                                    Log.d(TAG, "loadMore + " + isLoading);
                                 });
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -221,7 +218,9 @@ public class OverviewFragment extends Fragment {
                     @Override
                     public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                         if (response.isSuccessful()) {
-                            ratingItemAdapter.addAll(parseResponseData(response));
+                            List<Rating> ratings = parseResponseData(response);
+                            ratingItemAdapter.addAll(ratings);
+                            binding.divider.setVisibility(ratings != null && !ratings.isEmpty() ? View.VISIBLE : View.GONE);
                         }
                     }
 

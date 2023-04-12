@@ -77,7 +77,6 @@ public class RatePostDialog extends DialogFragment implements View.OnClickListen
                     @Override
                     public void onFocusChange(View view, boolean hasFocus) {
                         if (!hasFocus) {
-                            Log.d("TAD", String.valueOf(hasFocus));
                             InputMethodManager inputMethodManager =(InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
                             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         }
@@ -105,49 +104,6 @@ public class RatePostDialog extends DialogFragment implements View.OnClickListen
             return false;
         }
         return true;
-    }
-
-//    private void sendData() {
-//        RatingService ratingService = TripBlogApplication.createService(RatingService.class);
-//        ratingService.writeRating(
-//                postId,
-//                (int) ratingBar.getRating(),
-//                contentEdit.getText().toString()
-//        ).enqueue(new Callback<JsonObject>() {
-//            @Override
-//            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-//                if (response.isSuccessful()) {
-//                    Log.d("TAG", response.body().toString());
-//                    if (response.body().get("success").getAsInt() == 1) {
-//
-//                    }
-//                    else {
-//                        ((OverviewFragment) getParentFragment()).showSnackbar("You already rate this trip!");
-//                    }
-//                }
-//                dismiss();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<JsonObject> call, Throwable t) {
-//                ((OverviewFragment) getParentFragment()).showSnackbar("Error occur when rate the trip!");
-//                dismiss();
-//            }
-//        });
-//    }
-
-    public void loadNewRating() {
-        RatingService ratingService = TripBlogApplication.createService(RatingService.class);
-
-        try {
-            Response<JsonObject> req = ratingService.getAllPostRatings(postId, 1, 1).execute();
-            JsonObject ratingsObj = req.body().getAsJsonObject("ratings");
-            List<Rating> ratings = new Gson().fromJson(ratingsObj.get("data"), new TypeToken<List<Rating>>() {}.getType());
-            ((OverviewFragment) getParentFragment()).appendNewRating(ratings.get(0));
-            ((OverviewFragment) getParentFragment()).showSnackbar("Rate successfully");
-        } catch (IOException e) {
-            ((OverviewFragment) getParentFragment()).showSnackbar("Error occur when rate the trip!");
-        }
     }
 
     public void submitRating() {
@@ -199,12 +155,8 @@ public class RatePostDialog extends DialogFragment implements View.OnClickListen
                             ((OverviewFragment) getParentFragment()).showSnackbar("You already rate this trip!");
                         }
                     }
-//                    dismiss();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
-                } finally {
-//                    executorService.shutdown();
-//                    dismiss();
                 }
             }
         };

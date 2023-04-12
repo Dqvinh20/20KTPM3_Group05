@@ -2,48 +2,28 @@ package com.example.tripblog.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.Manifest;
 import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.databinding.ActivityMainBinding;
-import com.example.tripblog.services.MainService;
-import com.example.tripblog.ui.dialog.ImagePreviewDialog;
 import com.example.tripblog.ui.fragments.HomeFragment;
 import com.example.tripblog.ui.fragments.CreateFragment;
 import com.example.tripblog.ui.fragments.ProfileFragment;
-import com.example.tripblog.ui.post.EditablePostDetailActivity;
-import com.example.tripblog.ui.post.PostDetailActivity;
 import com.example.tripblog.ui.search.Search;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 //import com.karumi.dexter.Dexter;
 //import com.karumi.dexter.PermissionToken;
 //import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -57,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
     private Integer currFragment = null;
     private long lastClickTime = 0;
     private NotificationManagerCompat notificationManagerCompat;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,25 +67,17 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
                 return;
             }
             lastClickTime = SystemClock.elapsedRealtime();
-
             // Open create post dialog
-                Intent intent = new Intent(MainActivity.this, EditablePostDetailActivity.class);
-                intent.putExtra("postId", 61);
-                startActivity(intent);
-//            displayCreatePostDialog();
-//            ImagePreviewDialog imagePreviewDialog = new ImagePreviewDialog(this);
-//            imagePreviewDialog.show();
-
+            displayCreatePostDialog();
         });
 
-        binding.create.performClick();
         notificationManagerCompat = NotificationManagerCompat.from(this);
-        Log.i("MainActivity","Check");
-        Intent Serviceintent = new Intent(this, MainService.class);
-        if (!isMyServiceRunning(MainService.class)) {
-            Log.i("MainActivity","Start service");
-            startService(Serviceintent);
-        }
+
+//        Intent Serviceintent = new Intent(this, MainService.class);
+//        if (!isMyServiceRunning(MainService.class)) {
+//            Log.i("MainActivity","Start service");
+//            startService(Serviceintent);
+//        }
 
 //        logout();
     }
@@ -127,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         CreateFragment createFragment = CreateFragment.newInstance();
-        createFragment.show(fragmentTransaction, "CREATE");
+        createFragment.show(fragmentTransaction, CreateFragment.class.getSimpleName());
     }
 
     @Override

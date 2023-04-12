@@ -6,7 +6,6 @@ import java.io.Serializable;
 
 public class Location implements Serializable {
     private Integer id;
-
     private String name;
     private String address;
     @SerializedName("formatted_address")
@@ -14,6 +13,25 @@ public class Location implements Serializable {
     private String photo;
     @SerializedName("SchedulesLocations")
     private SchedulesLocations schedulesLocations;
+    private Geo geo;
+    public Geo getGeo() {
+        return geo;
+    }
+    private Boolean isExpandable = false;
+
+    public Double getLatitude() {
+        if (geo != null) {
+            return geo.getLatitude();
+        }
+        return 0.0;
+    }
+
+    public Double getLongitude() {
+        if (geo != null) {
+            return geo.getLongitude();
+        }
+        return 0.0;
+    }
 
     public Integer getId() {
         return id;
@@ -23,7 +41,6 @@ public class Location implements Serializable {
         this.id = id;
     }
 
-    private boolean isExpandable = false;
 
     public boolean isExpandable() {
         return isExpandable;

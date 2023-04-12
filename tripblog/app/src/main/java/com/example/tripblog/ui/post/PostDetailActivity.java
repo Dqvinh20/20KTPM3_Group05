@@ -30,9 +30,15 @@ import com.example.tripblog.api.services.PostService;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.ActivityPostDetailBinding;
 import com.example.tripblog.model.Post;
+import com.example.tripblog.model.User;
+import com.example.tripblog.ui.fragments.ProfileFragment;
+import com.example.tripblog.ui.map.MapActivity;
 import com.example.tripblog.utils.NumberUtil;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.io.IOException;
@@ -74,7 +80,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             postService.increaseView(postId).enqueue(new Callback<Post>() {
                 @Override
                 public void onResponse(Call<Post> call, Response<Post> response) {
-                    Log.d(TAG, "view increased");
                     if (response.isSuccessful()) {
                         currPostLiveData.postValue(response.body());
                     }
@@ -101,6 +106,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
         binding.likeBtn.setOnClickListener(this);
         binding.shareBtn.setOnClickListener(this);
+        binding.authorAvatar.setOnClickListener(this);
 
         // Auto reload view
         currPostLiveData.observe(this, new Observer<Post>() {
@@ -113,7 +119,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         currPostLiveData.observe(this, new Observer<Post>() {
             @Override
             public void onChanged(Post post) {
-                Log.e(TAG, "onChanged");
                 Bundle data = new Bundle();
                 data.putString("briefDescription", post.getBriefDescription());
                 data.putInt("postId", post.getId());
@@ -133,6 +138,19 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         // View pager
         contentViewPaperAdapter = new PostDetailViewPaperAdapter(PostDetailActivity.this);
         binding.contentViewPaper.setAdapter(contentViewPaperAdapter);
+        binding.tabLayout.addOnTabSelectedListener(
+                new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        boolean isOverviewFragment = tab.getText().toString().equals("Overview");
+                        binding.appbar.setExpanded(isOverviewFragment);
+                    }
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {}
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {}
+                }
+        );
         new TabLayoutMediator(binding.tabLayout, binding.contentViewPaper, (tab, position) -> {
             switch (position) {
                 case 0:
@@ -145,7 +163,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     break;
             }
         }).attach();
-
         binding.tripTitle.setTextIsSelectable(isEditable);
         binding.tripTitle.setFocusable(isEditable);
         binding.bottomAppBar.setVisibility(isEditable ? View.GONE : View.VISIBLE);
@@ -223,8 +240,6 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             args.putSerializable("schedules",(Serializable) currPost.getSchedules());
             contentViewPaperAdapter.refreshFragmentData(1, args);
         }
-
-
 
         binding.tripTitle.setText(currPost.getTitle());
         binding.collapseToolbarLayout.setTitle(currPost.getTitle());
@@ -313,6 +328,15 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
             Intent shareIntent = Intent.createChooser(sendIntent, null);
             startActivity(shareIntent);
+        }
+        else if (view.getId() == R.id.authorAvatar) {
+            User author = currPostLiveData.getValue().getAuthor();
+            User loggedUser = TripBlogApplication.getInstance().getLoggedUser();
+            if (!author.getId().equals(loggedUser.getId())) {
+                // TODO: Open author profile
+                Intent intent = new Intent(PostDetailActivity.this, ProfileFragment.class);
+//                startActivity(in);
+            }
         }
     }
 }

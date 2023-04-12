@@ -41,7 +41,6 @@ public class Post implements Serializable {
         this.schedules = schedules;
     }
 
-
     @SerializedName("is_liked_by_you")
     private boolean isLikedByYou;
 

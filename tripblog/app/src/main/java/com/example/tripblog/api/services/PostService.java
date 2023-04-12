@@ -64,8 +64,8 @@ public interface PostService {
    );
 
     @FormUrlEncoded
-    @DELETE("post/delete")
-    Call<Boolean> delete(@Field("post_id")Integer postId);
+    @HTTP(method = "DELETE", path = "post/delete", hasBody = true)
+    Call<Integer> delete(@Field("post_id")Integer postId);
     
     @GET("home/newest")
     Call<JsonObject> getNewestPost(  @Query("page")Integer page,@Query("limit")Integer limit);

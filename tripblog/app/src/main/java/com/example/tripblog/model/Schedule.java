@@ -18,14 +18,14 @@ public class Schedule implements Serializable {
 
     private List<Location> locations;
 
-    private boolean isExpandable = false;
+    private Boolean isExpandable = false;
 
     @SerializedName("created_at")
     private Date createdAt;
     @SerializedName("updated_at")
     private Date updatedAt;
 
-    private int markerColor = Color.GREEN;
+    private Integer markerColor = Color.GREEN;
 
     public int getMarkerColor() {
         return markerColor;
@@ -95,6 +95,7 @@ public class Schedule implements Serializable {
     }
 
     public boolean isExpandable() {
+        if (isExpandable == null) isExpandable = false;
         return isExpandable;
     }
     public void setExpandable(boolean expandable) {

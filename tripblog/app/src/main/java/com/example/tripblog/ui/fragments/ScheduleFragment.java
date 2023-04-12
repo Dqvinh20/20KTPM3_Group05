@@ -1,9 +1,10 @@
 package com.example.tripblog.ui.fragments;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -18,7 +19,9 @@ import com.example.tripblog.api.services.ScheduleService;
 import com.example.tripblog.databinding.FragmentScheduleBinding;
 import com.example.tripblog.model.Location;
 import com.example.tripblog.model.Schedule;
+import com.example.tripblog.ui.dialog.ImagePreviewDialog;
 import com.example.tripblog.ui.interfaces.IOnClickListener;
+import com.example.tripblog.ui.map.MapActivity;
 import com.example.tripblog.ui.post.AddPlaceBottomSheet;
 import com.example.tripblog.ui.post.PostDetailActivity;
 import com.google.android.material.snackbar.Snackbar;
@@ -93,6 +96,22 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                     int schedulePos = data.getInt("schedulePos");
                     String note = data.getString("note");
                     editNote(schedulePos, locationId, note, locationPos);
+                }
+                break;
+            case "view_on_map":
+                if (data != null) {
+                    Intent mapIntent = new Intent(getActivity(), MapActivity.class);
+                    data.putSerializable("schedule", adapter.getScheduleList().get(data.getInt("schedulePos")));
+                    data.putString("tripTitle",((PostDetailActivity) getActivity()).getPostLiveData().getValue().getTitle());
+                    mapIntent.putExtras(data);
+                    startActivity(mapIntent);
+                }
+                break;
+            case "show_img_preview":
+                if (data != null) {
+                    final ImagePreviewDialog imagePreviewDialog = new ImagePreviewDialog();
+                    imagePreviewDialog.setArguments(data);
+                    imagePreviewDialog.show(getChildFragmentManager(), ImagePreviewDialog.class.getSimpleName());
                 }
                 break;
             default:

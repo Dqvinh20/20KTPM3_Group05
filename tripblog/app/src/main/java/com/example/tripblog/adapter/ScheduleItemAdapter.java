@@ -40,6 +40,10 @@ public class ScheduleItemAdapter
     private IOnClickListener onClickListener;
     private boolean isColorLoaded = false;
 
+    public List<Schedule> getScheduleList() {
+        return scheduleList;
+    }
+
     public void setEditable(boolean isEditable) {
         this.isEditable = isEditable;
         notifyDataSetChanged();
@@ -106,7 +110,9 @@ public class ScheduleItemAdapter
                 new IOnClickListener() {
                     @Override
                     public void onClick(String action, Bundle data) {
-                        data.putInt("schedulePos", holder.getBindingAdapterPosition());
+                        if (data != null) {
+                            data.putInt("schedulePos", holder.getBindingAdapterPosition());
+                        }
                         onClickListener.onClick(action, data);
                     }
                 });

@@ -80,7 +80,6 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Location currLocation = locations.get(position);
         MapScheduleItemViewHolder mapHolder = (MapScheduleItemViewHolder) holder;
-
         mapHolder.locationPosition.getBackground().setTint(markerColor);
         mapHolder.locationPosition.setText(currLocation.getPosition().toString());
 
@@ -146,6 +145,11 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             removeLocation = itemView.findViewById(R.id.removeLocation);
             expandableLayout = itemView.findViewById(R.id.expandableLayout);
 
+            viewOnMap.setOnClickListener(view -> {
+                Bundle data = new Bundle();
+                onClickListener.onClick("view_on_map", data);
+            });
+
             removeLocation.setOnClickListener(view -> {
                 Location location = locations.get(getBindingAdapterPosition());
                 Bundle data = new Bundle();
@@ -168,9 +172,9 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             locationPhoto.setOnClickListener(v -> {
                 Bitmap imgSrc = ((BitmapDrawable) locationPhoto.getDrawable()).getBitmap();
-                final ImagePreviewDialog imagePreviewDialog = new ImagePreviewDialog(itemView.getContext());
-                imagePreviewDialog.setImgPreview(imgSrc);
-                imagePreviewDialog.show();
+                Bundle data = new Bundle();
+                data.putParcelable("imgSrc", imgSrc);
+                onClickListener.onClick("show_img_preview", data);
             });
 
             locationNote.setOnFocusChangeListener(new View.OnFocusChangeListener() {

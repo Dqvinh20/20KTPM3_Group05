@@ -1,6 +1,7 @@
 package com.example.tripblog.ui.fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
@@ -37,7 +38,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,11 +53,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     FragmentProfileBinding binding;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
-    private PostViewPagerAdapter postViewPagerAdapter;
+
     private User currUser;
     private UserService userService;
     private static final String ARG_PARAM1 = "param1";
     private int currUserId = 2;
+    private List<User> followingList;
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -67,20 +74,108 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
-
-
-    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(inflater, container, false);
+        userService = TripBlogApplication.createService(UserService.class);
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(false);
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        if (getArguments() != null) {
+            currUserId = getArguments().getInt(ARG_PARAM1);
+        }
 
+        if(currUserId == TripBlogApplication.getInstance().getLoggedUser().getId()) {
+            binding.followBtn.setVisibility(View.GONE);
+            binding.moreSettingProfileBtn.setVisibility(View.VISIBLE);
+        }
+        else {
+            binding.followBtn.setVisibility(View.VISIBLE);
+            binding.moreSettingProfileBtn.setVisibility(View.GONE);
+            userService.getUserFollowing(TripBlogApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
+                @Override
+                public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                    if(response.isSuccessful()) {
+                        JsonArray rawData = response.body().getAsJsonArray();
+                        JsonObject jsonObject = (JsonObject) rawData.get(0);
+                        JsonArray followingJsonArray = jsonObject.getAsJsonArray("followings");
+                        Gson gson = new Gson();
+                        Type userListType = new TypeToken<List<User>>() {}.getType();
+                        followingList = gson.fromJson(followingJsonArray, userListType);
+                        for(User user : followingList) {
+                            if(currUserId == user.getId()) {
+                                binding.followBtn.setBackgroundColor(Color.WHITE);
+                                binding.followBtn.setTextColor(Color.RED);
+                                binding.followBtn.setText("Unfollow");
+                                Log.d("Unfollow", "set");
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JsonArray> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        }
+
+
+        binding.followBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(binding.followBtn.getText().toString().equals("Unfollow")){
+                    view.setBackgroundColor(Color.RED);
+                    binding.followBtn.setText("Follow");
+                    binding.followBtn.setTextColor(Color.WHITE);
+
+                    userService.unfollowUser(currUserId).enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                            if(response.isSuccessful()){
+                                Toast.makeText(view.getContext(), "Unfollow", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Toast.makeText(view.getContext(), " Not success", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) {
+                            Toast.makeText(view.getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                            t.printStackTrace();
+                        }
+                    });
+                }
+                else{
+                    view.setBackgroundColor(Color.WHITE);
+                    binding.followBtn.setTextColor(Color.RED);
+                    binding.followBtn.setText("Unfollow");
+                    userService.followUser(currUserId).enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                            if(response.isSuccessful()){
+                                Toast.makeText(view.getContext(), "Follow", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Toast.makeText(view.getContext(), " Not success", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) {
+                            Toast.makeText(view.getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                            t.printStackTrace();
+                        }
+                    });
+
+                }
+            }
+        });
 
 
         binding.moreSettingProfileBtn.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +205,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View view) {
                         popupSetting.dismiss();
-
                         Intent intent = new Intent(getActivity(), EditProfile.class);
                         activityResultLauncher.launch(intent);
 //                        startActivity(intent);
@@ -122,48 +216,36 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        return binding.getRoot();
-    }
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-//        currUser = TripBlogApplication.getInstance().getLoggedUser();
-        if (getArguments() != null) {
-            currUserId = getArguments().getInt(ARG_PARAM1);
-        }
-        userService = TripBlogApplication.createService(UserService.class);
         userService.getUserById(currUserId).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful())
                 {
-                    currUser = response.body();
-                    Gson gson = new Gson();
-                    User deepcopy = gson.fromJson(gson.toJson(currUser), User.class);
-                    TextView username = view.findViewById(R.id.usernameTxt);
-                    username.setText(currUser.getUserName());
-                    ImageView avatar = view.findViewById(R.id.avatar);
+                    User user = response.body();
+//                    TextView username = view.findViewById(R.id.usernameTxt);
+                    binding.usernameTxt.setText(user.getUserName());
+//                    ImageView avatar = view.findViewById(R.id.avatar);
 
-                    Glide.with(view)
-                            .load(currUser.getAvatar())
+                    Glide.with(getContext())
+                            .load(user.getAvatar())
                             .placeholder(R.drawable.da_lat)
                             .error(R.drawable.da_lat)
-                            .into(avatar);
+                            .into(binding.avatar);
 
-                    TextView followerTxt = view.findViewById(R.id.followerTxt);
-                    TextView followingTxt = view.findViewById(R.id.followingTxt);
+//                    TextView followerTxt = view.findViewById(R.id.followerTxt);
+//                    TextView followingTxt = view.findViewById(R.id.followingTxt);
 
-                    followerTxt.setText(currUser.getFollowersCount().toString());
-                    followingTxt.setText(currUser.getFollowingsCount().toString());
+                    binding.followerTxt.setText(user.getFollowersCount().toString());
+                    binding.followingTxt.setText(user.getFollowingsCount().toString());
 
-                    viewPager = view.findViewById(R.id.pager);
-                    viewPager.setAdapter(new PostViewPagerAdapter(getActivity(), currUserId));
+//                    viewPager = view.findViewById(R.id.pager);
+                    binding.pager.setAdapter(new PostViewPagerAdapter(getActivity(), currUserId));
 
-                    LinearLayout followersBtn = view.findViewById(R.id.followersCount);
-                    LinearLayout followingBtn = view.findViewById(R.id.followingCount);
-                    tabLayout = view.findViewById(R.id.tab_layout);
+//                    LinearLayout followersBtn = view.findViewById(R.id.followersCount);
+//                    LinearLayout followingBtn = view.findViewById(R.id.followingCount);
+//                    tabLayout = view.findViewById(R.id.tab_layout);
 
-                    new TabLayoutMediator(tabLayout,viewPager, (tab, position) -> {
+                    new TabLayoutMediator(binding.tabLayout, binding.pager, (tab, position) -> {
                         switch(position) {
                             case 0:
                                 tab.setText("Public");
@@ -173,21 +255,21 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                                 break;
                         }
                     }).attach();
-                    followingBtn.setOnClickListener(new View.OnClickListener() {
+                    binding.followingCount.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, deepcopy.getUserName(),1);
-                            FragmentManager fragmentManager = getParentFragmentManager();
+                            FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, user.getUserName(),1);
+                            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragment.show(fragmentTransaction, "Detail followers");
-//                fragmentTransaction.replace(R.id.frameLayout, fragment);
-//                fragmentTransaction.commit();
+//                            fragment.show(fragmentTransaction, "Detail followers");
+                            fragmentTransaction.replace(R.id.frameLayout, fragment);
+                            fragmentTransaction.commit();
                         }
                     });
-                    followersBtn.setOnClickListener(new View.OnClickListener() {
+                    binding.followersCount.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, deepcopy.getUserName(),0);
+                            FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, user.getUserName(),0);
                             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //                fragment.show(fragmentTransaction, "Detail followers");
@@ -200,10 +282,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-
+                t.printStackTrace();
             }
         });
-
+        return binding.getRoot();
     }
 
     private void loadData() {

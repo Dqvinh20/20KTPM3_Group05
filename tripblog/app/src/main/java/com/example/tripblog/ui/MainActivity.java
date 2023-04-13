@@ -38,15 +38,14 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
     private long lastClickTime = 0;
     private NotificationManagerCompat notificationManagerCompat;
 
+    HomeFragment homeFragment = new HomeFragment();
+    ProfileFragment profileFragment = new ProfileFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        HomeFragment homeFragment = new HomeFragment();
-        ProfileFragment profileFragment = new ProfileFragment();
-
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if (currFragment != null && item.getItemId() == currFragment) {
                 return false;
@@ -102,6 +101,12 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         createFragment.show(fragmentTransaction, CreateFragment.class.getSimpleName());
     }
 
+    public void onCreateDismis() {
+        if (profileFragment.isAdded()) {
+            profileFragment.onResume();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -128,22 +133,16 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
 
     @Override
     public void onBackPressed() {
-        moveTaskToBack(true);
+        super.onBackPressed();
+//        moveTaskToBack(true);
 //        finish();
     }
     private void replaceFragment(Fragment fragment) {
-        String backStateName = fragment.getClass().getSimpleName();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        boolean fragmentPopped = fragmentManager.popBackStackImmediate(backStateName, 0);
-
-        if (!fragmentPopped){ //fragment not in back stack, create it.
-            FragmentTransaction fragmentTransaction = fragmentManager
-                    .beginTransaction();
-            fragmentTransaction.replace(R.id.frameLayout, fragment);
-            fragmentTransaction.addToBackStack(backStateName);
-            fragmentTransaction.commit();
-        }
-
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, fragment);
+        fragmentTransaction.commit();
     }
 
     @Override

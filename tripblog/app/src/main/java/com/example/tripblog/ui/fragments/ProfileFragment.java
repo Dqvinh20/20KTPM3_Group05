@@ -1,80 +1,190 @@
 package com.example.tripblog.ui.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.media.Image;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.FragmentProfileBinding;
-import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.adapter.PostViewPagerAdapter;
 import com.example.tripblog.ui.editprofile.EditProfile;
 import com.example.tripblog.ui.login.LoginActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
     FragmentProfileBinding binding;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
-    private PostViewPagerAdapter postViewPagerAdapter;
-    private User loggedUser;
+
+    private User currUser;
+    private UserService userService;
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    private int currUserId = 2;
+    private List<User> followingList;
+
     public ProfileFragment() {
         // Required empty public constructor
     }
 
-    public static ProfileFragment newInstance() {
+    public static ProfileFragment newInstance(int currUserId, boolean isMyProfile) {
         ProfileFragment fragment = new ProfileFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, currUserId);
+        args.putBoolean(ARG_PARAM2, isMyProfile);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(false);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == 1 && result.getData() != null) {
+                            Bundle data = result.getData().getExtras();
+                            User user = (User) data.getSerializable("user");
+                            TripBlogApplication.getInstance().setLoggedUser(user);
+                            updateUI();
+                        }
+                    }
+                }
+        );
     }
-    
+
+    @SuppressLint("RestrictedApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(inflater, container, false);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(false);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        userService = TripBlogApplication.createService(UserService.class);
 
+        if (getArguments() != null) {
+            currUserId = getArguments().getInt(ARG_PARAM1);
+            Boolean isMyProfile = getArguments().getBoolean(ARG_PARAM2);
+            binding.backBtn.setVisibility(isMyProfile != null && isMyProfile ? View.GONE : View.VISIBLE);
+        }
+        else {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(false);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+            binding.backBtn.setVisibility(View.GONE);
+        }
+
+        binding.backBtn.setOnClickListener((view) -> {
+            getActivity().getSupportFragmentManager().popBackStack();
+        });
+
+        if(currUserId == TripBlogApplication.getInstance().getLoggedUser().getId()) {
+            binding.followBtn.setVisibility(View.GONE);
+            binding.moreSettingProfileBtn.setVisibility(View.VISIBLE);
+        }
+        else {
+            binding.followBtn.setVisibility(View.VISIBLE);
+            binding.moreSettingProfileBtn.setVisibility(View.GONE);
+            userService.getUserFollowing(TripBlogApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
+                @Override
+                public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                    if(response.isSuccessful()) {
+                        JsonArray rawData = response.body().getAsJsonArray();
+                        JsonObject jsonObject = (JsonObject) rawData.get(0);
+                        JsonArray followingJsonArray = jsonObject.getAsJsonArray("followings");
+                        Gson gson = new Gson();
+                        Type userListType = new TypeToken<List<User>>() {}.getType();
+                        followingList = gson.fromJson(followingJsonArray, userListType);
+
+                        boolean isFollowing = followingList.parallelStream().anyMatch(user -> user.getId() == currUserId);
+                        binding.followBtn.setChecked(isFollowing);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JsonArray> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        }
+
+        binding.followBtn.addOnCheckedChangeListener(new MaterialButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(MaterialButton button, boolean isChecked) {
+                // Followed
+                if (isChecked) {
+                    button.setText("Unfollow");
+                }
+                // Not follow
+                else {
+                    button.setText("Follow");
+                }
+            }
+        });
+        binding.followBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (binding.followBtn.isChecked()) {
+                    userService.followUser(currUserId).enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {}
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+                } else {
+                    userService.unfollowUser(currUserId).enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
         binding.moreSettingProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,48 +197,57 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 logout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(getContext(), "Logout", 0).show();
-
                         TripBlogApplication.logout(getContext());
                         Intent loginPage = new Intent(getContext(), LoginActivity.class);
-                        startActivity(loginPage);
                         popupSetting.dismiss();
                         getActivity().finish();
+                        startActivity(loginPage);
                     }
                 });
                 Button editProfile =(Button) v.findViewById(R.id.editProfile);
-
                 editProfile.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         popupSetting.dismiss();
-
                         Intent intent = new Intent(getActivity(), EditProfile.class);
                         activityResultLauncher.launch(intent);
-//                        startActivity(intent);
-//                        finishAfterTransition();
                     }
                 });
-
-
             }
         });
+        userService.getUserById(currUserId).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.isSuccessful()) {
+                    User user = response.body();
+                    if (user == null) return;
+                    loadData(user);
+                }
+            }
 
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+        Toast.makeText(getContext(), "Loaded", Toast.LENGTH_SHORT).show();
         return binding.getRoot();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        loadData();
+    private void loadData(User user) {
+        binding.usernameTxt.setText(user.getUserName());
 
-        viewPager = view.findViewById(R.id.pager);
-        viewPager.setAdapter(new PostViewPagerAdapter(getActivity()));
+        Glide.with(getContext())
+                .load(user.getAvatar())
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.avatar)
+                .into(binding.avatar);
 
-        TextView followingTxt = view.findViewById(R.id.followingTxt);
-        tabLayout = view.findViewById(R.id.tab_layout);
+        binding.followerTxt.setText(user.getFollowersCount().toString());
+        binding.followingTxt.setText(user.getFollowingsCount().toString());
 
-        new TabLayoutMediator(tabLayout,viewPager, (tab, position) -> {
+        binding.pager.setAdapter(new PostViewPagerAdapter(getActivity(), currUserId));
+        new TabLayoutMediator(binding.tabLayout, binding.pager, (tab, position) -> {
             switch(position) {
                 case 0:
                     tab.setText("Public");
@@ -138,75 +257,56 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     break;
             }
         }).attach();
-
-//        TextView username = view.findViewById(R.id.usernameTxt);
-//        ImageView avatar = view.findViewById(R.id.avatar);
-//
-//        username.setText(loggedUser.getUserName());
-////        Glide.with()
-////                .load(list.get(position).getCoverImg())
-////                .placeholder(R.drawable.da_lat)
-////                .error(R.drawable.da_lat)
-////                .into(img);
-//        Glide.with(view)
-//                .load(loggedUser.getAvatar())
-//                .placeholder(R.drawable.da_lat)
-//                .error(R.drawable.da_lat)
-//                .into(avatar);
-
-
-        followingTxt.setOnClickListener(new View.OnClickListener() {
+        binding.followingCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FollowDialogFragment fragment = new FollowDialogFragment();
-                FragmentManager fragmentManager = getParentFragmentManager();
+                FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, user.getUserName(),1);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragment.show(fragmentTransaction, "Detail followers");
-//                fragmentTransaction.replace(R.id.frameLayout, fragment);
-//                fragmentTransaction.commit();
+                fragmentTransaction.add(R.id.frameLayout, fragment);
+                fragmentTransaction.addToBackStack(FollowDialogFragment.class.getSimpleName());
+                fragmentTransaction.commit();
+            }
+        });
+        binding.followersCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, user.getUserName(),0);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.add(R.id.frameLayout, fragment);
+                fragmentTransaction.addToBackStack(FollowDialogFragment.class.getSimpleName());
+                fragmentTransaction.commit();
             }
         });
     }
 
-    private void loadData() {
-        loggedUser = TripBlogApplication.getInstance().getLoggedUser();
-        binding.usernameTxt.setText(loggedUser.getUserName());
+    private void updateUI() {
+        currUser = TripBlogApplication.getInstance().getLoggedUser();
+        binding.usernameTxt.setText(currUser.getUserName());
         Glide.with(binding.getRoot())
-                .load(loggedUser.getAvatar())
+                .load(currUser.getAvatar())
                 .placeholder(R.drawable.da_lat)
                 .error(R.drawable.da_lat)
                 .into(binding.avatar);
     }
 
     public void updateUserData(User newUserData) {
-        this.loggedUser = newUserData;
+        this.currUser = newUserData;
     }
 
     @Override
     public void onDestroy() {
-
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        if (getArguments() == null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        }
         super.onDestroy();
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.logout) {
-        }
+
     }
 
-    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == 1 && result.getData() != null) {
-                        Bundle data = result.getData().getExtras();
-                        User user = (User) data.getSerializable("user");
-                        TripBlogApplication.getInstance().setLoggedUser(user);
-                        loadData();
-                    }
-                }
-            }
-    );
+    ActivityResultLauncher<Intent> activityResultLauncher;
 }

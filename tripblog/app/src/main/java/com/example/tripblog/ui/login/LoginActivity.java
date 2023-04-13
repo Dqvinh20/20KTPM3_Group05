@@ -204,7 +204,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void goToForgotPassword() {
-        // TODO: Implement go to forgot password activity
         Intent reset = new Intent(LoginActivity.this, ResetPassword.class);
         startActivity(reset);
     }

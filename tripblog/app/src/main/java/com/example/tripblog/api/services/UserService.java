@@ -27,7 +27,7 @@ public interface UserService {
     Call<JsonArray> getUserFollowing(@Path("id")Integer userId);
 
     @DELETE("user/{id}/unfollow")
-    Call<JsonArray> unfollowUser(@Path("id")Integer userId);
+    Call<JsonObject> unfollowUser(@Path("id")Integer userId);
 
     @POST("user/{id}/follow")
     Call<JsonObject> followUser(@Path("id")Integer userId);

@@ -3,97 +3,130 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="16dp">
+    android:padding="@dimen/margin_padding_size_medium"
+    android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="top"
+    >
     <androidx.cardview.widget.CardView
-        android:layout_width="110dp"
-        android:layout_height="75dp"
+        android:layout_width="90dp"
+        android:layout_height="80dp"
         app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
         >
         <ImageView
             android:id="@+id/imgView"
-            android:layout_width="110dp"
-            android:layout_height="75dp"
-            android:layout_marginRight="16dp"
-            android:background="@drawable/da_lat"></ImageView>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/da_lat"
+            android:scaleType="centerCrop"
+            />
     </androidx.cardview.widget.CardView>
     <LinearLayout
-        android:layout_width="400dp"
-        android:layout_height="wrap_content"
-
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginLeft="20dp">
-
+        android:layout_marginHorizontal="@dimen/margin_padding_size_medium"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        >
 
         <TextView
             android:id="@+id/postNameTxt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Da Lat Plan"
-            android:textColor="@color/quantum_grey600"
-            android:textSize="18sp"
+            android:textColor="@color/quantum_grey800"
             android:textStyle="bold"
-            android:layout_marginTop="10dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            tools:text="@tools:sample/lorem/random"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
             />
-        <TableLayout
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="1"
-
+            android:gravity="start"
             >
-            <TableRow android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                >
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:orientation="horizontal"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="20dp"
-                    >
-                    <ImageView
-                        android:id="@+id/fav_icon"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:background="@drawable/favarite_icon"
-                        android:layout_gravity="center"
+            <TextView
+                android:id="@+id/likeCountTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="7"
+                android:textColor="@color/quantum_grey600"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:gravity="center"
+                app:drawableStartCompat="@drawable/favarite_icon"
+                android:drawablePadding="@dimen/margin_padding_size_small"
+                android:layout_marginEnd="@dimen/margin_padding_size_large"
+                />
 
-                        android:foregroundGravity="center"/>
-                    <TextView
-                        android:id="@+id/likeCountTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="7"
-                        android:textColor="@color/quantum_grey600"
-                        android:textSize="15sp"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_marginLeft="5sp"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:orientation="horizontal"
-                    >
-                    <ImageView
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:background="@android:drawable/ic_menu_view"
-                        android:layout_gravity="center"/>
-                    <TextView
-                        android:id="@+id/viewCountTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="844"
-                        android:textColor="@color/quantum_grey600"
-                        android:textSize="15sp"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_marginLeft="5dp"/>
-                </LinearLayout>
+            <TextView
+                android:id="@+id/viewCountTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="844"
+                android:textColor="@color/quantum_grey600"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:gravity="center"
+                app:drawableStartCompat="@android:drawable/ic_menu_view"
+                android:drawablePadding="@dimen/margin_padding_size_small"
+                />
+        </LinearLayout>
+<!--        <TableLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:stretchColumns="1"-->
+<!--            >-->
+<!--            <TableRow-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                >-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layout_marginEnd="@dimen/margin_padding_size_large"-->
+<!--                    >-->
+<!--&lt;!&ndash;                    <ImageView&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:id="@+id/fav_icon"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_width="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:background="@drawable/favarite_icon"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_gravity="center"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:foregroundGravity="center"&ndash;&gt;-->
+<!--&lt;!&ndash;                        />&ndash;&gt;-->
+<!--                    -->
+<!--                </LinearLayout>-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    >-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@android:drawable/ic_menu_view"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        />-->
+<!--                    -->
+<!--                </LinearLayout>-->
 
-            </TableRow>
-        </TableLayout>
+<!--            </TableRow>-->
+<!--        </TableLayout>-->
+
     </LinearLayout>
-
+    <ImageView
+        android:clickable="true"
+        android:stateListAnimator="@animator/button_scale_animator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_baseline_more_horiz_24"
+        android:backgroundTint="@color/quantum_grey600"
+        android:id="@+id/more"
+        />
 </LinearLayout>

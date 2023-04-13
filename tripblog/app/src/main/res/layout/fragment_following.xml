@@ -4,19 +4,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragments.FollowingFragment">
-
+    <ProgressBar
+        android:id="@+id/loadingProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_padding_size_medium"
+        android:indeterminateOnly="true"
+        />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/followingRecycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        tools:listitem="@layout/user_follow_item"
+        tools:itemCount="3"
         />
     <TextView
         android:id="@+id/msgTxt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/quantum_grey600"
-        android:textSize="15sp"
+        tools:text="@tools:sample/lorem/random"
+        android:paddingHorizontal="@dimen/margin_padding_size_medium"
         android:textAlignment="center"
-        android:layout_marginTop="30dp" />
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:layout_marginTop="@dimen/margin_padding_size_large" />
 
 </FrameLayout>

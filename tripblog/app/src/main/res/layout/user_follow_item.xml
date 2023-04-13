@@ -3,44 +3,52 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="16dp"
+    android:padding="@dimen/margin_padding_size_medium"
     android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center_vertical"
     >
         <androidx.cardview.widget.CardView
             android:layout_width="?minTouchTargetSize"
             android:layout_height="?minTouchTargetSize"
-            app:cardCornerRadius="50dp"
+            app:cardCornerRadius="250dp"
             >
             <ImageView
                 android:id="@+id/avatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/da_lat"
-
                 />
         </androidx.cardview.widget.CardView>
         <TextView
             android:id="@+id/usernameTxt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Da Lat Plan"
-            android:textColor="@color/quantum_grey600"
-            android:textSize="18sp"
+            android:textColor="@color/quantum_black_text"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textStyle="bold"
             android:layout_weight="1"
-            android:layout_marginLeft="10dp"
+            tools:text="@tools:sample/full_names"
+            android:layout_marginHorizontal="@dimen/margin_padding_size_small"
             />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/followBtn"
-        android:layout_marginEnd="2dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:text="Unfollow"
         android:textAllCaps="false"
-        android:textColor="@color/red"
-        android:backgroundTint="@color/white"
-        app:cornerRadius="20dp" />
+        android:stateListAnimator="@animator/button_scale_animator"
+        android:textColor="@color/white"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:text="Follow"
+        android:checkable="true"
+        android:backgroundTint="@color/follow_btn_bg"
+        app:toggleCheckedStateOnClick="true"
+        app:cornerRadius="20dp"
+        android:paddingVertical="@dimen/margin_padding_size_small"
+        android:paddingHorizontal="@dimen/margin_padding_size_large"
+        app:elevation="@dimen/margin_padding_size_medium"
+        android:visibility="gone"
+        />
 
 </LinearLayout>

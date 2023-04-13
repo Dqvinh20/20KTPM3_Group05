@@ -2,6 +2,7 @@ package com.example.tripblog.ui.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -24,6 +25,7 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.PostService;
 import com.example.tripblog.databinding.FragmentCreateBinding;
 import com.example.tripblog.model.Post;
+import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.post.EditablePostDetailActivity;
 import com.example.tripblog.ui.post.PostDetailActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -52,6 +54,12 @@ public class CreateFragment extends DialogFragment {
 
     public CreateFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        ((MainActivity) getActivity()).onCreateDismis();
     }
 
     public static CreateFragment newInstance() {

@@ -7,19 +7,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.fragments.FollowDialogFragment"
     android:orientation="vertical"
+    android:id="@+id/dialogLayout"
     >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:background="@color/white"
         >
         <com.google.android.material.button.MaterialButton
             android:id="@+id/backBtn"
             android:layout_width="?minTouchTargetSize"
-            android:layout_height="match_parent"
+            android:layout_height="?minTouchTargetSize"
             style="@style/Widget.Material3.Button.IconButton"
-            app:iconTint="@color/quantum_grey600"
+            app:iconTint="@color/quantum_black_text"
             app:icon="@drawable/ic_baseline_keyboard_backspace_24"
             />
         <TextView
@@ -28,9 +30,13 @@
             android:id="@+id/nameTxt"
             android:gravity="center"
             android:layout_weight="1"
-            android:text="Quân Trần"
-            style="@style/TextAppearance.Material3.TitleMedium"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingHorizontal="@dimen/margin_padding_size_medium"
+            tools:text="@tools:sample/lorem/random"
+            android:textColor="@color/quantum_black_text"
             android:textStyle="bold"
+            style="@style/TextAppearance.Material3.TitleMedium"
             />
         <Space
             android:layout_width="?minTouchTargetSize"
@@ -38,18 +44,32 @@
             style="@style/Widget.Material3.Button.IconButton"
             />
     </LinearLayout>
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?minTouchTargetSize"
         android:background="@color/white"
         app:tabMode="scrollable"
         app:tabTextColor="@color/quantum_grey600"
         app:tabIndicatorColor="@color/quantum_orange800"
-        app:tabSelectedTextColor="@color/quantum_orange800"/>
+        app:tabSelectedTextColor="@color/quantum_orange800"
+        app:tabSelectedTextAppearance="?attr/textAppearanceTitleMedium"
+        app:tabTextAppearance="?attr/textAppearanceTitleMedium"
+        app:tabIndicatorFullWidth="true"
+        app:tabPaddingStart="@dimen/margin_padding_size_large"
+        app:tabPaddingEnd="@dimen/margin_padding_size_large"
+        app:tabRippleColor="@android:color/transparent"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/margin_padding_size_small"
+        />
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="@dimen/margin_padding_size_small"
+        />
 
     <androidx.viewpager2.widget.ViewPager2
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager"
         android:background="@color/white"
         android:layout_width="match_parent"

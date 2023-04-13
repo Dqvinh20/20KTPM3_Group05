@@ -69,13 +69,13 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.HomePo
         Glide.with(holder.itemView)
                 .load(listPost.get(position).getCoverImg())
                 .placeholder(R.drawable.img_placeholder)
-                .error(R.drawable.ic_baseline_broken_image_24)
+                .error(R.drawable.no_cover_img)
                 .into(holder.imageView);
 
         Glide.with(holder.itemView)
                 .load(listPost.get(position).getAuthor().getAvatar())
                 .placeholder(R.drawable.img_placeholder)
-                .error(R.drawable.ic_baseline_broken_image_24)
+                .error(R.drawable.avatar)
                 .into(holder.icon);
 //        URL url = null;
 //        try {

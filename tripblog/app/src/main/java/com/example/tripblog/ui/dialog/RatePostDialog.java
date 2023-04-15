@@ -1,12 +1,8 @@
 package com.example.tripblog.ui.dialog;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,21 +20,16 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.RatingService;
 import com.example.tripblog.model.Rating;
 import com.example.tripblog.ui.fragments.OverviewFragment;
-import com.example.tripblog.ui.post.PostDetailActivity;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.tripblog.ui.tripPlan.TripPlanDetailActivity;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Observable;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RatePostDialog extends DialogFragment implements View.OnClickListener {
@@ -121,7 +112,7 @@ public class RatePostDialog extends DialogFragment implements View.OnClickListen
                 JsonObject ratingsObj = req.body().getAsJsonObject("ratings");
                 List<Rating> ratings = new Gson().fromJson(ratingsObj.get("data"), new TypeToken<List<Rating>>() {}.getType());
                 getActivity().runOnUiThread(() -> {
-                    ((PostDetailActivity) getActivity()).fetchData();
+                    ((TripPlanDetailActivity) getActivity()).fetchData();
                     ((OverviewFragment) getParentFragment()).appendNewRating(ratings.get(0));
                 });
                 ((OverviewFragment) getParentFragment()).showSnackbar("Rate successfully");

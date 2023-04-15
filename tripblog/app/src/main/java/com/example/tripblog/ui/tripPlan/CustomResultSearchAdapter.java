@@ -1,12 +1,9 @@
-package com.example.tripblog.ui.post;
-
-import static androidx.core.content.ContextCompat.getSystemService;
+package com.example.tripblog.ui.tripPlan;
 
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,19 +16,18 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
-import com.example.tripblog.model.Post;
+import com.example.tripblog.model.TripPlan;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
 public class CustomResultSearchAdapter  extends ArrayAdapter<String> {
     Context context ;
-    List<Post> postList;
+    List<TripPlan> tripPlanList;
 
-    public CustomResultSearchAdapter(@NonNull Context context, int layoutToBeInflated ,List<Post> postList) {
-        super(context, R.layout.post_search_list_component,new String[postList.size()]);
-        this.postList = postList;
-        Log.d("Custom",postList.toString());
+    public CustomResultSearchAdapter(@NonNull Context context, int layoutToBeInflated ,List<TripPlan> tripPlanList) {
+        super(context, R.layout.post_search_list_component,new String[tripPlanList.size()]);
+        this.tripPlanList = tripPlanList;
 
         this.context = context;
     }
@@ -40,7 +36,7 @@ public class CustomResultSearchAdapter  extends ArrayAdapter<String> {
 
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View row = inflater.inflate(R.layout.post_search_list_component,null);
-        if (postList == null || postList.isEmpty()) return row;
+        if (tripPlanList == null || tripPlanList.isEmpty()) return row;
         ImageView image_result_search_imageview = ( ImageView ) row.findViewById(R.id.image_result_search_imageview);
         ImageView avatar_result_search = ( ImageView ) row.findViewById(R.id.avatar_result_search);
         TextView titleTextView = (TextView) row.findViewById(R.id.titleTextView);
@@ -50,22 +46,22 @@ public class CustomResultSearchAdapter  extends ArrayAdapter<String> {
         TextView viewTextView_result_search = (TextView) row.findViewById(R.id.viewTextView_result_search);
         ImageView share_btn = row.findViewById(R.id.share_btn);
 
-        Log.i("count", postList.get(position).getViewCount().toString());
-        titleTextView.setText(postList.get(position).getTitle());
-        nameTextView_result_search.setText(postList.get(position).getAuthor().getUserName());
-        fav_count_textView.setText(postList.get(position).getLikeCount().toString());
-        viewTextView_result_search.setText(postList.get(position).getViewCount().toString());
+        Log.i("count", tripPlanList.get(position).getViewCount().toString());
+        titleTextView.setText(tripPlanList.get(position).getTitle());
+        nameTextView_result_search.setText(tripPlanList.get(position).getAuthor().getUserName());
+        fav_count_textView.setText(tripPlanList.get(position).getLikeCount().toString());
+        viewTextView_result_search.setText(tripPlanList.get(position).getViewCount().toString());
         Glide.with(row)
-                .load(postList.get(position).getAuthor().getAvatar())
+                .load(tripPlanList.get(position).getAuthor().getAvatar())
                 .placeholder(R.drawable.app_logo_transparent)
                 .error(R.drawable.app_logo_transparent)
                 .into(avatar_result_search);
         Glide.with(row)
-                .load(postList.get(position).getCoverImg())
+                .load(tripPlanList.get(position).getCoverImg())
                 .placeholder(R.drawable.japan)
                 .error(R.drawable.japan)
                 .into(image_result_search_imageview);
-        if(postList.get(position).isLikedByYou()){
+        if(tripPlanList.get(position).isLikedByYou()){
             fav_icon.setTag("liked");
             fav_icon.setImageDrawable(context.getResources().getDrawable(R.drawable.favcorite_icon_red));
         }else{
@@ -92,7 +88,7 @@ public class CustomResultSearchAdapter  extends ArrayAdapter<String> {
             @Override
             public void onClick(View v) {
                 ClipboardManager clipboard = (ClipboardManager) context.getSystemService(context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Copied Text", "https://tripblog.com?postId="+postList.get(position).getId());
+                ClipData clip = ClipData.newPlainText("Copied Text", "https://tripblog.com?postId="+ tripPlanList.get(position).getId());
                 clipboard.setPrimaryClip(clip);
                 Snackbar.make(parent, "Copy to clipboard", Snackbar.LENGTH_SHORT)
                             .show();

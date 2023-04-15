@@ -30,6 +30,10 @@ public class RatingItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyDataSetChanged();
     }
 
+    public List<Rating> getRatingList() {
+        return ratingList;
+    }
+
     public void addAll(List<Rating> ratingList) {
         int lastIndex = this.ratingList.size();
         this.ratingList.addAll(ratingList);

@@ -9,7 +9,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.tripblog.ui.SplashActivity;
-import com.example.tripblog.ui.post.PostDetailActivity;
+import com.example.tripblog.ui.tripPlan.TripPlanDetailActivity;
 
 public class DeepLinking extends Activity {
     protected static final String TAG = DeepLinking.class.getSimpleName();
@@ -22,7 +22,7 @@ public class DeepLinking extends Activity {
             String data1 = data.getQueryParameter("postId");
             Integer postid =  Integer.valueOf(data1);
             Log.d(TAG,postid.toString());
-            Intent postintent = new Intent(DeepLinking.this, PostDetailActivity.class);
+            Intent postintent = new Intent(DeepLinking.this, TripPlanDetailActivity.class);
             postintent.putExtra("postId",postid);
             startActivityForResult(postintent,1122);
         } catch (Exception e) {

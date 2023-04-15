@@ -22,12 +22,11 @@ import android.widget.LinearLayout;
 
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
-import com.example.tripblog.api.services.PostService;
+import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.databinding.FragmentCreateBinding;
-import com.example.tripblog.model.Post;
+import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.post.EditablePostDetailActivity;
-import com.example.tripblog.ui.post.PostDetailActivity;
+import com.example.tripblog.ui.tripPlan.EditableTripPlanDetailActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -198,7 +197,7 @@ public class CreateFragment extends DialogFragment {
     }
 
     private void openEditPostDetail(Integer postId) {
-        Intent postDetail = new Intent(getActivity(), EditablePostDetailActivity.class);
+        Intent postDetail = new Intent(getActivity(), EditableTripPlanDetailActivity.class);
         postDetail.putExtra("postId", postId);
         startActivity(postDetail);
         dismiss();
@@ -224,24 +223,24 @@ public class CreateFragment extends DialogFragment {
     }
 
     private void createPost() {
-        PostService postService = TripBlogApplication.createService(PostService.class);
-        postService.createNewPost(
+        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+        tripPlanService.createNewTripPlan(
                 binding.editTripTitle.getText().toString(),
                 startDate,
                 endDate,
                 isPublic,
                 TripBlogApplication.getInstance().getLoggedUser().getId()
-        ).enqueue(new Callback<Post>() {
+        ).enqueue(new Callback<TripPlan>() {
             @Override
-            public void onResponse(Call<Post> call, Response<Post> response) {
+            public void onResponse(Call<TripPlan> call, Response<TripPlan> response) {
                 if (response.isSuccessful()) {
-                    Post newPost = response.body();
-                    Log.d(TAG, "Created post: " + newPost.toString());
-                    openEditPostDetail(newPost.getId());
+                    TripPlan newTripPlan = response.body();
+                    Log.d(TAG, "Created post: " + newTripPlan.toString());
+                    openEditPostDetail(newTripPlan.getId());
                 }
             }
             @Override
-            public void onFailure(Call<Post> call, Throwable t) {
+            public void onFailure(Call<TripPlan> call, Throwable t) {
                 Snackbar
                         .make(binding.getRoot(), "Fail to connect to server", Snackbar.LENGTH_LONG)
                         .setAction("Retry", view -> {

@@ -1,4 +1,4 @@
-package com.example.tripblog.ui.post;
+package com.example.tripblog.ui.tripPlan;
 
 import android.Manifest;
 import android.app.Activity;
@@ -8,11 +8,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.icu.text.DateFormat;
-import android.icu.util.GregorianCalendar;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +28,7 @@ import androidx.lifecycle.Observer;
 
 import com.example.tripblog.R;
 import com.example.tripblog.model.Location;
-import com.example.tripblog.model.Post;
+import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.model.Schedule;
 import com.example.tripblog.ui.SimpleLoadingDialog;
 import com.example.tripblog.utils.PathUtil;
@@ -45,11 +42,6 @@ import com.google.gson.JsonArray;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -65,9 +57,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EditablePostDetailActivity extends PostDetailActivity {
+public class EditableTripPlanDetailActivity extends TripPlanDetailActivity {
     protected final int REQUEST_CODE = 1;
-    private static final String TAG = EditablePostDetailActivity.class.getSimpleName();
+    private static final String TAG = EditableTripPlanDetailActivity.class.getSimpleName();
     private MaterialDatePicker<Pair<Long, Long>> tripDatesRangePicker;
     private MaterialDatePicker.Builder<Pair<Long, Long>> builder;
 
@@ -76,12 +68,12 @@ public class EditablePostDetailActivity extends PostDetailActivity {
         isEditable = true;
         super.onCreate(savedInstanceState);
 
-        currPostLiveData.observe(this, new Observer<Post>() {
+        currPostLiveData.observe(this, new Observer<TripPlan>() {
             @Override
-            public void onChanged(Post post) {
+            public void onChanged(TripPlan tripPlan) {
                 // First load only
                 initDateRangePicker();
-                currPostLiveData.removeObservers(EditablePostDetailActivity.this);
+                currPostLiveData.removeObservers(EditableTripPlanDetailActivity.this);
                 // Auto reload date on update currPostLiveData value
                 currPostLiveData.observeForever(post1 -> {
                     loadData();
@@ -268,16 +260,16 @@ public class EditablePostDetailActivity extends PostDetailActivity {
     }
 
     private void askForChangeTripDate(Date newStartDate, Date newEndDate) {
-        Post post = currPostLiveData.getValue();
+        TripPlan tripPlan = currPostLiveData.getValue();
         SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
 
         // Check if no change date
-        if (fmt.format(newStartDate).equals(fmt.format(post.getStartDate()))
-            && fmt.format(newEndDate).equals(fmt.format(post.getEndDate()))){
+        if (fmt.format(newStartDate).equals(fmt.format(tripPlan.getStartDate()))
+            && fmt.format(newEndDate).equals(fmt.format(tripPlan.getEndDate()))){
             return;
         }
 
-        List<String> deletedScheduleItem = post.getSchedules().parallelStream().filter(schedule -> {
+        List<String> deletedScheduleItem = tripPlan.getSchedules().parallelStream().filter(schedule -> {
             Date scheduleDate = schedule.getDate();
             List<Location> locationList = schedule.getLocations();
             boolean hasLocation = locationList != null
@@ -291,7 +283,7 @@ public class EditablePostDetailActivity extends PostDetailActivity {
                 .collect(Collectors.toList());
 
         if (deletedScheduleItem.isEmpty()) {
-            updateTripDate(post.getId(), newStartDate, newEndDate);
+            updateTripDate(tripPlan.getId(), newStartDate, newEndDate);
         }
         else {
             StringBuilder stringBuilder = new StringBuilder();
@@ -337,7 +329,7 @@ public class EditablePostDetailActivity extends PostDetailActivity {
                         "Yes",
                         (dialogInterface, i) -> {
                             // Update trip dates
-                            updateTripDate(post.getId(), newStartDate, newEndDate);
+                            updateTripDate(tripPlan.getId(), newStartDate, newEndDate);
                             dialogInterface.dismiss();
                         }
                 )
@@ -348,7 +340,7 @@ public class EditablePostDetailActivity extends PostDetailActivity {
     private void updateTripDate(Integer postId, Date startDate, Date endDate) {
         SimpleLoadingDialog loadingDialog = new SimpleLoadingDialog(this);
         loadingDialog.show();
-        postService.changeTripDates(postId, startDate, endDate)
+        tripPlanService.changeTripDates(postId, startDate, endDate)
                 .enqueue(
                         new Callback<JsonArray>() {
                             @Override
@@ -361,8 +353,8 @@ public class EditablePostDetailActivity extends PostDetailActivity {
                                     return;
                                 }
 
-                                Post post = new Gson().fromJson(body.get(1).getAsJsonObject(), Post.class);
-                                currPostLiveData.postValue(post);
+                                TripPlan tripPlan = new Gson().fromJson(body.get(1).getAsJsonObject(), TripPlan.class);
+                                currPostLiveData.postValue(tripPlan);
                                 Snackbar
                                         .make(binding.getRoot(), "Updated trip dates.", Snackbar.LENGTH_SHORT)
                                         .show();
@@ -435,7 +427,7 @@ public class EditablePostDetailActivity extends PostDetailActivity {
     }
 
     private void deletePost() {
-        postService.delete(currPostLiveData.getValue().getId()).enqueue(new Callback<Integer>() {
+        tripPlanService.delete(currPostLiveData.getValue().getId()).enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 if (response.isSuccessful()) {
@@ -478,7 +470,7 @@ public class EditablePostDetailActivity extends PostDetailActivity {
 
     private void callUpdateApi(Properties properties, String successMsg, String failureMsg) {
         RequestBody postId = RequestBody.create(MediaType.parse("multipart/form-data"), currPostLiveData.getValue().getId().toString());
-        postService.updatePost(
+        tripPlanService.updatePost(
                         postId,
                         (RequestBody) properties.get("title"),
                         (RequestBody) properties.get("brief_description"),
@@ -490,15 +482,15 @@ public class EditablePostDetailActivity extends PostDetailActivity {
                     public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                         if (properties.containsKey("imageRealPath")) {
                             ((SimpleLoadingDialog) properties.get("loading")).dismiss();
-                            PathUtil.deleteTempFile(EditablePostDetailActivity.this, (String) properties.get("imageRealPath"));
+                            PathUtil.deleteTempFile(EditableTripPlanDetailActivity.this, (String) properties.get("imageRealPath"));
                         }
 
                         if (!response.isSuccessful()) return;
                         JsonArray body = response.body();
                         // Update success
                         if (body.get(0).getAsInt() == 1) {
-                            Post updatedPost = new Gson().fromJson(body.get(1).getAsJsonObject(), Post.class);
-                            currPostLiveData.postValue(updatedPost);
+                            TripPlan updatedTripPlan = new Gson().fromJson(body.get(1).getAsJsonObject(), TripPlan.class);
+                            currPostLiveData.postValue(updatedTripPlan);
 
                             if (successMsg != null) {
                                 Snackbar
@@ -512,7 +504,7 @@ public class EditablePostDetailActivity extends PostDetailActivity {
                     public void onFailure(Call<JsonArray> call, Throwable t) {
                         if (properties.containsKey("imageRealPath")) {
                             ((SimpleLoadingDialog) properties.get("loading")).dismiss();
-                            PathUtil.deleteTempFile(EditablePostDetailActivity.this, (String) properties.get("imageRealPath"));
+                            PathUtil.deleteTempFile(EditableTripPlanDetailActivity.this, (String) properties.get("imageRealPath"));
                         }
                         if (failureMsg != null) {
                             Snackbar

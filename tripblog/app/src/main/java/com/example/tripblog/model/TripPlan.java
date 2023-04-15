@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Post implements Serializable {
+public class TripPlan implements Serializable {
     private Integer id;
     private String title;
     @SerializedName("brief_description")
@@ -73,7 +73,7 @@ public class Post implements Serializable {
                 '}';
     }
 
-    public Post() {
+    public TripPlan() {
         this.isPublic = true;
     }
 

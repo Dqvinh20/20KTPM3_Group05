@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,25 +13,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
-import com.example.tripblog.api.services.PostService;
-import com.example.tripblog.databinding.FragmentProfileBinding;
-import com.example.tripblog.model.Post;
-import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.fragments.PublicPlanFragment;
-import com.example.tripblog.ui.post.EditablePostDetailActivity;
+import com.example.tripblog.api.services.TripPlanService;
+import com.example.tripblog.model.TripPlan;
+import com.example.tripblog.ui.tripPlan.EditableTripPlanDetailActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -42,7 +33,7 @@ import retrofit2.Response;
 
 public class PlanListAdapter extends ArrayAdapter<String> {
     Context context;
-    List<Post> list;
+    List<TripPlan> list;
     private boolean isEditable;
 
     @Override
@@ -53,7 +44,7 @@ public class PlanListAdapter extends ArrayAdapter<String> {
         return 0;
     }
 
-    public PlanListAdapter(@NonNull Context context, int layoutToBeInflated, List<Post> list, boolean isEditable) {
+    public PlanListAdapter(@NonNull Context context, int layoutToBeInflated, List<TripPlan> list, boolean isEditable) {
         super(context, layoutToBeInflated, new String[list.size()]);
         this.context = context;
         this.list = list;
@@ -87,7 +78,7 @@ public class PlanListAdapter extends ArrayAdapter<String> {
         row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent postDetail = new Intent(context, EditablePostDetailActivity.class);
+                Intent postDetail = new Intent(context, EditableTripPlanDetailActivity.class);
                 Bundle data = new Bundle();
                 data.putInt("postId", list.get(position).getId());
                 postDetail.putExtras(data);
@@ -114,8 +105,8 @@ public class PlanListAdapter extends ArrayAdapter<String> {
                                 .setPositiveButton("Yes, delete it", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        PostService postService = TripBlogApplication.createService(PostService.class);
-                                        postService.delete(list.get(position).getId()).enqueue(new Callback<Integer>() {
+                                        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+                                        tripPlanService.delete(list.get(position).getId()).enqueue(new Callback<Integer>() {
                                             @Override
                                             public void onResponse(Call<Integer> call, Response<Integer> response) {
                                                 if(response.isSuccessful()) {
@@ -142,7 +133,7 @@ public class PlanListAdapter extends ArrayAdapter<String> {
         return (row);
     }
 
-    public void updateData(List<Post> list) {
+    public void updateData(List<TripPlan> list) {
         this.list.addAll(list);
         notifyDataSetChanged();
     }

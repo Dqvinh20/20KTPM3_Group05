@@ -1,14 +1,12 @@
 package com.example.tripblog.ui.fragments;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +20,8 @@ import com.example.tripblog.model.Schedule;
 import com.example.tripblog.ui.dialog.ImagePreviewDialog;
 import com.example.tripblog.ui.interfaces.IOnClickListener;
 import com.example.tripblog.ui.map.MapActivity;
-import com.example.tripblog.ui.post.AddPlaceBottomSheet;
-import com.example.tripblog.ui.post.PostDetailActivity;
+import com.example.tripblog.ui.tripPlan.AddPlaceBottomSheet;
+import com.example.tripblog.ui.tripPlan.TripPlanDetailActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.JsonObject;
 
@@ -57,7 +55,6 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
         // Inflate the layout for this fragment
         binding = FragmentScheduleBinding.inflate(inflater, container, false);
         binding.contentRecyclerView.setAdapter(adapter);
-        ((PostDetailActivity) getActivity()).onFragmentLoaded();
         return binding.getRoot();
     }
 
@@ -102,7 +99,7 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                 if (data != null) {
                     Intent mapIntent = new Intent(getActivity(), MapActivity.class);
                     data.putSerializable("schedule", adapter.getScheduleList().get(data.getInt("schedulePos")));
-                    data.putString("tripTitle",((PostDetailActivity) getActivity()).getPostLiveData().getValue().getTitle());
+                    data.putString("tripTitle",((TripPlanDetailActivity) getActivity()).getPostLiveData().getValue().getTitle());
                     mapIntent.putExtras(data);
                     startActivity(mapIntent);
                 }
@@ -205,9 +202,10 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
         adapter.setEditable(editable);
     }
 
-    public void refresh() {
-        if (getArguments() != null) {
-            Bundle args =  getArguments();
+    @Override
+    public void setArguments(@Nullable Bundle args) {
+        super.setArguments(args);
+        if (args != null) {
             List<Schedule> schedules = (List<Schedule>) args.getSerializable("schedules");
             adapter.setScheduleList(schedules);
         }

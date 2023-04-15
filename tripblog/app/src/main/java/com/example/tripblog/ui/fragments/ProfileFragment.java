@@ -31,6 +31,7 @@ import com.example.tripblog.model.User;
 import com.example.tripblog.ui.adapter.PostViewPagerAdapter;
 import com.example.tripblog.ui.editprofile.EditProfile;
 import com.example.tripblog.ui.login.LoginActivity;
+import com.example.tripblog.utils.NumberUtil;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
@@ -48,17 +49,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
+    public static final String TAG = ProfileFragment.class.getSimpleName();
     FragmentProfileBinding binding;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
-
     private User currUser;
     private UserService userService;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
     private int currUserId = 2;
     private List<User> followingList;
+    ActivityResultLauncher<Intent> activityResultLauncher;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -76,6 +77,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(false);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        }
+
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -106,8 +112,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             binding.backBtn.setVisibility(isMyProfile != null && isMyProfile ? View.GONE : View.VISIBLE);
         }
         else {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(false);
-            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
             binding.backBtn.setVisibility(View.GONE);
         }
 
@@ -230,23 +235,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 t.printStackTrace();
             }
         });
-        Toast.makeText(getContext(), "Loaded", Toast.LENGTH_SHORT).show();
-        return binding.getRoot();
-    }
 
-    private void loadData(User user) {
-        binding.usernameTxt.setText(user.getUserName());
-
-        Glide.with(getContext())
-                .load(user.getAvatar())
-                .placeholder(R.drawable.img_placeholder)
-                .error(R.drawable.avatar)
-                .into(binding.avatar);
-
-        binding.followerTxt.setText(user.getFollowersCount().toString());
-        binding.followingTxt.setText(user.getFollowingsCount().toString());
-
-        binding.pager.setAdapter(new PostViewPagerAdapter(getActivity(), currUserId));
+        binding.pager.setAdapter(new PostViewPagerAdapter(this, currUserId));
+        binding.pager.setSaveEnabled(false);
         new TabLayoutMediator(binding.tabLayout, binding.pager, (tab, position) -> {
             switch(position) {
                 case 0:
@@ -257,6 +248,21 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     break;
             }
         }).attach();
+
+        return binding.getRoot();
+    }
+
+    private void loadData(User user) {
+        binding.usernameTxt.setText(user.getUserName());
+        Glide.with(getContext())
+                .load(user.getAvatar())
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.avatar)
+                .into(binding.avatar);
+
+        binding.followerTxt.setText(NumberUtil.formatShorter(user.getFollowersCount()));
+        binding.followingTxt.setText(NumberUtil.formatShorter(user.getFollowingsCount()));
+
         binding.followingCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -268,6 +274,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 fragmentTransaction.commit();
             }
         });
+
         binding.followersCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -297,16 +304,21 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onDestroy() {
-        if (getArguments() == null) {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        }
         super.onDestroy();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        int backStackCount = fragmentManager.getBackStackEntryCount();
+        if (backStackCount == 0) {
+            List<Fragment> fragments = fragmentManager.getFragments();
+            if (fragments.size() == 1 && fragments.get(0) instanceof HomeFragment) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+            }
+        }
+//
+
     }
 
     @Override
     public void onClick(View view) {
 
     }
-
-    ActivityResultLauncher<Intent> activityResultLauncher;
 }

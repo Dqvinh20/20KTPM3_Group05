@@ -7,8 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +15,13 @@ import android.view.inputmethod.InputMethodManager;
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.adapter.RatingItemAdapter;
-import com.example.tripblog.api.services.PostService;
+import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.api.services.RatingService;
 import com.example.tripblog.databinding.FragmentOverviewBinding;
-import com.example.tripblog.model.Post;
+import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.model.Rating;
-import com.example.tripblog.model.User;
 import com.example.tripblog.ui.dialog.RatePostDialog;
-import com.example.tripblog.ui.post.EditablePostDetailActivity;
-import com.example.tripblog.ui.post.PostDetailActivity;
+import com.example.tripblog.ui.tripPlan.EditableTripPlanDetailActivity;
 import com.example.tripblog.utils.NumberUtil;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -42,6 +38,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class OverviewFragment extends Fragment {
+    private static final String TAG = OverviewFragment.class.getSimpleName();
     private final short LIMIT_RATING_PER_REQ = 5;
     private final RatingItemAdapter ratingItemAdapter = new RatingItemAdapter();
     private final RatingService ratingService = TripBlogApplication.createService(RatingService.class);
@@ -57,6 +54,7 @@ public class OverviewFragment extends Fragment {
     private int currentPage = 1;
     private int maxPage = 1;
     private boolean isLoading = false;
+    private boolean isFirstLoad = true;
 
     public OverviewFragment() {
         // Required empty public constructor
@@ -69,10 +67,6 @@ public class OverviewFragment extends Fragment {
 
     public void setEditable(boolean editable) {
         isEditable = editable;
-        initEditableView();
-        if (!isEditable) {
-            fetchReviews();
-        }
     }
 
     @Override
@@ -81,16 +75,16 @@ public class OverviewFragment extends Fragment {
         // Inflate the layout for this
         binding = FragmentOverviewBinding.inflate(inflater, container, false);
         binding.ratingList.setAdapter(ratingItemAdapter);
-        binding.writeYourReviewBtn.setOnClickListener(view -> {
+        binding.writeYourRatingBtn.setOnClickListener(view -> {
             RatePostDialog ratePostDialog = new RatePostDialog(postId);
             ratePostDialog.show(getChildFragmentManager(), RatePostDialog.class.getSimpleName());
         });
-        binding.reviewTitle.setOnClickListener(new View.OnClickListener() {
+        binding.ratingTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isExpanded = !isExpanded;
                 int icon = isExpanded ? R.drawable.ic_baseline_arrow_drop_down_24 : R.drawable.ic_baseline_arrow_left_24;
-                binding.reviewTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, icon, 0);
+                binding.ratingTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, icon, 0);
                 binding.reviewExpandableLayout.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
             }
         });
@@ -98,16 +92,25 @@ public class OverviewFragment extends Fragment {
         binding.briefDescription.setTextIsSelectable(isEditable);
         binding.briefDescription.setFocusable(isEditable);
         binding.briefDescription.setCursorVisible(isEditable);
-
-        ((PostDetailActivity) getActivity()).onFragmentLoaded();
         return binding.getRoot();
+    }
+
+    @Override
+    public void setArguments(@Nullable Bundle args) {
+        super.setArguments(args);
+        if (args != null) {
+            postId = args.getInt("postId");
+            briefDescription = args.getString("briefDescription");
+            avgPoint = (float) args.getDouble("avgPoint");
+            avgCount = args.getInt("avgCount");
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        refresh();
         initScrollListener();
+        initEditableView();
     }
 
     public void showSnackbar(final String text) {
@@ -118,6 +121,10 @@ public class OverviewFragment extends Fragment {
     public void onResume() {
         super.onResume();
         loadDataToView();
+        if (isFirstLoad && postId != null) {
+            fetchRatings();
+            isFirstLoad = false;
+        }
     }
 
     private void initScrollListener() {
@@ -139,8 +146,6 @@ public class OverviewFragment extends Fragment {
     }
 
     private void initEditableView() {
-        if(isResumed()) return;
-
         binding.reviewLayout.setVisibility(isEditable ? View.GONE : View.VISIBLE);
         binding.briefDescription.setTextIsSelectable(isEditable);
         binding.briefDescription.setFocusableInTouchMode(isEditable);
@@ -208,11 +213,10 @@ public class OverviewFragment extends Fragment {
                 });
     }
 
-    private void fetchReviews() {
+    private void fetchRatings() {
         if (currentPage > maxPage) {
             return;
         }
-
         ratingService.getAllPostRatings(postId, currentPage, (int) LIMIT_RATING_PER_REQ)
                 .enqueue(new Callback<JsonObject>() {
                     @Override
@@ -226,22 +230,12 @@ public class OverviewFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<JsonObject> call, Throwable t) {
+                        t.printStackTrace();
                         Snackbar
                                 .make(binding.getRoot(), "Fail when load reviews", Snackbar.LENGTH_SHORT)
                                 .show();
                     }
                 });
-    }
-
-    public void refresh() {
-        if (getArguments() != null) {
-            Bundle args = getArguments();
-            postId = args.getInt("postId");
-            briefDescription = args.getString("briefDescription");
-            avgPoint = (float) args.getDouble("avgPoint");
-            avgCount = args.getInt("avgCount");
-            loadDataToView();
-        }
     }
 
     public void appendNewRating(Rating rating) {
@@ -272,7 +266,7 @@ public class OverviewFragment extends Fragment {
     }
 
     private void updateBriefDescription() {
-        PostService postService = TripBlogApplication.createService(PostService.class);
+        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
         RequestBody postIdBody = RequestBody.create(
                 MediaType.parse("multipart/form-data"),
                 postId.toString());
@@ -280,7 +274,7 @@ public class OverviewFragment extends Fragment {
                 MediaType.parse("multipart/form-data"),
                 binding.briefDescription.getText().toString());
 
-        postService.updatePost(
+        tripPlanService.updatePost(
                 postIdBody,
                 null,
                 briefDescriptionBody,
@@ -293,9 +287,9 @@ public class OverviewFragment extends Fragment {
                 JsonArray body = response.body();
                 // Update success
                 if (body.get(0).getAsInt() == 1) {
-                    Post updatedPost = new Gson().fromJson(body.get(1).getAsJsonObject(), Post.class);
-                    briefDescription = updatedPost.getBriefDescription();
-                    ((EditablePostDetailActivity) getActivity()).getPostLiveData().getValue().setBriefDescription(updatedPost.getBriefDescription());
+                    TripPlan updatedTripPlan = new Gson().fromJson(body.get(1).getAsJsonObject(), TripPlan.class);
+                    briefDescription = updatedTripPlan.getBriefDescription();
+                    ((EditableTripPlanDetailActivity) getActivity()).getPostLiveData().getValue().setBriefDescription(updatedTripPlan.getBriefDescription());
                 }
             }
 

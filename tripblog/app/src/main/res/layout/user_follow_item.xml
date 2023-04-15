@@ -29,7 +29,7 @@
             android:textStyle="bold"
             android:layout_weight="1"
             tools:text="@tools:sample/full_names"
-            android:layout_marginHorizontal="@dimen/margin_padding_size_small"
+            android:layout_marginHorizontal="@dimen/margin_padding_size_medium"
             />
 
     <com.google.android.material.button.MaterialButton

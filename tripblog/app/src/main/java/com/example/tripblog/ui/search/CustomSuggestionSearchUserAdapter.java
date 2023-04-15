@@ -39,19 +39,11 @@ public class CustomSuggestionSearchUserAdapter extends ArrayAdapter<String> {
 
         titleTextView.setText(userListBelow.get(position).getUserName());
         subTiltleTextView.setText(userListBelow.get(position).getUserNameNonAccent());
-//        Toast.makeText(context, "Hi", Toast.LENGTH_LONG).show();
         Glide.with(row)
                 .load(userListBelow.get(position).getAvatar())
-                .placeholder(R.drawable.app_logo_transparent)
-                .error(R.drawable.app_logo_transparent)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.avatar)
                 .into(icon_suggestion_search_imageview);
-//        row.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.i("id user: ",userListBelow.get(position).getId().toString());
-//
-//            }
-//        });
 
         return(row);
     }

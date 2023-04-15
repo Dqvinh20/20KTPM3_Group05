@@ -23,7 +23,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="@dimen/margin_padding_size_small"
-            android:layout_marginStart="@dimen/margin_padding_size_small"
             />
 
         <com.google.android.material.button.MaterialButton
@@ -172,11 +171,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?minTouchTargetSize"
                 android:background="@color/white"
-
                 app:tabMode="scrollable"
                 app:tabIndicatorColor="@color/quantum_orange800"
                 app:tabSelectedTextColor="@color/quantum_orange800"
-
                 app:tabSelectedTextAppearance="?attr/textAppearanceTitleMedium"
                 app:tabTextAppearance="?attr/textAppearanceTitleMedium"
                 app:tabTextColor="@color/quantum_grey600"

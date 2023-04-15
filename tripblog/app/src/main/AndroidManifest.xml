@@ -73,15 +73,15 @@ Dangerous
             android:name=".ui.search.Search"
             android:exported="false" />
         <activity
-            android:name=".ui.post.ViewSearchList"
+            android:name=".ui.tripPlan.ViewSearchList"
             android:exported="false" />
         <activity
-            android:name=".ui.post.PostDetailActivity"
+            android:name=".ui.tripPlan.TripPlanDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.Tripblog.PostDetail"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
-            android:name=".ui.post.EditablePostDetailActivity"
+            android:name=".ui.tripPlan.EditableTripPlanDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.Tripblog.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustPan" />

@@ -6,7 +6,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -20,21 +19,16 @@ import android.text.TextWatcher;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
-import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.ActivityUpdateProfileBinding;
 //import com.example.tripblog.model.AuthResponse;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.SimpleLoadingDialog;
-import com.example.tripblog.ui.login.LoginActivity;
 import com.example.tripblog.utils.PathUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -43,8 +37,6 @@ import com.google.gson.JsonArray;
 
 import java.io.File;
 import java.util.Properties;
-
-import javax.xml.validation.Validator;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;

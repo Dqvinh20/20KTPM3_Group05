@@ -6,6 +6,7 @@
     tools:context=".ui.fragments.HomeFragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/colorOnPrimary"
     >
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,12 +29,12 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Featured guides from users"
                 android:textAppearance="?attr/textAppearanceHeadlineMedium"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:layout_marginTop="@dimen/margin_padding_size_medium"
                 android:layout_marginBottom="@dimen/margin_padding_size_small"
+                android:text="Most attractive trip plans"
                 />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -50,7 +51,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Latest post"
+                android:text="Latest trip plans"
                 android:textAppearance="?attr/textAppearanceHeadlineMedium"
                 android:textColor="@color/black"
                 android:textStyle="bold"

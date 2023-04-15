@@ -17,13 +17,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingVertical="@dimen/post_detail_item_margin_vertical"
+        android:paddingTop="@dimen/margin_padding_size_medium"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:focusableInTouchMode="true"
         android:descendantFocusability="beforeDescendants"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/schedule_item_layout"
-        tools:itemCount="3"
+        tools:itemCount="1"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

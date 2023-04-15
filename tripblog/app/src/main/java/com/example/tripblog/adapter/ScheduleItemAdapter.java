@@ -1,7 +1,6 @@
 package com.example.tripblog.adapter;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,22 +10,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tripblog.R;
 import com.example.tripblog.model.Location;
 import com.example.tripblog.model.Schedule;
-import com.example.tripblog.ui.fragments.ScheduleFragment;
 import com.example.tripblog.ui.interfaces.IOnClickListener;
-import com.example.tripblog.ui.post.AddPlaceBottomSheet;
-import com.example.tripblog.ui.post.PostDetailActivity;
 import com.example.tripblog.utils.ColorUtil;
 import com.google.android.material.divider.MaterialDivider;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;

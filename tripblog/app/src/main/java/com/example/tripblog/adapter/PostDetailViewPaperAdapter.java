@@ -1,7 +1,6 @@
 package com.example.tripblog.adapter;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -12,7 +11,6 @@ import com.example.tripblog.ui.fragments.OverviewFragment;
 import com.example.tripblog.ui.fragments.ScheduleFragment;
 
 public class PostDetailViewPaperAdapter extends FragmentStateAdapter {
-    private final String TAG = PostDetailViewPaperAdapter.class.getSimpleName();
     private OverviewFragment overviewFragment = new OverviewFragment();
     private ScheduleFragment scheduleFragment = new ScheduleFragment();
     private boolean isEditable = false;
@@ -37,14 +35,14 @@ public class PostDetailViewPaperAdapter extends FragmentStateAdapter {
         return overviewFragment;
     }
 
-    public void refreshFragmentData(int position, Bundle args) {
+    public void setFragmentData(int position, Bundle args) {
         if (position == 1) {
             scheduleFragment.setArguments(args);
-            scheduleFragment.refresh();
+            scheduleFragment.onResume();
         }
         else {
             overviewFragment.setArguments(args);
-            overviewFragment.refresh();
+            overviewFragment.onResume();
         }
         notifyItemChanged(position);
     }
@@ -54,10 +52,10 @@ public class PostDetailViewPaperAdapter extends FragmentStateAdapter {
         return 2;
     }
 
-    public Fragment get(int position) {
-        if (position == 1) {
-            return scheduleFragment;
-        }
-        return overviewFragment;
-    }
+//    public Fragment get(int position) {
+//        if (position == 1) {
+//            return scheduleFragment;
+//        }
+//        return overviewFragment;
+//    }
 }

@@ -1,11 +1,8 @@
 package com.example.tripblog.api.services;
 //import com.example.tripblog.model.AuthResponse;
-import com.example.tripblog.model.Post;
 import com.example.tripblog.model.User;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import java.util.Properties;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

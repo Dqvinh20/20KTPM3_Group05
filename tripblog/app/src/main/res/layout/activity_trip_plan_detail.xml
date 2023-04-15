@@ -31,11 +31,11 @@
             >
 
             <FrameLayout
-                app:cardBackgroundColor="@android:color/white"
+                app:cardBackgroundColor="?attr/colorOnPrimary"
                 android:gravity="bottom|center"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/white"
+                android:background="?attr/colorOnPrimary"
                 >
                 <ImageView
                     android:id="@+id/coverImg"
@@ -49,19 +49,20 @@
                     android:clipChildren="false"
                     app:cardElevation="10dp"
                     app:cardCornerRadius="10dp"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="@dimen/margin_padding_size_medium"
                     app:cardPreventCornerOverlap="true"
                     android:layout_marginTop="70dp"
-                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginHorizontal="@dimen/margin_padding_size_large"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
                     <LinearLayout
-                        android:paddingHorizontal="20dp"
-                        android:paddingVertical="12dp"
+                        android:paddingHorizontal="@dimen/margin_padding_size_large"
+                        android:paddingVertical="@dimen/margin_padding_size_medium"
                         android:orientation="vertical"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        >
 
                         <EditText
                             android:text=""
@@ -71,7 +72,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@null"
-                            android:paddingVertical="20dp"
+                            android:paddingVertical="@dimen/margin_padding_size_large"
                             android:textStyle="bold"
                             android:inputType="text|textMultiLine"
                             android:scrollHorizontally="false"
@@ -83,7 +84,7 @@
                             android:maxLength="180"
                             />
                         <RelativeLayout
-                            android:paddingVertical="4dp"
+                            android:paddingVertical="@dimen/margin_padding_size_small"
                             android:gravity="center_vertical"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -97,11 +98,11 @@
                             android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
                             android:drawableLeft="@drawable/ic_baseline_calendar_month_24"
-                            android:drawablePadding="8dp"
+                            android:drawablePadding="@dimen/margin_padding_size_small"
                             android:stateListAnimator="@null"
                             android:backgroundTint="@android:color/transparent"
                             android:background="@null"
-                            android:textColor="#9B9B9B"
+                            android:textColor="@color/quantum_black_hint_text"
                             android:textStyle="bold"
                             android:textAllCaps="false"
                             android:paddingHorizontal="0dp"
@@ -110,8 +111,8 @@
                             <com.google.android.material.imageview.ShapeableImageView
                                 android:clickable="true"
                                 android:id="@+id/authorAvatar"
-                                android:layout_width="48dp"
-                                android:layout_height="48dp"
+                                android:layout_width="?minTouchTargetSize"
+                                android:layout_height="?minTouchTargetSize"
                                 android:layout_alignParentEnd="true"
                                 android:layout_centerVertical="true"
                                 android:layout_gravity="center"
@@ -119,7 +120,7 @@
                                 android:scaleType="centerCrop"
                                 app:srcCompat="@drawable/img_placeholder"
                                 app:shapeAppearanceOverlay="@style/CircleAvatar"
-                                app:strokeColor="@color/white"
+                                app:strokeColor="?attr/colorOnPrimary"
                                 app:strokeWidth="2dp"
                                 android:stateListAnimator="@animator/button_scale_animator"
                                 />
@@ -131,7 +132,7 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
-                app:contentInsetEnd="56dp"
+                app:contentInsetEnd="?attr/actionBarSize"
                 app:contentInsetStartWithNavigation="0dp"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/transparent"
@@ -148,16 +149,21 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             app:tabGravity="start"
-            app:tabPadding="10dp"
-            app:tabIndicatorColor="@color/teal_700"
             app:tabIndicatorGravity="bottom"
-            app:tabMode="scrollable"
-            app:tabRippleColor="@color/teal_700"
-            app:tabSelectedTextColor="@color/teal_700"
-            app:tabBackground="@android:color/white"
+            app:tabBackground="?attr/colorOnPrimary"
             android:contentDescription="TAB LAYOUT"
+            android:background="?attr/colorOnPrimary"
+            app:tabMode="scrollable"
+            app:tabIndicatorColor="@color/quantum_orange800"
+            app:tabSelectedTextColor="@color/quantum_orange800"
+            app:tabSelectedTextAppearance="?attr/textAppearanceTitleMedium"
+            app:tabTextAppearance="?attr/textAppearanceTitleMedium"
+            app:tabTextColor="@color/quantum_grey600"
+            app:tabIndicatorFullWidth="true"
+            app:tabPaddingStart="@dimen/margin_padding_size_large"
+            app:tabPaddingEnd="@dimen/margin_padding_size_large"
+            android:clipToPadding="false"
             android:hint=""
             />
     </com.google.android.material.appbar.AppBarLayout>
@@ -166,38 +172,30 @@
         android:id="@+id/contentViewPaper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
+        android:visibility="visible"
+        android:background="@color/quantum_grey100"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-        android:layout_marginBottom="?minTouchTargetSize"
-        android:visibility="gone"
+        android:fitsSystemWindows="true"
+        android:clipToPadding="false"
+        android:paddingBottom="?minTouchTargetSize"
         />
-
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:orientation="vertical"-->
-<!--        android:fillViewport="true"-->
-<!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">-->
-
-<!--        -->
-
-<!--    </LinearLayout>-->
 
     <View
         android:layout_width="match_parent"
         android:layout_height="4dp"
+        android:background="@drawable/shadow"
         app:layout_anchorGravity="top"
         app:layout_anchor="@id/bottomAppBar"
-        android:background="@drawable/shadow"/>
-
+        />
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="?minTouchTargetSize"
+        android:visibility="visible"
         android:layout_gravity="bottom"
+        app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior"
         >
-    <RelativeLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
@@ -220,7 +218,7 @@
                 android:layout_toRightOf="@+id/likeBtn"
                 android:layout_toLeftOf="@id/shareBtn"
                 app:iconGravity="textStart"
-                app:iconPadding="8dp"
+                app:iconPadding="@dimen/margin_padding_size_small"
                 app:icon="@drawable/ic_outline_remove_red_eye_24"
                 android:maxLines="1"
                 android:text="@string/view_txt"

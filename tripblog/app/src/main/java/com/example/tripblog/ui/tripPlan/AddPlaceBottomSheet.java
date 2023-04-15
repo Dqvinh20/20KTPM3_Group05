@@ -1,4 +1,4 @@
-package com.example.tripblog.ui.post;
+package com.example.tripblog.ui.tripPlan;
 
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -12,7 +12,6 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.adapter.SearchResultAdapter;
@@ -20,7 +19,6 @@ import com.example.tripblog.api.services.SearchService;
 import com.example.tripblog.databinding.BottomSheetSearchPlacesBinding;
 import com.example.tripblog.model.Location;
 import com.example.tripblog.model.response.SearchResponse;
-import com.example.tripblog.ui.fragments.ScheduleFragment;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 

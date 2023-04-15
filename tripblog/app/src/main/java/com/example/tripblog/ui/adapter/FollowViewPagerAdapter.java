@@ -13,8 +13,8 @@ import com.example.tripblog.ui.fragments.FollowingFragment;
 public class FollowViewPagerAdapter extends FragmentStateAdapter {
 
     private int currUserId;
-    public FollowViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, int currUserId) {
-        super(fragmentActivity);
+    public FollowViewPagerAdapter(@NonNull Fragment fragment, int currUserId) {
+        super(fragment);
         this.currUserId = currUserId;
     }
 

@@ -39,8 +39,7 @@ public class CustomSuggestionSearchLocationAdapter extends ArrayAdapter<String> 
         titleTextView.setText(listLocation.get(position).getName());
         subTiltleTextView.setText(listLocation.get(position).getFormattedAddress());
 
-        icon_suggestion_search_imageview.setImageResource(R.drawable.market_location);
-
+        icon_suggestion_search_imageview.setImageResource(R.drawable.ic_baseline_location_on_24);
         return(row);
     }
 }

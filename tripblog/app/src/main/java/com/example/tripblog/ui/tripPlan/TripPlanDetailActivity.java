@@ -1,4 +1,4 @@
-package com.example.tripblog.ui.post;
+package com.example.tripblog.ui.tripPlan;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,16 +6,12 @@ import androidx.core.view.ViewCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,16 +22,14 @@ import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.adapter.PostDetailViewPaperAdapter;
-import com.example.tripblog.api.services.PostService;
+import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.api.services.UserService;
-import com.example.tripblog.databinding.ActivityPostDetailBinding;
-import com.example.tripblog.model.Post;
+import com.example.tripblog.databinding.ActivityTripPlanDetailBinding;
+import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.model.User;
+import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.fragments.ProfileFragment;
-import com.example.tripblog.ui.map.MapActivity;
 import com.example.tripblog.utils.NumberUtil;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -46,7 +40,6 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,24 +48,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PostDetailActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String TAG = PostDetailActivity.class.getSimpleName();
+public class TripPlanDetailActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = TripPlanDetailActivity.class.getSimpleName();
     protected final String DATE_PATTERN = "MMM d"; // "d/M/yy"
-    protected ActivityPostDetailBinding binding;
-    protected MutableLiveData<Post> currPostLiveData = new MutableLiveData<>();
+    protected ActivityTripPlanDetailBinding binding;
+    protected MutableLiveData<TripPlan> currPostLiveData = new MutableLiveData<>();
     protected PostDetailViewPaperAdapter contentViewPaperAdapter;
-    protected final PostService postService = TripBlogApplication.createService(PostService.class);
+    protected final TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
     protected boolean isEditable = false;
     private boolean isLoading = false;
 
-    public MutableLiveData<Post> getPostLiveData() {
+    public MutableLiveData<TripPlan> getPostLiveData() {
         return currPostLiveData;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityPostDetailBinding.inflate(getLayoutInflater());
+        binding = ActivityTripPlanDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
 
@@ -92,35 +85,53 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
         binding.authorAvatar.setOnClickListener(this);
 
         // Auto reload view
-        currPostLiveData.observe(this, new Observer<Post>() {
+        currPostLiveData.observe(this, new Observer<TripPlan>() {
             @Override
-            public void onChanged(Post post) {
+            public void onChanged(TripPlan tripPlan) {
                 loadData();
             }
         });
 
-        currPostLiveData.observe(this, new Observer<Post>() {
+        currPostLiveData.observe(this, new Observer<TripPlan>() {
             @Override
-            public void onChanged(Post post) {
+            public void onChanged(TripPlan tripPlan) {
                 Bundle data = new Bundle();
-                data.putString("briefDescription", post.getBriefDescription());
-                data.putInt("postId", post.getId());
-                data.putDouble("avgPoint", post.getAvgRating());
-                data.putInt("avgCount", post.getRatingCount());
-                contentViewPaperAdapter.refreshFragmentData(0, data);
+                data.putString("briefDescription", tripPlan.getBriefDescription());
+                data.putInt("postId", tripPlan.getId());
+                data.putDouble("avgPoint", tripPlan.getAvgRating());
+                data.putInt("avgCount", tripPlan.getRatingCount());
+                contentViewPaperAdapter.setFragmentData(0, data);
             }
         });
 
         fetchData();
         reloadEditableView();
     }
-    public void onFragmentLoaded() {
-        contentViewPaperAdapter.setEditable(isEditable);
-    }
     protected void reloadEditableView() {
+        binding.authorAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                User author = currPostLiveData.getValue().getAuthor();
+                if (author == null || author.getId() == TripBlogApplication.getInstance().getLoggedUser().getId()) {
+                    return;
+                }
+                Intent result = new Intent();
+                Bundle data = new Bundle();
+                data.putInt("userId", author.getId());
+                result.putExtras(data);
+                setResult(MainActivity.TRIP_PLAN_REQ_CODE, result);
+                finishAfterTransition();
+            }
+        });
+
         // View pager
-        contentViewPaperAdapter = new PostDetailViewPaperAdapter(PostDetailActivity.this);
+        contentViewPaperAdapter = new PostDetailViewPaperAdapter(TripPlanDetailActivity.this);
+        contentViewPaperAdapter.setEditable(isEditable);
+
         binding.contentViewPaper.setAdapter(contentViewPaperAdapter);
+        if (isEditable) {
+            binding.contentViewPaper.setPadding(0,0,0, 0);
+        }
         binding.tabLayout.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
                     @Override
@@ -134,6 +145,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
                     public void onTabReselected(TabLayout.Tab tab) {}
                 }
         );
+
         new TabLayoutMediator(binding.tabLayout, binding.contentViewPaper, (tab, position) -> {
             switch (position) {
                 case 0:
@@ -192,7 +204,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
 
         if (bundle != null && bundle.containsKey("post")) {
             // Load from bundle
-            currPostLiveData.postValue((Post) bundle.getSerializable("post"));
+            currPostLiveData.postValue((TripPlan) bundle.getSerializable("post"));
         }
         else {
             // Load data from internet
@@ -201,66 +213,66 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             // Increase view
             if (!isEditable) {
                 // View only
-                postService.increaseView(postId).enqueue(new Callback<Post>() {
+                tripPlanService.increaseView(postId).enqueue(new Callback<TripPlan>() {
                     @Override
-                    public void onResponse(Call<Post> call, Response<Post> response) {
+                    public void onResponse(Call<TripPlan> call, Response<TripPlan> response) {
                         if (response.isSuccessful()) {
                             currPostLiveData.postValue(response.body());
                         }
                     }
                     @Override
-                    public void onFailure(Call<Post> call, Throwable t) {}
+                    public void onFailure(Call<TripPlan> call, Throwable t) {}
                 });
             }
 
-            postService.getPostById(postId).enqueue(new Callback<Post>() {
+            tripPlanService.getTripPlanById(postId).enqueue(new Callback<TripPlan>() {
                 @Override
-                public void onResponse(Call<Post> call, Response<Post> response) {
-                    Post post = response.body();
-                    if (post.getId() == null) return;
-                    currPostLiveData.postValue(post);
+                public void onResponse(Call<TripPlan> call, Response<TripPlan> response) {
+                    TripPlan tripPlan = response.body();
+                    if (tripPlan.getId() == null) return;
+                    currPostLiveData.postValue(tripPlan);
                 }
 
                 @Override
-                public void onFailure(Call<Post> call, Throwable t) {
+                public void onFailure(Call<TripPlan> call, Throwable t) {
                     Snackbar
-                        .make(binding.getRoot(), "Can't connect to server", Snackbar.LENGTH_SHORT)
-                        .show();
+                            .make(binding.getRoot(), "Can't connect to server", Snackbar.LENGTH_SHORT)
+                            .show();
                 }
             });
         }
     }
     protected void loadData() {
-        Post currPost = currPostLiveData.getValue();
-        if (currPost == null) return;
+        TripPlan currTripPlan = currPostLiveData.getValue();
+        if (currTripPlan == null) return;
 
-        if (currPost.getSchedules() != null) {
+        if (currTripPlan.getSchedules() != null) {
             Bundle args = new Bundle();
-            args.putSerializable("schedules",(Serializable) currPost.getSchedules());
-            contentViewPaperAdapter.refreshFragmentData(1, args);
+            args.putSerializable("schedules",(Serializable) currTripPlan.getSchedules());
+            contentViewPaperAdapter.setFragmentData(1, args);
         }
 
-        binding.tripTitle.setText(currPost.getTitle());
-        binding.collapseToolbarLayout.setTitle(currPost.getTitle());
-        setTripDatesText(currPost.getStartDate(), currPost.getEndDate(), DATE_PATTERN);
+        binding.tripTitle.setText(currTripPlan.getTitle());
+        binding.collapseToolbarLayout.setTitle(currTripPlan.getTitle());
+        setTripDatesText(currTripPlan.getStartDate(), currTripPlan.getEndDate(), DATE_PATTERN);
 
-        String formattedViewCount = NumberUtil.formatShorter(currPost.getViewCount());
+        String formattedViewCount = NumberUtil.formatShorter(currTripPlan.getViewCount());
         binding.viewCountTxt.setText(String.join(" ",formattedViewCount , getString(R.string.view_txt)));
 
-        String formattedLikeCount = NumberUtil.formatShorter(currPost.getLikeCount());
+        String formattedLikeCount = NumberUtil.formatShorter(currTripPlan.getLikeCount());
         binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
-        binding.likeBtn.setChecked(currPost.isLikedByYou());
+        binding.likeBtn.setChecked(currTripPlan.isLikedByYou());
 
         // Load cover img
         Glide.with(binding.getRoot())
-                .load(currPost.getCoverImg())
+                .load(currTripPlan.getCoverImg())
                 .placeholder(R.drawable.img_placeholder)
                 .error(R.drawable.img_placeholder)
                 .into(binding.coverImg);
-        
+
         // Load author avatar
         Glide.with(binding.getRoot())
-                .load(currPost.getAuthor().getAvatar())
+                .load(currTripPlan.getAuthor().getAvatar())
                 .centerCrop()
                 .into(binding.authorAvatar);
 
@@ -289,14 +301,14 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             if (isLoading) return;
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             UserService userService = TripBlogApplication.createService(UserService.class);
-            Post post = currPostLiveData.getValue();
-            int likedCount = post.getLikeCount();
-            boolean isLiked = post.isLikedByYou();
+            TripPlan tripPlan = currPostLiveData.getValue();
+            int likedCount = tripPlan.getLikeCount();
+            boolean isLiked = tripPlan.isLikedByYou();
 
             if (isLiked) {
                 executorService.execute(() -> {
                     try {
-                        userService.unlikePost(post.getId()).execute();
+                        userService.unlikePost(tripPlan.getId()).execute();
                         isLoading = false;
                     } catch (IOException e) {}
                 });
@@ -304,17 +316,17 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             else {
                 executorService.execute(() -> {
                     try {
-                        userService.likePost(post.getId()).execute();
+                        userService.likePost(tripPlan.getId()).execute();
                         isLoading = false;
                     } catch (IOException e) {}
                 });
             }
             executorService.shutdown();
-            post.setLikedByYou(!isLiked);
-            post.setLikeCount(likedCount + (!isLiked ? 1 : -1));
+            tripPlan.setLikedByYou(!isLiked);
+            tripPlan.setLikeCount(likedCount + (!isLiked ? 1 : -1));
 
             // Update like button text
-            String formattedLikeCount = NumberUtil.formatShorter(post.getLikeCount());
+            String formattedLikeCount = NumberUtil.formatShorter(tripPlan.getLikeCount());
             binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
         }
         else if (view.getId() == R.id.shareBtn) {
@@ -333,7 +345,7 @@ public class PostDetailActivity extends AppCompatActivity implements View.OnClic
             User loggedUser = TripBlogApplication.getInstance().getLoggedUser();
             if (!author.getId().equals(loggedUser.getId())) {
                 // TODO: Open author profile
-                Intent intent = new Intent(PostDetailActivity.this, ProfileFragment.class);
+                Intent intent = new Intent(TripPlanDetailActivity.this, ProfileFragment.class);
 //                startActivity(in);
             }
         }

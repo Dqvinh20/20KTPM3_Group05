@@ -1,28 +1,23 @@
 package com.example.tripblog.ui.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager2.widget.ViewPager2;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
-import com.example.tripblog.api.services.PostService;
-import com.example.tripblog.model.Post;
+import com.example.tripblog.api.services.TripPlanService;
+import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.adapter.PlanListAdapter;
-import com.example.tripblog.ui.adapter.PostViewPagerAdapter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
@@ -76,22 +71,22 @@ public class PrivatePlanFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        PostService postService = TripBlogApplication.createService(PostService.class);
-        postService.getPostByUserId(currUserId, false).enqueue(new Callback<JsonArray>() {
+        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+        tripPlanService.getTripPlanByUserId(currUserId, false).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if(response.isSuccessful()) {
                     JsonArray postJsonArray = response.body().getAsJsonArray();
                     Gson gson = new Gson();
-                    Type postListType = new TypeToken<List<Post>>(){}.getType();
-                    List<Post> postList = gson.fromJson(postJsonArray, postListType);
+                    Type postListType = new TypeToken<List<TripPlan>>(){}.getType();
+                    List<TripPlan> tripPlanList = gson.fromJson(postJsonArray, postListType);
 
-                    if(postList.size() != 0) {
+                    if(tripPlanList.size() != 0) {
                         if(currUserId == loggedUser.getId())
                             isEditable = true;
                         else
                             isEditable = false;
-                        adapter = new PlanListAdapter(getActivity(), R.layout.plan_item, postList, isEditable);
+                        adapter = new PlanListAdapter(getActivity(), R.layout.plan_item, tripPlanList, isEditable);
                         planList.setAdapter(adapter);
                     }
                     else{

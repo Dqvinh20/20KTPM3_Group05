@@ -35,14 +35,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FollowingFragment extends Fragment {
+    private static final String TAG = FollowDialogFragment.class.getSimpleName();
     private ProgressBar loadingProgressBar;
     private static final String ARG_PARAM1 = "param1";
     private int currUserId;
     public FollowingFragment() {
         // Required empty public constructor
     }
-
-
     public static FollowingFragment newInstance(int currUserId) {
         FollowingFragment fragment = new FollowingFragment();
         Bundle args = new Bundle();
@@ -54,8 +53,8 @@ public class FollowingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
+
     private UserFollowAdapter adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

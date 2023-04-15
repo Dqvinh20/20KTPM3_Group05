@@ -12,10 +12,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:contentPaddingLeft="@dimen/content_item_padding_horizontal"
-        app:contentPaddingRight="@dimen/content_item_padding_horizontal"
-        app:contentPaddingTop="10dp"
-        app:contentPaddingBottom="10dp"
+        app:contentPaddingLeft="@dimen/margin_padding_size_medium"
+        app:contentPaddingRight="@dimen/margin_padding_size_medium"
+        app:contentPaddingTop="@dimen/margin_padding_size_small"
+        app:contentPaddingBottom="@dimen/margin_padding_size_small"
         app:cardElevation="0dp"
         app:cardBackgroundColor="?attr/colorOnPrimary"
         style="?attr/materialCardViewElevatedStyle"
@@ -51,7 +51,7 @@
                     android:layout_height="?attr/actionBarSize"
                     android:orientation="vertical"
                     android:layout_toRightOf="@id/avatarContainer"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="@dimen/margin_padding_size_medium"
                     android:gravity="center_vertical"
                     android:layout_centerVertical="true"
                     >
@@ -82,7 +82,7 @@
                 app:layout_constraintTop_toBottomOf="@id/topLayout"
                 tools:text="@tools:sample/lorem/random"
                 android:maxLength="1000"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="@dimen/margin_padding_size_small"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

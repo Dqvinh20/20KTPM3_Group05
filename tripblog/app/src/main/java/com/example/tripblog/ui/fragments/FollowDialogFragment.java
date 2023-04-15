@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,15 +23,15 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class FollowDialogFragment extends DialogFragment {
+    private static final String TAG = FollowDialogFragment.class.getSimpleName();
     DialogFollowBinding binding;
     private static final String ARG_PARAM1 = "param1";
     private int tabPosition;
     private int currUserId;
     private String currUserName;
 
-    public FollowDialogFragment() {
+    public FollowDialogFragment() {}
 
-    }
     public FollowDialogFragment(String currUserName, int tabPosition) {
         // Required empty public constructor
         this.tabPosition = tabPosition;
@@ -64,7 +65,7 @@ public class FollowDialogFragment extends DialogFragment {
             currUserId = getArguments().getInt(ARG_PARAM1);
         }
         binding = DialogFollowBinding.inflate(inflater, container, false);
-        binding.pager.setAdapter(new FollowViewPagerAdapter(getActivity(), currUserId));
+        binding.pager.setAdapter(new FollowViewPagerAdapter(this, currUserId));
 
         if(tabPosition == 1){
             binding.pager.setCurrentItem(tabPosition);
@@ -84,6 +85,7 @@ public class FollowDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 dismiss();
+                getActivity().getSupportFragmentManager().popBackStack();
             }
         });
         binding.nameTxt.setText(currUserName);

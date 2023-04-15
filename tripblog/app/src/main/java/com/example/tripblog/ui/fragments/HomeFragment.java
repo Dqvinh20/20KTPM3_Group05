@@ -18,11 +18,11 @@ import android.widget.Toast;
 
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
-import com.example.tripblog.api.services.PostService;
-import com.example.tripblog.model.Post;
+import com.example.tripblog.api.services.TripPlanService;
+import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.component.HomePostAdapter;
-import com.example.tripblog.ui.post.PostDetailActivity;
+import com.example.tripblog.ui.tripPlan.TripPlanDetailActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -37,7 +37,7 @@ import retrofit2.Response;
 
 public class HomeFragment extends Fragment
         implements HomePostAdapter.ItemClickListener {
-    private final String TAG = HomeFragment.class.getSimpleName();
+    public static final String TAG = HomeFragment.class.getSimpleName();
     private final Integer LIMIT_PER_PAGE = 4;
     ImageNewsFeedFragment imageNewsFeedFragment;
     FragmentTransaction ft;
@@ -61,12 +61,12 @@ public class HomeFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
         ft = getChildFragmentManager().beginTransaction();
         imageNewsFeedFragment = ImageNewsFeedFragment.newInstance("Image Infor");
         ft.replace(R.id.infornewsfeed, imageNewsFeedFragment);
         ft.commit();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -77,7 +77,7 @@ public class HomeFragment extends Fragment
         latestPostAdapter.setItemClickListener(this);
         popularPosts.setAdapter(popularPostsAdapter);
         lastedPosts.setAdapter(latestPostAdapter);
-        PostService postService = TripBlogApplication.createService(PostService.class);
+        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
         scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View view, int i, int i1, int i2, int i3) {
@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment
                             Log.v("...", "Last Item Wow !");
 
                             // Do pagination.. i.e. fetch new data
-                            postService.getNewestPost(nextPage, LIMIT_PER_PAGE).enqueue(new Callback<JsonObject>() {
+                            tripPlanService.getNewestTripPlans(nextPage, LIMIT_PER_PAGE).enqueue(new Callback<JsonObject>() {
                                 @Override
                                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                                     JsonObject data = response.body();
@@ -98,7 +98,7 @@ public class HomeFragment extends Fragment
                                     maxPage = data.get("maxPage").getAsInt();
 
                                     JsonArray list = data.getAsJsonArray("data");
-                                    List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                                    List<TripPlan> listpost = new Gson().fromJson(list, new TypeToken<List<TripPlan>>(){}.getType());
                                     latestPostAdapter.appendList(listpost);
                                     isLoading = false;
                                 }
@@ -120,15 +120,15 @@ public class HomeFragment extends Fragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        PostService postService = TripBlogApplication.createService(PostService.class);
-        postService.getPopularPost(
+        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+        tripPlanService.getPopularTripPlans(
                 1,10
         ).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if (response.isSuccessful()) {
                     JsonArray list = response.body();
-                    List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                    List<TripPlan> listpost = new Gson().fromJson(list, new TypeToken<List<TripPlan>>(){}.getType());
                     popularPostsAdapter.setListPost(listpost);//1
                 }
             }
@@ -139,7 +139,7 @@ public class HomeFragment extends Fragment
                         .show();
             }
         });
-        postService.getNewestPost(1,4).enqueue(new Callback<JsonObject>() {
+        tripPlanService.getNewestTripPlans(1,4).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 JsonObject data = response.body();
@@ -148,7 +148,7 @@ public class HomeFragment extends Fragment
                 maxPage = data.get("maxPage").getAsInt();
 
                 JsonArray list = data.getAsJsonArray("data");
-                List<Post> listpost = new Gson().fromJson(list, new TypeToken<List<Post>>(){}.getType());
+                List<TripPlan> listpost = new Gson().fromJson(list, new TypeToken<List<TripPlan>>(){}.getType());
                 latestPostAdapter.setListPost(listpost);
             }
 
@@ -166,8 +166,8 @@ public class HomeFragment extends Fragment
 
     @Override
     public void onItemClick(Integer postId) {
-        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+        Intent intent = new Intent(getActivity(), TripPlanDetailActivity.class);
         intent.putExtra("postId", postId);
-        startActivity(intent);
+        ((MainActivity) getActivity()).getActivityResultLauncher().launch(intent);
     }
 }

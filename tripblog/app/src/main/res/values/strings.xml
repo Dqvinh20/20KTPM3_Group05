@@ -26,8 +26,8 @@
     <string name="public_txt">Public</string>
     <string name="private_txt">Private</string>
     <string name="privacy_setting">Privacy Settings</string>
-    <string name="public_scope">Anyone can view your post</string>
-    <string name="private_scope">Only you can view your post</string>
+    <string name="public_scope">Anyone can view your tripPlan</string>
+    <string name="private_scope">Only you can view your tripPlan</string>
     <string name="reset_password">Reset password</string>
     <string name="success">Success</string>
     <string name="success_message">New password have send to your email!</string>
@@ -46,7 +46,7 @@
     <string name="add_place_title">Add a place</string>
     <string name="search_place_hint">Search by name</string>
     <string name="delete_post_title">Delete</string>
-    <string name="delete_post_message">Are you sure yout want to delete this post?</string>
+    <string name="delete_post_message">Are you sure yout want to delete this tripPlan?</string>
     <string name="brief_description_hint">Enter a brief description about your lovely trip...</string>
     <string name="content_rating_hint">Write your thoughts about the trip...</string>
 

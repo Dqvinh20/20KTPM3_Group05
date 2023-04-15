@@ -29,16 +29,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Post rating"
+            android:text="Trip plan rating"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
             android:gravity="center_horizontal"
-            android:layout_marginBottom="6dp"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Provide your feedback"
+            android:text="Provide your rating about the trip"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:gravity="center_horizontal"
             />
@@ -52,25 +52,40 @@
             android:stepSize="1"
             android:isIndicator="false"
             style="@style/Widget.Tripblog.GoldenRatingBar"
-            android:layout_marginVertical="12dp"
+            android:layout_marginVertical="@dimen/margin_padding_size_medium"
             />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:counterMaxLength="400"
+            app:hintEnabled="false"
+            app:helperTextEnabled="false"
+            >
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@id/contentEdit"
-            android:maxLength="400"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="start"
             android:textAlignment="gravity"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            android:background="@drawable/rating_content_edit_bg"
             android:hint="@string/content_rating_hint"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="12dp"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginBottom="12dp"
-            android:inputType="textMultiLine"
+            android:paddingHorizontal="@dimen/margin_padding_size_medium"
+            android:paddingVertical="@dimen/margin_padding_size_medium"
+            android:layout_marginHorizontal="@dimen/margin_padding_size_small"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
+            android:inputType="text|textMultiLine"
+            android:minLines="7"
+            android:maxLines="9"
+            android:ellipsize="end"
+            android:maxLength="400"
+            tools:text="@tools:sample/lorem/random"
             />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--        android:background="@drawable/rating_content_edit_bg"-->
+        <!--            android:textColor="?attr/colorOnPrimaryContainer"-->
 
         <LinearLayout
             android:layout_width="match_parent"

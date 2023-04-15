@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,28 +14,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
-import com.example.tripblog.model.Post;
+import com.example.tripblog.model.TripPlan;
 
 import java.util.List;
 
 public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.HomePostViewHolder>{
     private int layoutOrientation;
-    private List<Post> listPost;
+    private List<TripPlan> listTripPlan;
     private ItemClickListener itemClickListener;
 
     public HomePostAdapter(@NonNull int layoutOrientation) {
         this.layoutOrientation = layoutOrientation;
     }
 
-    public void setListPost(List<Post> listPost){
-        this.listPost = listPost;
+    public void setListPost(List<TripPlan> listTripPlan){
+        this.listTripPlan = listTripPlan;
         notifyDataSetChanged();
     }
 
-    public void appendList(List<Post> listPost) {
-        if (listPost != null) {
-            int lastPos = this.listPost.size() - 1;
-            this.listPost.addAll(listPost);
+    public void appendList(List<TripPlan> listTripPlan) {
+        if (listTripPlan != null) {
+            int lastPos = this.listTripPlan.size() - 1;
+            this.listTripPlan.addAll(listTripPlan);
             notifyItemChanged(lastPos);
         }
     }
@@ -58,22 +57,22 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.HomePo
 
     @Override
     public void onBindViewHolder(@NonNull HomePostViewHolder holder, int position) {
-        if(listPost.size() == 0){
+        if(listTripPlan.size() == 0){
             return;
         }
-        holder.namelb.setText(listPost.get(position).getAuthor().getUserName());
-        holder.tiltelb.setText(listPost.get(position).getTitle());
-        holder.briefDeslb.setText(listPost.get(position).getBriefDescription());
-        holder.viewlb.setText(listPost.get(position).getViewCount().toString()+" views");
+        holder.namelb.setText(listTripPlan.get(position).getAuthor().getUserName());
+        holder.tiltelb.setText(listTripPlan.get(position).getTitle());
+        holder.briefDeslb.setText(listTripPlan.get(position).getBriefDescription());
+        holder.viewlb.setText(listTripPlan.get(position).getViewCount().toString()+" views");
 
         Glide.with(holder.itemView)
-                .load(listPost.get(position).getCoverImg())
+                .load(listTripPlan.get(position).getCoverImg())
                 .placeholder(R.drawable.img_placeholder)
                 .error(R.drawable.no_cover_img)
                 .into(holder.imageView);
 
         Glide.with(holder.itemView)
-                .load(listPost.get(position).getAuthor().getAvatar())
+                .load(listTripPlan.get(position).getAuthor().getAvatar())
                 .placeholder(R.drawable.img_placeholder)
                 .error(R.drawable.avatar)
                 .into(holder.icon);
@@ -92,7 +91,7 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.HomePo
 //        }
 
         holder.itemView.setOnClickListener(view -> {
-            itemClickListener.onItemClick(listPost.get(position).getId());
+            itemClickListener.onItemClick(listTripPlan.get(position).getId());
         });
 
         holder.itemView.setOnTouchListener(new View.OnTouchListener() {
@@ -120,7 +119,7 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.HomePo
     }
     @Override
     public int getItemCount() {
-        if(listPost != null) return listPost.size();
+        if(listTripPlan != null) return listTripPlan.size();
         return 0;
     }
 

@@ -1,5 +1,9 @@
 package com.example.tripblog.ui;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
@@ -10,7 +14,6 @@ import androidx.fragment.app.FragmentTransaction;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -24,6 +27,7 @@ import com.example.tripblog.ui.fragments.HomeFragment;
 import com.example.tripblog.ui.fragments.CreateFragment;
 import com.example.tripblog.ui.fragments.ProfileFragment;
 import com.example.tripblog.ui.search.Search;
+import com.google.android.material.snackbar.Snackbar;
 //import com.karumi.dexter.Dexter;
 //import com.karumi.dexter.PermissionToken;
 //import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -32,32 +36,57 @@ import com.example.tripblog.ui.search.Search;
 //import com.karumi.dexter.listener.single.PermissionListener;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks{
+    public static int TRIP_PLAN_REQ_CODE = 1;
+    public static int SEARCH_REQ_CODE = 2;
+
     private String TAG = MainActivity.class.getSimpleName();
+
     ActivityMainBinding binding;
-    private Integer currFragment = null;
     private long lastClickTime = 0;
     private NotificationManagerCompat notificationManagerCompat;
 
     HomeFragment homeFragment = new HomeFragment();
     ProfileFragment profileFragment = new ProfileFragment();
 
+    ActivityResultLauncher<Intent> activityResultLauncher;
+    public ActivityResultLauncher<Intent> getActivityResultLauncher() {
+        return activityResultLauncher;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getData() != null) {
+                            if (result.getResultCode() == TRIP_PLAN_REQ_CODE) {
+                                Bundle data = result.getData().getExtras();
+                                Integer userId = data.getInt("userId");
+                                openUserProfile(userId);
+                            }
+                            else if (result.getResultCode() == SEARCH_REQ_CODE) {
+                                Bundle data = result.getData().getExtras();
+                                Integer userId = data.getInt("userId");
+                                openUserProfile(userId);
+                            }
+                        }
+                    }
+                }
+        );
+
+
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-            if (currFragment != null && item.getItemId() == currFragment) {
-                return false;
-            }
-
             if (item.getItemId() == R.id.home) {
-                replaceFragment(homeFragment);
+                replaceFragment(homeFragment, homeFragment.TAG);
             } else if (item.getItemId() == R.id.profile) {
-                replaceFragment(profileFragment);
+                replaceFragment(profileFragment, profileFragment.TAG);
             }
-
-            currFragment = item.getItemId();
             return true;
         });
         binding.bottomNavigationView.setSelectedItemId(R.id.home);
@@ -68,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             }
             lastClickTime = SystemClock.elapsedRealtime();
             // Open create post dialog
-            displayCreatePostDialog();
+            displayCreateTripPlanDialogFragment();
         });
 
         notificationManagerCompat = NotificationManagerCompat.from(this);
@@ -78,8 +107,12 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
 //            Log.i("MainActivity","Start service");
 //            startService(Serviceintent);
 //        }
+    }
 
-//        logout();
+    public void showSnackBarInfo(String text) {
+        Snackbar.make(binding.getRoot(), text, Snackbar.LENGTH_SHORT)
+                .setAnchorView(binding.create)
+                .show();
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -94,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         return false;
     }
 
-    private void displayCreatePostDialog() {
+    private void displayCreateTripPlanDialogFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         CreateFragment createFragment = CreateFragment.newInstance();
@@ -113,14 +146,14 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             case R.id.action_search:
                 Intent intent=new Intent(MainActivity.this, Search.class);
                 intent.setAction(Intent.ACTION_VIEW);
-                startActivityForResult(intent, 1122);
+//                startActivityForResult(intent, 1122);
+                activityResultLauncher.launch(intent);
                 // User chose the "Settings" item, show the app settings UI...
                 return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -137,18 +170,26 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
 //        moveTaskToBack(true);
 //        finish();
     }
-    private void replaceFragment(Fragment fragment) {
+    private void replaceFragment(Fragment fragment, String name) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
+//        fragmentTransaction.addToBackStack(name);
         fragmentTransaction.commit();
     }
 
     @Override
     public void onMsgFromFragToMain(String sender, String strValue) {
         if(sender.equals("CREATE_TRIP_BTN")){
-            displayCreatePostDialog();
+            displayCreateTripPlanDialogFragment();
         }
+    }
+    public void openUserProfile(Integer userId) {
+        Fragment fragment = ProfileFragment.newInstance(userId, false);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.frameLayout, fragment);
+        transaction.addToBackStack(ProfileFragment.TAG);
+        transaction.commit();
     }
 }

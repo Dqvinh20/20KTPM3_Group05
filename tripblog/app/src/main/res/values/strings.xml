@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">TripBlog</string>
+    <string name="app_name" translatable="false">TripShare</string>
     <!-- Strings used for login -->
     <string name="login_title">Login</string>
     <string name="signup_title">Sign up</string>
@@ -18,7 +18,7 @@
     <string name="pass_required_err">Password is required</string>
     <string name="invalid_confirm_pass_err">Confirm password does not match</string>
     <string name="create_post_title">Plan new trip</string>
-    <string name="edit_trip_title">Trip Title</string>
+    <string name="edit_trip_title">Trip title</string>
     <string name="edit_trip_title_hint" translatable="false">E.g., Trip to Vietnam...</string>
     <string name="trip_dates">Dates</string>
     <string name="start_date">Start date</string>
@@ -49,6 +49,10 @@
     <string name="delete_post_message">Are you sure yout want to delete this tripPlan?</string>
     <string name="brief_description_hint">Enter a brief description about your lovely trip...</string>
     <string name="content_rating_hint">Write your thoughts about the trip...</string>
+    <string name="edit_trip_title_required">Trip title *</string>
+    <string name="edit_trip_dates_title_required">Dates *</string>
+    <string name="edit_brief_description_title">Brief description</string>
+    <string name="pick_cover_img_title_required">Pick a cover image about the trip! *</string>
 
     <!--    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>-->
 </resources>

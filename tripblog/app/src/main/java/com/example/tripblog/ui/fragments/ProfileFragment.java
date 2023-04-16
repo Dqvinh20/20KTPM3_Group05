@@ -1,25 +1,19 @@
 package com.example.tripblog.ui.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager2.widget.ViewPager2;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import android.widget.Button;
 
 import com.bumptech.glide.Glide;
@@ -28,13 +22,13 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.FragmentProfileBinding;
 import com.example.tripblog.model.User;
+import com.example.tripblog.ui.MainActivity;
 import com.example.tripblog.ui.adapter.PostViewPagerAdapter;
 import com.example.tripblog.ui.editprofile.EditProfile;
 import com.example.tripblog.ui.login.LoginActivity;
 import com.example.tripblog.utils.NumberUtil;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -51,13 +45,11 @@ import retrofit2.Response;
 public class ProfileFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = ProfileFragment.class.getSimpleName();
     FragmentProfileBinding binding;
-    private TabLayout tabLayout;
-    private ViewPager2 viewPager;
-    private User currUser;
     private UserService userService;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private int currUserId = 2;
+    private User currUserData;
     private List<User> followingList;
     ActivityResultLauncher<Intent> activityResultLauncher;
 
@@ -77,11 +69,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getActivity() != null) {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setShowHideAnimationEnabled(false);
-            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-        }
+        ((MainActivity) requireActivity()).hideAppBar();
 
+        userService = TripBlogApplication.createService(UserService.class);
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -98,13 +88,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         );
     }
 
-    @SuppressLint("RestrictedApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(inflater, container, false);
-        userService = TripBlogApplication.createService(UserService.class);
 
         if (getArguments() != null) {
             currUserId = getArguments().getInt(ARG_PARAM1);
@@ -112,13 +100,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             binding.backBtn.setVisibility(isMyProfile != null && isMyProfile ? View.GONE : View.VISIBLE);
         }
         else {
-
             binding.backBtn.setVisibility(View.GONE);
         }
-
-        binding.backBtn.setOnClickListener((view) -> {
-            getActivity().getSupportFragmentManager().popBackStack();
-        });
 
         if(currUserId == TripBlogApplication.getInstance().getLoggedUser().getId()) {
             binding.followBtn.setVisibility(View.GONE);
@@ -127,27 +110,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         else {
             binding.followBtn.setVisibility(View.VISIBLE);
             binding.moreSettingProfileBtn.setVisibility(View.GONE);
-            userService.getUserFollowing(TripBlogApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
-                @Override
-                public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
-                    if(response.isSuccessful()) {
-                        JsonArray rawData = response.body().getAsJsonArray();
-                        JsonObject jsonObject = (JsonObject) rawData.get(0);
-                        JsonArray followingJsonArray = jsonObject.getAsJsonArray("followings");
-                        Gson gson = new Gson();
-                        Type userListType = new TypeToken<List<User>>() {}.getType();
-                        followingList = gson.fromJson(followingJsonArray, userListType);
-
-                        boolean isFollowing = followingList.parallelStream().anyMatch(user -> user.getId() == currUserId);
-                        binding.followBtn.setChecked(isFollowing);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonArray> call, Throwable t) {
-                    t.printStackTrace();
-                }
-            });
+            getLoggedUserFollowings();
         }
 
         binding.followBtn.addOnCheckedChangeListener(new MaterialButton.OnCheckedChangeListener() {
@@ -163,78 +126,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
-        binding.followBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (binding.followBtn.isChecked()) {
-                    userService.followUser(currUserId).enqueue(new Callback<JsonObject>() {
-                        @Override
-                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {}
 
-                        @Override
-                        public void onFailure(Call<JsonObject> call, Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
-                } else {
-                    userService.unfollowUser(currUserId).enqueue(new Callback<JsonObject>() {
-                        @Override
-                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        }
-
-                        @Override
-                        public void onFailure(Call<JsonObject> call, Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
-                }
-            }
-        });
-        binding.moreSettingProfileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                View v = getLayoutInflater().inflate(R.layout.setting_profile_layout,null);
-                BottomSheetDialog popupSetting = new BottomSheetDialog(getContext());
-                popupSetting.setContentView(v);
-                popupSetting.show();
-
-                Button logout = (Button) v.findViewById(R.id.logout);
-                logout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        TripBlogApplication.logout(getContext());
-                        Intent loginPage = new Intent(getContext(), LoginActivity.class);
-                        popupSetting.dismiss();
-                        getActivity().finish();
-                        startActivity(loginPage);
-                    }
-                });
-                Button editProfile =(Button) v.findViewById(R.id.editProfile);
-                editProfile.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        popupSetting.dismiss();
-                        Intent intent = new Intent(getActivity(), EditProfile.class);
-                        activityResultLauncher.launch(intent);
-                    }
-                });
-            }
-        });
-        userService.getUserById(currUserId).enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if(response.isSuccessful()) {
-                    User user = response.body();
-                    if (user == null) return;
-                    loadData(user);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+        binding.followBtn.setOnClickListener(this);
+        binding.backBtn.setOnClickListener(this);
+        binding.moreSettingProfileBtn.setOnClickListener(this);
+        binding.followingCount.setOnClickListener(this);
+        binding.followersCount.setOnClickListener(this);
 
         binding.pager.setAdapter(new PostViewPagerAdapter(this, currUserId));
         binding.pager.setSaveEnabled(false);
@@ -249,57 +146,24 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             }
         }).attach();
 
+        userService.getUserById(currUserId).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.isSuccessful()) {
+                    User user = response.body();
+                    if (user == null) return;
+                    loadData(user);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                t.printStackTrace();
+                ((MainActivity) requireActivity()).showSnackBarInfo("Can't connect to server");
+            }
+        });
+
         return binding.getRoot();
-    }
-
-    private void loadData(User user) {
-        binding.usernameTxt.setText(user.getUserName());
-        Glide.with(getContext())
-                .load(user.getAvatar())
-                .placeholder(R.drawable.img_placeholder)
-                .error(R.drawable.avatar)
-                .into(binding.avatar);
-
-        binding.followerTxt.setText(NumberUtil.formatShorter(user.getFollowersCount()));
-        binding.followingTxt.setText(NumberUtil.formatShorter(user.getFollowingsCount()));
-
-        binding.followingCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, user.getUserName(),1);
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(R.id.frameLayout, fragment);
-                fragmentTransaction.addToBackStack(FollowDialogFragment.class.getSimpleName());
-                fragmentTransaction.commit();
-            }
-        });
-
-        binding.followersCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, user.getUserName(),0);
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(R.id.frameLayout, fragment);
-                fragmentTransaction.addToBackStack(FollowDialogFragment.class.getSimpleName());
-                fragmentTransaction.commit();
-            }
-        });
-    }
-
-    private void updateUI() {
-        currUser = TripBlogApplication.getInstance().getLoggedUser();
-        binding.usernameTxt.setText(currUser.getUserName());
-        Glide.with(binding.getRoot())
-                .load(currUser.getAvatar())
-                .placeholder(R.drawable.da_lat)
-                .error(R.drawable.da_lat)
-                .into(binding.avatar);
-    }
-
-    public void updateUserData(User newUserData) {
-        this.currUser = newUserData;
     }
 
     @Override
@@ -310,15 +174,142 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         if (backStackCount == 0) {
             List<Fragment> fragments = fragmentManager.getFragments();
             if (fragments.size() == 1 && fragments.get(0) instanceof HomeFragment) {
-                ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+                ((MainActivity) getActivity()).showAppBar();
             }
         }
-//
-
     }
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.followBtn:
+                onFollowBtnClick();
+                break;
+            case R.id.moreSettingProfileBtn:
+                onMoreSettingsClick();
+                break;
+            case R.id.backBtn:
+                getActivity().getSupportFragmentManager().popBackStack();
+                break;
+            case R.id.followersCount:
+                openFollowDialogFragment(currUserData.getUserName(), 0);
+                break;
 
+            case R.id.followingCount:
+                openFollowDialogFragment(currUserData.getUserName(), 1);
+                break;
+            default:
+                break;
+        }
     }
+
+    private void loadData(User user) {
+        currUserData = user;
+        binding.usernameTxt.setText(user.getUserName());
+        Glide.with(getContext())
+                .load(user.getAvatar())
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.avatar)
+                .into(binding.avatar);
+
+        binding.followerTxt.setText(NumberUtil.formatShorter(user.getFollowersCount()));
+        binding.followingTxt.setText(NumberUtil.formatShorter(user.getFollowingsCount()));
+    }
+
+    private void updateUI() {
+        User currLoggedUser = TripBlogApplication.getInstance().getLoggedUser();
+        binding.usernameTxt.setText(currLoggedUser.getUserName());
+        Glide.with(binding.getRoot())
+                .load(currLoggedUser.getAvatar())
+                .placeholder(R.drawable.da_lat)
+                .error(R.drawable.da_lat)
+                .into(binding.avatar);
+    }
+
+    private void getLoggedUserFollowings() {
+        userService.getUserFollowing(TripBlogApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
+            @Override
+            public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                if(response.isSuccessful()) {
+                    JsonArray rawData = response.body().getAsJsonArray();
+                    JsonObject jsonObject = (JsonObject) rawData.get(0);
+                    JsonArray followingJsonArray = jsonObject.getAsJsonArray("followings");
+                    Gson gson = new Gson();
+                    Type userListType = new TypeToken<List<User>>() {}.getType();
+                    followingList = gson.fromJson(followingJsonArray, userListType);
+
+                    boolean isFollowing = followingList.parallelStream().anyMatch(user -> user.getId() == currUserId);
+                    binding.followBtn.setChecked(isFollowing);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonArray> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    public void onFollowBtnClick() {
+        if (binding.followBtn.isChecked()) {
+            userService.followUser(currUserId).enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {}
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        } else {
+            userService.unfollowUser(currUserId).enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        }
+    }
+
+    private void onMoreSettingsClick() {
+        View v = getLayoutInflater().inflate(R.layout.setting_profile_layout,null);
+        BottomSheetDialog popupSetting = new BottomSheetDialog(getContext());
+        popupSetting.setContentView(v);
+        popupSetting.show();
+
+        Button logout = (Button) v.findViewById(R.id.logout);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TripBlogApplication.logout(getContext());
+                Intent loginPage = new Intent(getContext(), LoginActivity.class);
+                popupSetting.dismiss();
+                getActivity().finish();
+                startActivity(loginPage);
+            }
+        });
+        Button editProfile =(Button) v.findViewById(R.id.editProfile);
+        editProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popupSetting.dismiss();
+                Intent intent = new Intent(getActivity(), EditProfile.class);
+                activityResultLauncher.launch(intent);
+            }
+        });
+    }
+
+    private void openFollowDialogFragment(String username, int tabPosition) {
+        FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, username,tabPosition);
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.frameLayout, fragment);
+        fragmentTransaction.addToBackStack(FollowDialogFragment.class.getSimpleName());
+        fragmentTransaction.commit();
+    }
+
 }

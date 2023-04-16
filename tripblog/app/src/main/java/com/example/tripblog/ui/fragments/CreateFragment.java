@@ -1,22 +1,28 @@
 package com.example.tripblog.ui.fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.core.util.Pair;
 
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
@@ -26,30 +32,46 @@ import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.databinding.FragmentCreateBinding;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.ui.MainActivity;
+import com.example.tripblog.ui.SimpleLoadingDialog;
 import com.example.tripblog.ui.tripPlan.EditableTripPlanDetailActivity;
+import com.example.tripblog.utils.PathUtil;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateFragment extends DialogFragment {
+public class CreateFragment extends DialogFragment
+    implements View.OnClickListener, TextWatcher
+{
     private static final String TAG = CreateFragment.class.getSimpleName();
+    private final String DATE_PATTERN = "MMM d, yyyy";
+    private final String SUBMIT_DATE_PATTERN = "yyyy-MM-dd";
     FragmentCreateBinding binding;
     private MaterialDatePicker tripDates = null;
     private String title;
     private Date startDate = null;
     private Date endDate = null;
     private boolean isPublic = true;
+    private Uri coverImgUri = null;
+
+    ActivityResultLauncher<Intent> activityResultLauncher;
+    ActivityResultLauncher<String> permissionLauncher;
 
     public CreateFragment() {
         // Required empty public constructor
@@ -77,9 +99,35 @@ public class CreateFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
-        setStyle(STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_NoActionBar);
+        permissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                new ActivityResultCallback<Boolean>() {
+                    @Override
+                    public void onActivityResult(Boolean result) {
+                        if (result) {
+                            openGallery();
+                        }
+                    }
+                }
+        );
+
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK  && result.getData() != null) {
+                            final Uri imageUri = result.getData().getData();
+                            coverImgUri = imageUri;
+                            binding.coverImg.setImageURI(imageUri);
+                            binding.coverImg.setVisibility(View.VISIBLE);
+                            toggleCreateBtnOnValidInput();
+                        }
+                    }
+                }
+        );
+
+        setStyle(STYLE_NO_TITLE, R.style.Theme_Tripblog_NoActionBar);
     }
 
     @Override
@@ -87,32 +135,51 @@ public class CreateFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentCreateBinding.inflate(inflater, container,false);
-        binding.close.setOnClickListener(view -> this.dismiss());
-        binding.tripDatesLayout.setOnClickListener(view -> onTripDatesPicker());
-        binding.privacySetting.setOnClickListener(view -> openPrivacySettingBottomSheet());
-        binding.createPost.setOnClickListener(view -> {
-            hideKeyboard(view);
-            if (validateInput()) {
-                createPost();
+        binding.close.setOnClickListener(this);
+        binding.tripDatesLayout.setOnClickListener(this);
+        binding.privacySetting.setOnClickListener(this);
+        binding.imgChooser.setOnClickListener(this);
+
+        binding.createTripPlanBtn.setOnClickListener(this);
+        binding.createTripPlanBtn.setEnabled(false);
+
+        binding.editTripTitle.addTextChangedListener(this);
+
+        // Hide keyboard when click outside edittext
+        binding.container.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    hideKeyboard(view);
+                }
             }
         });
-
-        if (savedInstanceState != null) {
-            title = savedInstanceState.getString("title");
-            startDate = (Date) savedInstanceState.getSerializable("start_date");
-            endDate = (Date) savedInstanceState.getSerializable("end_date");
-            binding.startDate.setText(formatDate(startDate));
-            binding.endDate.setText(formatDate(endDate));
-        }
-
-        binding.getRoot().setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                hideKeyboard(v);
-            }
-            return false;
-        });
-
         return binding.getRoot();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.coverImg:
+            case R.id.imgChooser:
+                permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+                break;
+            case R.id.close:
+                dismiss();
+                break;
+            case R.id.createTripPlanBtn:
+                hideKeyboard(view);
+                createTripPlan();
+                break;
+            case R.id.tripDatesLayout:
+                onTripDatesPicker();
+                break;
+            case R.id.privacySetting:
+                openPrivacySettingBottomSheet();
+                break;
+            default:
+                break;
+        }
     }
 
     private void hideKeyboard(View v) {
@@ -121,8 +188,8 @@ public class CreateFragment extends DialogFragment {
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
-    private String formatDate(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
+    private String formatDate(Date date, String pattern) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
         return sdf.format(date);
     }
 
@@ -161,12 +228,14 @@ public class CreateFragment extends DialogFragment {
                 // Get start date
                 cal.setTimeInMillis(dates.first);
                 startDate = cal.getTime();
-                binding.startDate.setText(formatDate(cal.getTime()));
+                binding.startDate.setText(formatDate(cal.getTime(), DATE_PATTERN));
 
                 // Get end date
                 cal.setTimeInMillis(dates.second);
                 endDate = cal.getTime();
-                binding.endDate.setText(formatDate(cal.getTime()));
+                binding.endDate.setText(formatDate(cal.getTime(), DATE_PATTERN));
+
+                toggleCreateBtnOnValidInput();
             }));
         }
 
@@ -205,49 +274,99 @@ public class CreateFragment extends DialogFragment {
 
     private boolean validateInput() {
         if (binding.editTripTitle.getText().toString().isEmpty()) {
-            binding.editTripTitle.requestFocus();
-            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-            Snackbar
-                    .make(binding.getRoot(), "You must enter trip title!", Snackbar.LENGTH_LONG)
-                    .show();
             return false;
         }
 
         if (startDate == null || endDate == null) {
-            Snackbar
-                    .make(binding.getRoot(), "You must choose dates for trip!", Snackbar.LENGTH_LONG)
-                    .show();
             return false;
         }
+
+        if (coverImgUri == null) {
+            return false;
+        }
+
         return true;
     }
 
-    private void createPost() {
-        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
-        tripPlanService.createNewTripPlan(
-                binding.editTripTitle.getText().toString(),
-                startDate,
-                endDate,
-                isPublic,
-                TripBlogApplication.getInstance().getLoggedUser().getId()
-        ).enqueue(new Callback<TripPlan>() {
+    private void toggleCreateBtnOnValidInput() {
+        binding.createTripPlanBtn.setEnabled(validateInput());
+    }
+
+    private void createTripPlan() {
+        SimpleLoadingDialog simpleLoadingDialog = new SimpleLoadingDialog(getContext());
+        simpleLoadingDialog.show();
+        String tripTitle = binding.editTripTitle.getText().toString();
+        String briefDescription = binding.editTripBriefDescription.getText().toString();
+        String startDateStr = formatDate(startDate, SUBMIT_DATE_PATTERN);
+        String endDateStr = formatDate(endDate, SUBMIT_DATE_PATTERN);
+        String createdBy = TripBlogApplication.getInstance().getLoggedUser().getId().toString();
+
+        RequestBody tripTitleBody = RequestBody.create(MediaType.parse("multipart/form-data"), tripTitle);
+        RequestBody briefDescriptionBody = RequestBody.create(MediaType.parse("multipart/form-data"), briefDescription);
+        RequestBody startDateBody = RequestBody.create(MediaType.parse("multipart/form-data"), startDateStr);
+        RequestBody endDateBody = RequestBody.create(MediaType.parse("multipart/form-data"), endDateStr);
+        RequestBody isPublicBody = RequestBody.create(MediaType.parse("multipart/form-data"), String.valueOf(isPublic));
+        RequestBody createdByBody = RequestBody.create(MediaType.parse("multipart/form-data"), createdBy);
+
+        String imageRealPath = PathUtil.getRealPath(getContext(), coverImgUri);
+        File coverImgFile = new File(imageRealPath);
+        RequestBody coverImg = RequestBody.create(MediaType.parse("multipart/form-data"), coverImgFile);
+        MultipartBody.Part coverImgBody = MultipartBody.Part.createFormData("cover_img", coverImgFile.getName(), coverImg);
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
             @Override
-            public void onResponse(Call<TripPlan> call, Response<TripPlan> response) {
-                if (response.isSuccessful()) {
-                    TripPlan newTripPlan = response.body();
-                    Log.d(TAG, "Created post: " + newTripPlan.toString());
-                    openEditPostDetail(newTripPlan.getId());
-                }
-            }
-            @Override
-            public void onFailure(Call<TripPlan> call, Throwable t) {
-                Snackbar
-                        .make(binding.getRoot(), "Fail to connect to server", Snackbar.LENGTH_LONG)
+            public void run() {
+                try {
+                    TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+                    Call<TripPlan> createNewTripCall = tripPlanService.createNewTripPlan(
+                            tripTitleBody,
+                            startDateBody,
+                            endDateBody,
+                            isPublicBody,
+                            createdByBody,
+                            briefDescriptionBody,
+                            coverImgBody
+                    );
+                    Response<TripPlan> response = createNewTripCall.execute();
+                    simpleLoadingDialog.dismiss();
+                    if (response.isSuccessful()) {
+                        TripPlan newTripPlan = response.body();
+                        openEditPostDetail(newTripPlan.getId());
+                    }
+                } catch (IOException e) {
+                    Snackbar
+                        .make(binding.getRoot(), "Fail to connect to server", Snackbar.LENGTH_SHORT)
                         .setAction("Retry", view -> {
-                            createPost();
+                            createTripPlan();
                         })
                         .show();
+                    simpleLoadingDialog.dismiss();
+                }
             }
         });
+
+        executorService.shutdown();
     }
+
+    // Image chooser
+    protected void openGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        activityResultLauncher.launch(Intent.createChooser(intent, "Select Picture"));
+    }
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    }
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+        toggleCreateBtnOnValidInput();
+    }
+
+
 }

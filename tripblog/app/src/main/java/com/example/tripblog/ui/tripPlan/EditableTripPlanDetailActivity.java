@@ -62,11 +62,26 @@ public class EditableTripPlanDetailActivity extends TripPlanDetailActivity {
     private static final String TAG = EditableTripPlanDetailActivity.class.getSimpleName();
     private MaterialDatePicker<Pair<Long, Long>> tripDatesRangePicker;
     private MaterialDatePicker.Builder<Pair<Long, Long>> builder;
+    ActivityResultLauncher<Intent> activityResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         isEditable = true;
         super.onCreate(savedInstanceState);
+
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK  && result.getData() != null) {
+
+                            final Uri imageUri = result.getData().getData();
+                            updateCoverImg(imageUri);
+                        }
+                    }
+                }
+        );
 
         currPostLiveData.observe(this, new Observer<TripPlan>() {
             @Override
@@ -543,17 +558,4 @@ public class EditableTripPlanDetailActivity extends TripPlanDetailActivity {
             }
         }
     }
-    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK  && result.getData() != null) {
-
-                        final Uri imageUri = result.getData().getData();
-                        updateCoverImg(imageUri);
-                    }
-                }
-            }
-    );
 }

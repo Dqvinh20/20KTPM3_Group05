@@ -44,4 +44,8 @@
     <string name="delete_post_message">Bạn có chắc muốn xoá bài viết không</string>
     <string name="brief_description_hint">Mô tả ngắn ngọn về chuyến đi của bạn...</string>
     <string name="content_rating_hint">Bạn đánh giá như thế nào về chuyến đi...</string>
+    <string name="edit_trip_title_required">Tên chuyến đi *</string>
+    <string name="edit_trip_dates_title_required">Chọn ngày đi ngày về *</string>
+    <string name="edit_brief_description_title">Mô tả về chuyến đi</string>
+    <string name="pick_cover_img_title_required">Chọn ảnh nền của chuyến đi *</string>
 </resources>

@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 
 import com.example.tripblog.R;
 import com.example.tripblog.databinding.ActivityMainBinding;
@@ -44,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
     ActivityMainBinding binding;
     private long lastClickTime = 0;
     private NotificationManagerCompat notificationManagerCompat;
-
     HomeFragment homeFragment = new HomeFragment();
     ProfileFragment profileFragment = new ProfileFragment();
 
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        setSupportActionBar(binding.toolbar);
 
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -79,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
                     }
                 }
         );
-
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.home) {
@@ -146,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
             case R.id.action_search:
                 Intent intent=new Intent(MainActivity.this, Search.class);
                 intent.setAction(Intent.ACTION_VIEW);
-//                startActivityForResult(intent, 1122);
                 activityResultLauncher.launch(intent);
                 // User chose the "Settings" item, show the app settings UI...
                 return true;
@@ -159,23 +160,15 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.search_trip_and_location, menu);
+        getMenuInflater().inflate(R.menu.search_trip_and_location, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-//        moveTaskToBack(true);
-//        finish();
-    }
     private void replaceFragment(Fragment fragment, String name) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
-//        fragmentTransaction.addToBackStack(name);
         fragmentTransaction.commit();
     }
 
@@ -191,5 +184,14 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         transaction.add(R.id.frameLayout, fragment);
         transaction.addToBackStack(ProfileFragment.TAG);
         transaction.commit();
+    }
+
+    public void showAppBar() {
+        getSupportActionBar().setShowHideAnimationEnabled(false);
+        getSupportActionBar().show();
+    }
+
+    public void hideAppBar() {
+        getSupportActionBar().hide();
     }
 }

@@ -5,6 +5,7 @@
         android:id="@+id/action_search"
         android:title="Search"
         android:icon="@android:drawable/ic_menu_search"
-        app:showAsAction="ifRoom"
+        android:iconTint="?colorOnPrimaryContainer"
+        app:showAsAction="always"
         />
 </menu>

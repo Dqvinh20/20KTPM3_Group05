@@ -10,7 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@color/black"
-        android:dividerHeight="0.3dp">
+        android:dividerHeight="1dp"
+        tools:listitem="@layout/plan_item"
+        >
     </ListView>
     <TextView
         android:id="@+id/noPlanTxt"

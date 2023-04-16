@@ -21,10 +21,6 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface TripPlanService {
-//    @GET("post")
-//    Call<JsonArray> getAllPost(@Query("page")Integer page, @Query("limit")Integer limit);
-    @GET("post/")
-    Call<JsonObject> getAllPost(@Query("page")Integer page);
     @GET("post/by-location/{id}")
     Call<JsonArray> getTripPlanByLocation(@Path("id")Integer loctionID);
 
@@ -34,14 +30,15 @@ public interface TripPlanService {
     @GET("post/{id}")
     Call<TripPlan> getTripPlanById(@Path("id")Integer id);
 
-    @FormUrlEncoded
+    @Multipart
     @POST("post/create")
-    Call<TripPlan> createNewTripPlan(@Field("title") String title,
-                                     @Field("start_date")Date startDate,
-                                     @Field("end_date") Date endDate,
-                                     @Field("is_public") Boolean isPublic,
-                                     @Field("created_by") Integer userId
-                             );
+    Call<TripPlan> createNewTripPlan(@Part("title") RequestBody title,
+                                     @Part("start_date")RequestBody startDate,
+                                     @Part("end_date") RequestBody endDate,
+                                     @Part("is_public") RequestBody isPublic,
+                                     @Part("created_by") RequestBody userId,
+                                     @Part("brief_description") RequestBody brief_description,
+                                     @Part MultipartBody.Part coverImg);
     @FormUrlEncoded
     @HTTP(method = "PATCH", path = "post/change-trip-dates/{id}", hasBody = true)
     Call<JsonArray> changeTripDates(

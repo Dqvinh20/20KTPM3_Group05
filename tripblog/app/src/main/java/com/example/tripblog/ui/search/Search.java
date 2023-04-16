@@ -215,6 +215,7 @@ public class Search extends AppCompatActivity {
                 try {
                     locations = searchLocation(query);
                     users = searchUser(query);
+                    users.removeIf(user -> user.getId().equals(TripBlogApplication.getInstance().getLoggedUser().getId()));
                     List<Serializable> results = new ArrayList<>();
                     results.addAll(locations);
                     results.addAll(users);

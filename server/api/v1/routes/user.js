@@ -18,7 +18,6 @@ router.patch(
   "/update",
   multer.single("avatar_img"),
   body("user_name").custom(async (value) => {
-    console.log("user_name: " + value);
     if (!value) {
       return Promise.resolve();
     }

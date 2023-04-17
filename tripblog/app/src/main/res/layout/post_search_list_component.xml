@@ -3,53 +3,62 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="180dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="@dimen/margin_padding_size_medium"
+    android:gravity="center_vertical"
+    >
     <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="20sp">
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp"
+        >
         <ImageView
             android:id="@+id/image_result_search_imageview"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:scaleType="centerCrop"
             />
     </androidx.cardview.widget.CardView>
 
-    <LinearLayout android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:gravity="center_vertical"
         android:layout_weight="2"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="@dimen/margin_padding_size_medium"
         >
 
         <TextView
             android:id="@+id/titleTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Name"
-            android:maxLines="1"
+            tools:text="@tools:sample/lorem/random"
+            android:maxLines="2"
             android:minLines="1"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            app:autoSizeTextType="uniform" />
+            android:ellipsize="end"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+             />
 
         <LinearLayout
-            android:layout_marginTop="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/margin_padding_size_small"
+            android:paddingBottom="@dimen/margin_padding_size_small"
+            android:gravity="center_vertical"
+            >
+
             <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="15dp">
+                android:layout_width="@dimen/icon_small"
+                android:layout_height="@dimen/icon_small"
+                app:cardCornerRadius="250dp">
                 <ImageView
                     android:id = "@+id/avatar_result_search"
-                    android:layout_width = "40dp"
-                    android:layout_height = "40dp"
+                    android:layout_width = "match_parent"
+                    android:layout_height = "match_parent"
                     android:background = "@drawable/avatar"
                     android:contentDescription = "Avatar"
                     tools:srcCompat="@tools:sample/avatars"
@@ -59,73 +68,78 @@
 
 
             <TextView
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="@dimen/margin_padding_size_small"
                 android:id="@+id/nameTextView_result_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:maxLines="1"
-
-                android:text="Mizhelle"
-                android:layout_gravity="center"/>
+                android:ellipsize="end"
+                tools:text="@tools:sample/lorem/random"
+                />
         </LinearLayout>
 
         <TableLayout
-            android:layout_weight="1"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:stretchColumns="*">
-            <TableRow android:layout_width="wrap_content"
+            android:stretchColumns="*"
+            >
+
+            <TableRow
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 >
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_weight="1"
+                    android:gravity="center_vertical"
+
                     >
-                <ImageView
-                    android:id="@+id/fav_icon"
-                    android:layout_width="15sp"
-                    android:layout_height="15sp"
-                    android:background="@drawable/favarite_icon"
-                    android:layout_gravity="center"
-                    android:tag="unliked"
-                    android:foregroundGravity="center"/>
-                <TextView
-                    android:id="@+id/fav_count_textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="7"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_marginLeft="5sp"/>
+                    <ImageView
+                        android:id="@+id/fav_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/favarite_icon"
+                        android:tag="unliked"
+                        android:foregroundGravity="center"/>
+                    <TextView
+                        android:id="@+id/fav_count_textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="7"
+                        android:gravity="start"
+                        android:layout_marginLeft="@dimen/margin_padding_size_small"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     >
                     <ImageView
-                        android:layout_width="22sp"
-                        android:layout_height="22sp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:background="@android:drawable/ic_menu_view"
-                        android:layout_gravity="center"/>
+                        />
                     <TextView
                         android:id="@+id/viewTextView_result_search"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="844"
-                        android:layout_gravity="center"
-                        android:gravity="center"/>
+                        android:gravity="start"
+                        android:layout_marginLeft="@dimen/margin_padding_size_small"/>
+                    />
                 </LinearLayout>
                 <ImageView
                     android:id="@+id/share_btn"
-                    android:layout_width="30sp"
-                    android:layout_height="30sp"
-                    android:background="@android:drawable/ic_menu_share"
-                    android:layout_gravity="center"/>
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/ic_share_24"
+                    android:layout_gravity="center"
+                    />
             </TableRow>
         </TableLayout>
     </LinearLayout>

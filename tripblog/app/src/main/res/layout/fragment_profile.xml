@@ -74,7 +74,7 @@
             android:gravity="center_horizontal"
             >
         <TextView
-            android:id="@+id/usernameTxt"
+            android:id="@+id/nameTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxWidth="@dimen/username_max_width"
@@ -82,12 +82,29 @@
             android:paddingHorizontal="@dimen/margin_padding_size_small"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:maxLines="2"
+            android:maxLines="1"
             android:ellipsize="end"
             android:gravity="top|center_horizontal"
             android:textAlignment="gravity"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             />
+
+        <TextView
+                android:id="@+id/usernameTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_padding_size_small"
+                android:maxWidth="@dimen/username_max_width"
+                tools:text="@tools:sample/full_names"
+                android:paddingHorizontal="@dimen/margin_padding_size_small"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="top|center_horizontal"
+                android:textAlignment="gravity"
+                android:textColor="@color/quantum_grey600"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                />
 
         <LinearLayout
             android:layout_width="wrap_content"

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,20 +55,19 @@ public class CustomResultSearchAdapter  extends ArrayAdapter<String> {
         viewTextView_result_search.setText(tripPlanList.get(position).getViewCount().toString());
         Glide.with(row)
                 .load(tripPlanList.get(position).getAuthor().getAvatar())
-                .placeholder(R.drawable.app_logo_transparent)
-                .error(R.drawable.app_logo_transparent)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.avatar)
                 .into(avatar_result_search);
         Glide.with(row)
                 .load(tripPlanList.get(position).getCoverImg())
-                .placeholder(R.drawable.japan)
-                .error(R.drawable.japan)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.ic_baseline_broken_image_24)
                 .into(image_result_search_imageview);
         if(tripPlanList.get(position).isLikedByYou()){
             fav_icon.setTag("liked");
-            fav_icon.setImageDrawable(context.getResources().getDrawable(R.drawable.favcorite_icon_red));
+            fav_icon.getBackground().setTint(Color.RED);
         }else{
             fav_icon.setTag("unliked");
-            fav_icon.setImageDrawable(context.getResources().getDrawable(R.drawable.favarite_icon));
         }
 
 //        fav_icon.setOnClickListener(new View.OnClickListener() {

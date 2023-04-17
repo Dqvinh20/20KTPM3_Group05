@@ -118,7 +118,6 @@ public class EditProfile extends AppCompatActivity {
                 .load(currUser.getAvatar())
                 .centerCrop()
                 .into(binding.userAvatar);
-
         binding.emailEdit.setText(currUser.getEmail());
         binding.usernameEditText.setText(currUser.getUserName());
         binding.nameEditText.setText(currUser.getName());

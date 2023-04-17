@@ -33,7 +33,6 @@ import java.util.concurrent.Executors;
 import retrofit2.Response;
 
 public class RatePostDialog extends DialogFragment implements View.OnClickListener {
-
     RatingBar ratingBar;
     EditText contentEdit;
 
@@ -143,11 +142,13 @@ public class RatePostDialog extends DialogFragment implements View.OnClickListen
                             return;
                         }
                         else {
+                            dismiss();
                             ((OverviewFragment) getParentFragment()).showSnackbar("You already rate this trip!");
                         }
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    dismiss();
+                    ((OverviewFragment) getParentFragment()).showSnackbar("Error occur when rate the trip!");
                 }
             }
         };

@@ -35,8 +35,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -146,6 +149,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             }
         }).attach();
 
+        fetchData();
+        return binding.getRoot();
+    }
+
+    public void fetchData() {
         userService.getUserById(currUserId).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -162,8 +170,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 ((MainActivity) requireActivity()).showSnackBarInfo("Can't connect to server");
             }
         });
-
-        return binding.getRoot();
     }
 
     @Override
@@ -192,11 +198,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 getActivity().getSupportFragmentManager().popBackStack();
                 break;
             case R.id.followersCount:
-                openFollowDialogFragment(currUserData.getUserName(), 0);
+                openFollowDialogFragment(currUserData.getName(), 0);
                 break;
 
             case R.id.followingCount:
-                openFollowDialogFragment(currUserData.getUserName(), 1);
+                openFollowDialogFragment(currUserData.getName(), 1);
                 break;
             default:
                 break;
@@ -205,7 +211,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private void loadData(User user) {
         currUserData = user;
-        binding.usernameTxt.setText(user.getUserName());
+        binding.usernameTxt.setText("@" + user.getUserName());
+        binding.nameTxt.setText(user.getName());
+
         Glide.with(getContext())
                 .load(user.getAvatar())
                 .placeholder(R.drawable.img_placeholder)
@@ -218,7 +226,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private void updateUI() {
         User currLoggedUser = TripBlogApplication.getInstance().getLoggedUser();
-        binding.usernameTxt.setText(currLoggedUser.getUserName());
+        binding.usernameTxt.setText("@" + currLoggedUser.getUserName());
+        binding.nameTxt.setText(currLoggedUser.getName());
         Glide.with(binding.getRoot())
                 .load(currLoggedUser.getAvatar())
                 .placeholder(R.drawable.da_lat)
@@ -251,28 +260,23 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     public void onFollowBtnClick() {
-        if (binding.followBtn.isChecked()) {
-            userService.followUser(currUserId).enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {}
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    t.printStackTrace();
+        executorService.execute(() -> {
+            try {
+                if (binding.followBtn.isChecked()) {
+                    userService.followUser(currUserId).execute();
+                } else {
+                    userService.unfollowUser(currUserId).execute();
                 }
-            });
-        } else {
-            userService.unfollowUser(currUserId).enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                }
+                fetchData();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    t.printStackTrace();
-                }
-            });
-        }
+        executorService.shutdown();
     }
 
     private void onMoreSettingsClick() {
@@ -303,8 +307,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void openFollowDialogFragment(String username, int tabPosition) {
-        FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, username,tabPosition);
+    private void openFollowDialogFragment(String name, int tabPosition) {
+        FollowDialogFragment fragment = FollowDialogFragment.newInstance(currUserId, name,tabPosition);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.frameLayout, fragment);

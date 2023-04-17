@@ -38,63 +38,40 @@ import retrofit2.Response;
 public class ViewSearchList extends AppCompatActivity {
     ActivityViewSearchListBinding binding;
     private static final String TAG = ViewSearchList.class.getSimpleName();
-
     TextView hint_search;
     List<TripPlan> listpost;
     CustomResultSearchAdapter postAdapter;
-    private String [] id = {
-            "1","2","3"
-    };
-    // Dữ liệu mẫu
-    private String [] name = {
-            "Mizhelle","Sebastiano","Pietro Mossali"
-    };
-    private String [] title = {
-            "Best Cherry Blossom Spots in Tokyo","French Riviera - Cote d'Azur Gui9de","Milan Photo Touri"
-    };
-    private String [] briefDes = {
-            "Tokyo resident since 2011.",
-            "It's dice I was 5 years old that I enjoy doing trips to Milan with My Familly",
-            "I was in New Tork for a holiday in 2019 and it was one of most place"
-    };
-    private String [] views = {
-            "150 views","78 views","123 views"
-    };
-    private String [] images = {
-            "https://www.state.gov/wp-content/uploads/2019/04/Japan-2107x1406.jpg",
-            "https://www.state.gov/wp-content/uploads/2019/04/Japan-2107x1406.jpg",
-            "https://www.state.gov/wp-content/uploads/2019/04/Japan-2107x1406.jpg"
-    };
-    private String [] avatars = {
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png",
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png",
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png"
-    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityViewSearchListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Intent currIntent = getIntent();
-        Bundle currBundle = currIntent.getExtras();;
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        Bundle currBundle = getIntent().getExtras();;
         Integer locationId = currBundle.getInt("LocationId");
-        Log.d(TAG,locationId.toString());
+
         TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
         tripPlanService.getTripPlanByLocation(locationId).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 JsonArray list = response.body();
-                Log.d(TAG,list.toString());
                 listpost = new Gson().fromJson(list, new TypeToken<List<TripPlan>>(){}.getType());
-                Log.d(TAG,listpost.toString());
-                postAdapter = new CustomResultSearchAdapter(ViewSearchList.this, R.layout.post_search_list_component
-                        ,listpost);
+                if (listpost != null && listpost.size() == 0) {
+                    binding.noResultInfo.setVisibility(View.VISIBLE);
+                }
+                else {
+                    binding.noResultInfo.setVisibility(View.GONE);
+                }
+                postAdapter = new CustomResultSearchAdapter(ViewSearchList.this, R.layout.post_search_list_component, listpost);
                 binding.listResultSearch.setAdapter(postAdapter);
             }
 
             @Override
             public void onFailure(Call<JsonArray> call, Throwable t) {
-
             }
         });
         binding.listResultSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -105,8 +82,6 @@ public class ViewSearchList extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
     }
 
     @Override
@@ -118,7 +93,6 @@ public class ViewSearchList extends AppCompatActivity {
         SpannableString s = new SpannableString(menuItem.getTitle());
 
         s.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, s.length(), 0);
-
         menuItem.setTitle(s);
         Log.i("expand",menuItem.isActionViewExpanded()?"Yes":"No");
         return super.onCreateOptionsMenu(menu);
@@ -128,6 +102,7 @@ public class ViewSearchList extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         final MenuItem searchitem = menu.findItem(R.id.hint_search_activity);
         LinearLayout rootView = (LinearLayout) searchitem.getActionView();
+
         hint_search= rootView.findViewById(R.id.hint_search);
         Intent currIntent = getIntent();
         Bundle currBundle = currIntent.getExtras();;
@@ -169,12 +144,10 @@ public class ViewSearchList extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case R.id.hint_search_activity:
-
-                Toast.makeText(this, "Click", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.back_arrow_menu_item:
+            case android.R.id.home:
                 finish();
+                return true;
+            case R.id.hint_search_activity:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

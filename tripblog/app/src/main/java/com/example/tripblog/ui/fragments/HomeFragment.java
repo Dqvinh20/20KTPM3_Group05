@@ -82,11 +82,9 @@ public class HomeFragment extends Fragment
             @Override
             public void onScrollChange(View view, int i, int i1, int i2, int i3) {
                 if (!scrollView.canScrollVertically(1)) {
-                    Log.d(TAG, "Load More...");
                     if (!isLoading) {
                         if (currPage != maxPage) {
                             isLoading = true;
-                            Log.v("...", "Last Item Wow !");
 
                             // Do pagination.. i.e. fetch new data
                             tripPlanService.getNewestTripPlans(nextPage, LIMIT_PER_PAGE).enqueue(new Callback<JsonObject>() {

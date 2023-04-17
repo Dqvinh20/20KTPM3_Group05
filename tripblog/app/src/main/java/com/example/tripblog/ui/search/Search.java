@@ -88,8 +88,10 @@ public class Search extends AppCompatActivity {
                 intent.putExtra("title", name);
                 intent.putExtra("LocationId", id);
                 intent.setAction(Intent.ACTION_VIEW);
-                startActivityForResult(intent, 1122);
+//                startActivityForResult(intent, 1122);
+                startActivity(intent);
                 searchView.setQuery(name,true);
+                finish();
             }
         });
         searchResultRecycleAdapter.setOnUserItemClickListener(new SearchResultRecycleAdapter.IOnUserItemClickListener() {

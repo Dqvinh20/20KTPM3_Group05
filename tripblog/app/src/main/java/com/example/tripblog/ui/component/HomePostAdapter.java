@@ -63,6 +63,12 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.HomePo
         holder.namelb.setText(listTripPlan.get(position).getAuthor().getUserName());
         holder.tiltelb.setText(listTripPlan.get(position).getTitle());
         holder.briefDeslb.setText(listTripPlan.get(position).getBriefDescription());
+        if (listTripPlan.get(position).getBriefDescription().isEmpty()) {
+            holder.briefDeslb.setVisibility(View.GONE);
+        }
+        else {
+            holder.briefDeslb.setVisibility(View.VISIBLE);
+        }
         holder.viewlb.setText(listTripPlan.get(position).getViewCount().toString()+" views");
 
         Glide.with(holder.itemView)

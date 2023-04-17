@@ -239,6 +239,7 @@ public class OverviewFragment extends Fragment {
     }
 
     public void appendNewRating(Rating rating) {
+        binding.divider.setVisibility(rating != null ? View.VISIBLE : View.GONE);
         ratingItemAdapter.addHead(rating);
     }
 
@@ -253,8 +254,8 @@ public class OverviewFragment extends Fragment {
                 binding.briefDescription.setText(briefDescription);
             }
 
-            String formated = String.format("%.1f", avgPoint);
-            binding.avgPoint.setText(formated);
+            String formatted = String.format("%.1f", avgPoint);
+            binding.avgPoint.setText(formatted);
             binding.avgRatingBar.setRating(avgPoint);
             binding.ratingCount.setText(
                     String.format(

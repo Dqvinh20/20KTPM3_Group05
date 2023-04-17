@@ -1,16 +1,10 @@
 const Post = require("../models/post.model");
 const sequelize = require("../config");
+const cloudinary = require("../utils/cloudinary");
 
 const queryAuthor = {
   association: "author",
-  attributes: [
-    "id",
-    "email",
-    "avatar",
-    "user_name",
-    "user_name_non_accent",
-    "name",
-  ],
+  attributes: ["id", "email", "avatar", "user_name", "user_name_non_accent"],
 };
 
 const common = (query) => {
@@ -72,10 +66,15 @@ const getPostById = async (id) => {
   );
 
   return post;
-  return post;
 };
 
 const createPost = async (post_data) => {
+  if (!post_data.cover_img) {
+    delete post_data.cover_img;
+  }
+  if (!post_data.brief_description) {
+    delete post_data.brief_description;
+  }
   const newPost = await Post.create(post_data, {
     include: [
       {
@@ -92,7 +91,16 @@ const createPost = async (post_data) => {
 
 const updatePost = async (id, post) => {
   const oldCoverImg = await Post.findByPk(id, { attributes: ["cover_img"] });
-  // console.log(oldCoverImg.cover_img);
+
+  if (
+    oldCoverImg.cover_img &&
+    oldCoverImg.cover_img !==
+      "https://res.cloudinary.com/dkzlalahi/image/upload/q_90/v1681707145/default_trip_plan_cover_img.png"
+  ) {
+    cloudinary.destroy(oldCoverImg.cover_img);
+    console.log("delete cover img");
+  }
+  console.log("oldCoverImg", oldCoverImg.cover_img);
   const result = await Post.update(
     post,
     common({
@@ -101,10 +109,6 @@ const updatePost = async (id, post) => {
       individualHooks: true,
     })
   );
-
-  // if (post.cover_img) {
-  //   cloudinary.destroy(oldCoverImg.cover_img);
-  // }
 
   return [result[0], await getPostById(id)];
 };

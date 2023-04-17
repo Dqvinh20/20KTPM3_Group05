@@ -66,12 +66,9 @@ const getPopularPosts = async (req, res) => {
   }
 };
 
-const getNewestPosts = async (req, res) => {
+const getNewsFeed = async (req, res) => {
   try {
     let { limit, page } = req.query;
-    if (!page) page = 1;
-    else page = Number(page);
-    const offset = (page - 1) * limit;
 
     if (!limit) limit = MIN_LIMIT;
     else {
@@ -79,12 +76,16 @@ const getNewestPosts = async (req, res) => {
       if (limit > MAX_LIMIT) limit = MAX_LIMIT;
     }
 
-    let result = await HomeService.getNewestPosts({ limit, offset });
-    result = await addLikedByYou(result, req.user.id);
-    const count = await HomeService.countAllNewestPosts();
+    if (!page) page = 1;
+    else page = Number(page);
+    const offset = (page - 1) * limit;
+
+    let result = await HomeService.getNewsFeed(req.user.id, { limit, offset });
+    result.row = await addLikedByYou(result.row, req.user.id);
+    const count = result.count;
 
     result = paginate(page, limit, count, {
-      data: result,
+      data: result.row,
     });
 
     return res.send(result);
@@ -96,5 +97,5 @@ const getNewestPosts = async (req, res) => {
 module.exports = {
   getHome,
   getPopularPosts,
-  getNewestPosts,
+  getNewsFeed,
 };

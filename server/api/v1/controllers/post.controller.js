@@ -143,9 +143,15 @@ const createPost = async (req, res) => {
       cover_img = upload_img.url;
     }
 
-    let { title, brief_description, start_date, end_date, is_public } =
-      req.body;
-    const created_by = req.user.id;
+    let {
+      title,
+      brief_description,
+      start_date,
+      end_date,
+      is_public,
+      created_by,
+    } = req.body;
+    if (!created_by) created_by = req.user.id;
 
     start_date = start_date ? new Date(start_date) : new Date();
     end_date = end_date ? new Date(end_date) : new Date();
@@ -170,18 +176,17 @@ const createPost = async (req, res) => {
 const createExamplePost = async (req, res) => {
   const user_id = req.user.id;
   const start_date = dayjs().toDate();
-  const end_date = dayjs(start_date).add(2, "day").toDate();
+  const end_date = dayjs(start_date).add(3, "day").toDate();
   const postData = {
     title: "Trip to Vietnam in 3 days",
     brief_description: "Trip to Vietnam in 3 days",
-    cover_img:
-      "https://res.cloudinary.com/dkzlalahi/image/upload/v1677847284/cld-sample-2.jpg",
     start_date,
     end_date,
     is_public: true,
     created_by: user_id,
     schedules: createSchedules(start_date, end_date),
   };
+  console.log(postData);
 
   try {
     const post = await PostService.createPost(postData);
@@ -245,7 +250,10 @@ const updatePost = async (req, res) => {
   }
 
   const { post_id, ...data } = req.body;
-  cover_img ? (data.cover_img = cover_img) : null;
+
+  if (cover_img) {
+    data.cover_img = cover_img;
+  }
 
   try {
     const post = await PostService.updatePost(post_id, data);
@@ -258,9 +266,18 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
   const { post_id } = req.body;
   const post = await PostService.getPostById(post_id);
-  cloudinary.destroy(post.cover_img);
+  if (
+    post.cover_img &&
+    post.cover_img !==
+      "https://res.cloudinary.com/dkzlalahi/image/upload/q_90/v1681707145/default_trip_plan_cover_img.png"
+  ) {
+    cloudinary.destroy(post.cover_img);
+    console.log("delete cover img");
+  }
+
   try {
     const result = await PostService.deletePost(post_id);
+
     return res.json(result);
   } catch (error) {
     return res.json(error);

@@ -2,6 +2,7 @@ package com.example.tripblog.api.services;
 //import com.example.tripblog.model.AuthResponse;
 import com.example.tripblog.model.User;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import okhttp3.MultipartBody;
@@ -31,7 +32,7 @@ public interface UserService {
 
     @Multipart
     @PATCH("user/update")
-    Call<JsonArray> updateUser(
+    Call<JsonElement> updateUser(
             @Part("user_name") RequestBody userName,
             @Part("name")  RequestBody name,
             @Part MultipartBody.Part avatar_img

@@ -32,13 +32,17 @@ import com.example.tripblog.utils.PathUtil;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -156,17 +160,20 @@ public class EditProfile extends AppCompatActivity {
     {
         if (!preValidate()) return;
 
-        String usernameEditText = binding.usernameEditText.getText().toString().trim();
-        String nameEditText = binding.nameEditText.getText().toString().trim();
-
         SimpleLoadingDialog loadingDialog = new SimpleLoadingDialog(this);
         loadingDialog.show();
+
+        String usernameEditText = binding.usernameEditText.getText().toString().trim();
+        String nameEditText = binding.nameEditText.getText().toString().trim();
 
         RequestBody username = RequestBody.create(MediaType.parse("multipart/form-data"),usernameEditText);
         RequestBody name = RequestBody.create(MediaType.parse("multipart/form-data"),nameEditText);
 
         Properties data = new Properties();
-        data.put("user_name",username);
+        if (!usernameEditText.equals(currUser.getUserName())) {
+            data.put("user_name", username);
+        }
+
         data.put("name",name);
         data.put("loading", loadingDialog);
         callUpdateApi(data);
@@ -212,16 +219,15 @@ public class EditProfile extends AppCompatActivity {
             Log.e(TAG, err.toString());
         }
     };
-
     private void callUpdateApi(Properties properties) {
         userService.updateUser(
                         (RequestBody) properties.get("user_name"),
                         (RequestBody) properties.get("name"),
                         (MultipartBody.Part) properties.get("avatar_img")
                 )
-                .enqueue(new Callback<JsonArray>() {
+                .enqueue(new Callback<JsonElement>() {
                     @Override
-                    public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                    public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                         ((SimpleLoadingDialog) properties.get("loading")).dismiss();
 
                         if (properties.containsKey("imageRealPath")) {
@@ -229,11 +235,26 @@ public class EditProfile extends AppCompatActivity {
                         }
 
                         if (!response.isSuccessful()) {
-                            Snackbar
-                                    .make(binding.getRoot(), "Upload  unsuccessfully. - " + response.code(), Snackbar.LENGTH_SHORT).show();
+                            if (properties.get("avatar_img") != null) {
+                                Snackbar
+                                    .make(binding.getRoot(), "Upload image unsuccessfully!", Snackbar.LENGTH_SHORT).show();
+                                return;
+                            }
+                            try {
+                                String responseData = response.errorBody().string();
+                                JsonObject errorBody = new Gson().fromJson(responseData, JsonObject.class);
+                                JsonArray errors = errorBody.getAsJsonArray("errors");
+                                if (errors.size() > 0) {
+                                    JsonObject error = errors.get(0).getAsJsonObject();
+                                    if (error.get("param").getAsString().equals("user_name")) {
+                                        binding.usernameEditLayout.setError(error.get("msg").getAsString());
+                                    }
+                                }
+                            } catch (IOException e) {}
                             return;
                         }
-                        JsonArray body = response.body();
+
+                        JsonArray body = (JsonArray) response.body();
                         // Update success
                         if (body.get(0).getAsInt() == 1) {
                             User updateUser = new Gson().fromJson(body.get(1).getAsJsonObject(), User.class);
@@ -242,11 +263,11 @@ public class EditProfile extends AppCompatActivity {
                             currUser.setAvatar(updateUser.getAvatar());
                             loadData();
                             Snackbar
-                                    .make(binding.getRoot(), "Upload successfully.", Snackbar.LENGTH_SHORT).show();
+                                    .make(binding.getRoot(), "Update successfully!", Snackbar.LENGTH_SHORT).show();
                         }
                     }
                     @Override
-                    public void onFailure(Call<JsonArray> call, Throwable t) {
+                    public void onFailure(Call<JsonElement> call, Throwable t) {
                         ((SimpleLoadingDialog) properties.get("loading")).dismiss();
 
                         if (properties.containsKey("imageRealPath")) {
@@ -254,7 +275,7 @@ public class EditProfile extends AppCompatActivity {
                         }
 
                         Snackbar
-                                .make(binding.getRoot(), "Can't upload !", Snackbar.LENGTH_SHORT).show();
+                                .make(binding.getRoot(), "Fail when updating!", Snackbar.LENGTH_SHORT).show();
                     }
                 });
     }

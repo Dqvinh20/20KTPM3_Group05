@@ -4,9 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="12dp"
+    android:padding="@dimen/margin_padding_size_small"
     >
-    z
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -26,7 +25,7 @@
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 android:text="Share"
                 app:icon="@android:drawable/ic_menu_share"
-                app:iconPadding="10dp"
+                app:iconPadding="@dimen/margin_padding_size_medium"
                 android:id="@+id/share"
 
                 />
@@ -38,7 +37,7 @@
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 android:text="Edit"
                 app:icon="@android:drawable/ic_menu_edit"
-                app:iconPadding="10dp"
+                app:iconPadding="@dimen/margin_padding_size_medium"
                 android:id="@+id/edit"
 
                 />
@@ -50,9 +49,8 @@
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 android:text="Delete"
                 app:icon="@android:drawable/ic_menu_delete"
-                app:iconPadding="10dp"
+                app:iconPadding="@dimen/margin_padding_size_medium"
                 android:id="@+id/delete"
-
                 />
 
         </LinearLayout>

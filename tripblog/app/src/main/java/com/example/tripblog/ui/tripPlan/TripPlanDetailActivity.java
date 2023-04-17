@@ -108,22 +108,6 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
         reloadEditableView();
     }
     protected void reloadEditableView() {
-        binding.authorAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                User author = currPostLiveData.getValue().getAuthor();
-                if (author == null || author.getId() == TripBlogApplication.getInstance().getLoggedUser().getId()) {
-                    return;
-                }
-                Intent result = new Intent();
-                Bundle data = new Bundle();
-                data.putInt("userId", author.getId());
-                result.putExtras(data);
-                setResult(MainActivity.TRIP_PLAN_REQ_CODE, result);
-                finishAfterTransition();
-            }
-        });
-
         // View pager
         contentViewPaperAdapter = new PostDetailViewPaperAdapter(TripPlanDetailActivity.this);
         contentViewPaperAdapter.setEditable(isEditable);
@@ -342,12 +326,16 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
         }
         else if (view.getId() == R.id.authorAvatar) {
             User author = currPostLiveData.getValue().getAuthor();
-            User loggedUser = TripBlogApplication.getInstance().getLoggedUser();
-            if (!author.getId().equals(loggedUser.getId())) {
-                // TODO: Open author profile
-                Intent intent = new Intent(TripPlanDetailActivity.this, ProfileFragment.class);
-//                startActivity(in);
+            if (author == null || author.getId() == TripBlogApplication.getInstance().getLoggedUser().getId()) {
+                return;
             }
+
+            Intent result = new Intent();
+            Bundle data = new Bundle();
+            data.putInt("userId", author.getId());
+            result.putExtras(data);
+            setResult(MainActivity.TRIP_PLAN_REQ_CODE, result);
+            finishAfterTransition();
         }
     }
 }

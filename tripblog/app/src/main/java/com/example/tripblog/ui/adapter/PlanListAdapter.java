@@ -23,6 +23,7 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.ui.tripPlan.EditableTripPlanDetailActivity;
+import com.example.tripblog.ui.tripPlan.TripPlanDetailActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.List;
@@ -70,15 +71,16 @@ public class PlanListAdapter extends ArrayAdapter<String> {
                 .placeholder(R.drawable.img_placeholder)
                 .error(R.drawable.img_placeholder)
                 .into(img);
-        if(isEditable != true)
-            moreBtn.setVisibility(View.GONE);
-        else
+        if(isEditable)
             moreBtn.setVisibility(View.VISIBLE);
+        else
+            moreBtn.setVisibility(View.GONE);
 
         row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent postDetail = new Intent(context, EditableTripPlanDetailActivity.class);
+                Class postDetailClass = isEditable ? EditableTripPlanDetailActivity.class : TripPlanDetailActivity.class;
+                Intent postDetail = new Intent(context, postDetailClass);
                 Bundle data = new Bundle();
                 data.putInt("postId", list.get(position).getId());
                 postDetail.putExtras(data);
@@ -127,6 +129,33 @@ public class PlanListAdapter extends ArrayAdapter<String> {
 
                     }
                 });
+
+                Button editBtn = v.findViewById(R.id.edit);
+                editBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        moreDialog.dismiss();
+                        row.performClick();
+                    }
+                });
+                Button shareBtn = v.findViewById(R.id.share);
+                shareBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        moreDialog.dismiss();
+                        String link = "https://tripblog.com?postId=" + list.get(position).getId();
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, link);
+                        sendIntent.putExtra(Intent.EXTRA_TITLE, "Share this trip");
+                        sendIntent.setType("text/plain");
+
+                        Intent shareIntent = Intent.createChooser(sendIntent, null);
+                        context.startActivity(shareIntent);
+                    }
+                });
+
+
             }
         });
 

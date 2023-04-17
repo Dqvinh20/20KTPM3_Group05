@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="12dp"
+    android:padding="@dimen/margin_padding_size_small"
     >
 
     <FrameLayout
@@ -26,22 +26,22 @@
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 android:text="Edit profile"
                 app:icon="@android:drawable/ic_menu_edit"
-                app:iconPadding="10dp"
+                app:iconPadding="@dimen/margin_padding_size_medium"
                 android:id="@+id/editProfile"
 
                 />
-            <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="match_parent"
-                android:layout_height="?minTouchTargetSize"
-                android:gravity="start|center_vertical"
-                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-                android:text="Donate"
-                app:icon="@android:drawable/ic_menu_report_image"
-                app:iconPadding="10dp"
-                android:id="@+id/donate"
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                style="@style/Widget.Material3.Button.IconButton"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="?minTouchTargetSize"-->
+<!--                android:gravity="start|center_vertical"-->
+<!--                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"-->
+<!--                android:text="Donate"-->
+<!--                app:icon="@android:drawable/ic_menu_report_image"-->
+<!--                app:iconPadding="@dimen/margin_padding_size_medium"-->
+<!--                android:id="@+id/donate"-->
 
-                />
+<!--                />-->
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="match_parent"
@@ -50,9 +50,8 @@
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 android:text="Logout"
                 app:icon="@drawable/ic_baseline_logout_24"
-                app:iconPadding="10dp"
+                app:iconPadding="@dimen/margin_padding_size_medium"
                 android:id="@+id/logout"
-
                 />
 
         </LinearLayout>

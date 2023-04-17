@@ -26,11 +26,9 @@ import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.ActivityUpdateProfileBinding;
-//import com.example.tripblog.model.AuthResponse;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.SimpleLoadingDialog;
 import com.example.tripblog.utils.PathUtil;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -46,20 +44,36 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EditProfile extends AppCompatActivity {
-
-    MaterialAlertDialogBuilder loading = null;
     private static final String TAG = EditProfile.class.getSimpleName();
     private static final int REQUEST_CODE = 1;
-    protected final UserService userService = TripBlogApplication.createService(UserService.class);
+    private final int MAX_USERNAME_LENGTH = 15;
+    private final String USERNAME_PATTERN = "^[a-zA-Z]([_]?[a-zA-Z0-9]+)*$";
 
-    protected ActivityUpdateProfileBinding binding;
-    private User currUser;
+    // Source pattern https://stackoverflow.com/a/5963425
+    private final String NAME_PATTERN = "^(?:[\\p{L}\\p{Mn}\\p{Pd}\\'\\x{2019}]+\\s[\\p{L}\\p{Mn}\\p{Pd}\\'\\x{2019}]+\\s?)+$";
+    private final UserService userService = TripBlogApplication.createService(UserService.class);
+    private ActivityUpdateProfileBinding binding;
+    private User currUser = TripBlogApplication.getInstance().getLoggedUser();
+    ActivityResultLauncher<Intent> activityResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityUpdateProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK  && result.getData() != null) {
+                            final Uri imageUri = result.getData().getData();
+                            updateCoverImg(imageUri);
+                        }
+                    }
+                }
+        );
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -73,82 +87,12 @@ public class EditProfile extends AppCompatActivity {
 
         binding.editAvatarButton.setOnClickListener(view -> {
             onClickRequestPermission();
-                }
-        );
-        currUser = TripBlogApplication.getInstance().getLoggedUser();
-        loadData();
+        });
 
         binding.nameEditText.addTextChangedListener(new ValidationTextWatcher(binding.nameEditText));
         binding.usernameEditText.addTextChangedListener(new ValidationTextWatcher(binding.usernameEditText));
-    }
 
-
-    private void save()
-    {
-        String usernameEditText = binding.usernameEditText.getText().toString();
-        String nameEditText = binding.nameEditText.getText().toString();
-
-        if (loading == null) {
-            loading = new MaterialAlertDialogBuilder(EditProfile.this);
-            loading.setView(R.layout.loading);
-            loading.setBackground(getDrawable(android.R.color.transparent));
-            loading.setCancelable(false);
-        }
-//        String imageRealPath = PathUtil.getRealPath(this, imageUri);
-//        File coverImgFile = new File(imageRealPath);
-//        RequestBody coverImg = RequestBody.create(MediaType.parse("multipart/form-data"), coverImgFile);
-//        MultipartBody.Part multipartBodyCoverImg = MultipartBody.Part.createFormData("avatar_img", coverImgFile.getName(), coverImg);
-
-        RequestBody username= RequestBody.create(MediaType.parse("multipart/form-data"),usernameEditText);
-        RequestBody name= RequestBody.create(MediaType.parse("multipart/form-data"),nameEditText);
-
-        Properties data = new Properties();
-        data.put("user_name",username);
-        data.put("name",name);
-        callUpdateApi(data);
-    }
-    private class ValidationTextWatcher implements TextWatcher {
-        private View view;
-        private ValidationTextWatcher(View view) {
-            this.view = view;
-        }
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            switch (view.getId()) {
-                case R.id.usernameEditText:
-                    binding.usernameEditText.setError(null);
-                    break;
-                case R.id.nameEditText:
-                    binding.nameEditText.setError(null);
-                    break;
-            }
-        }
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-        public void afterTextChanged(Editable editable) {
-
-        }
-    }
-
-    private void onClickRequestPermission() {
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            openGallery();
-        }
-        else {
-            String[] permissions = {
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-            };
-            requestPermissions(permissions, REQUEST_CODE);
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openGallery();
-            }
-        }
+        loadData();
     }
 
     @Override
@@ -162,29 +106,93 @@ public class EditProfile extends AppCompatActivity {
         return true;
     }
 
-    private void fetchData() {
+    protected void loadData() {
+        if (currUser == null) return;
 
+        // Load author avatar
+        Glide.with(binding.getRoot())
+                .load(currUser.getAvatar())
+                .centerCrop()
+                .into(binding.userAvatar);
+
+        binding.emailEdit.setText(currUser.getEmail());
+        binding.usernameEditText.setText(currUser.getUserName());
+        binding.nameEditText.setText(currUser.getName());
     }
 
-    protected void openGallery() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        activityResultLauncher.launch(Intent.createChooser(intent, "Select Picture"));
+    private boolean preValidate() {
+        String usernameEditText = binding.usernameEditText.getText().toString().trim();
+        String nameEditText = binding.nameEditText.getText().toString().trim();
+
+        if (nameEditText.isEmpty()) {
+            binding.nameEditLayout.setError("Please enter your name.");
+            return false;
+        }
+
+        if (!nameEditText.matches(NAME_PATTERN)) {
+            binding.nameEditLayout.setError("Your name should contain letters only.");
+            return false;
+        }
+        if (usernameEditText.isEmpty()) {
+            binding.usernameEditLayout.setError("Please enter a username.");
+            return false;
+        }
+
+        if (usernameEditText.length() > MAX_USERNAME_LENGTH) {
+            binding.usernameEditLayout.setError(String.format("Username must be less than %d characters long.",
+                    MAX_USERNAME_LENGTH)
+            );
+            return false;
+        }
+
+        if (!usernameEditText.matches(USERNAME_PATTERN)) {
+            binding.usernameEditLayout.setError("Your username can only contain letters, numbers, underscores and start with a letter");
+            return false;
+        }
+        return true;
     }
 
-    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK  && result.getData() != null) {
-                        final Uri imageUri = result.getData().getData();
-                        updateCoverImg(imageUri);
-                    }
-                }
+    private void save()
+    {
+        if (!preValidate()) return;
+
+        String usernameEditText = binding.usernameEditText.getText().toString().trim();
+        String nameEditText = binding.nameEditText.getText().toString().trim();
+
+        SimpleLoadingDialog loadingDialog = new SimpleLoadingDialog(this);
+        loadingDialog.show();
+
+        RequestBody username = RequestBody.create(MediaType.parse("multipart/form-data"),usernameEditText);
+        RequestBody name = RequestBody.create(MediaType.parse("multipart/form-data"),nameEditText);
+
+        Properties data = new Properties();
+        data.put("user_name",username);
+        data.put("name",name);
+        data.put("loading", loadingDialog);
+        callUpdateApi(data);
+    }
+
+    private class ValidationTextWatcher implements TextWatcher {
+        private View view;
+        private ValidationTextWatcher(View view) {
+            this.view = view;
+        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            switch (view.getId()) {
+                case R.id.usernameEditText:
+                    binding.usernameEditLayout.setError(null);
+                    break;
+                case R.id.nameEditText:
+                    binding.nameEditLayout.setError(null);
+                    break;
             }
-    );
+        }
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+        public void afterTextChanged(Editable editable) {
+
+        }
+    }
 
     private void updateCoverImg(Uri imageUri) {
         try {
@@ -214,8 +222,9 @@ public class EditProfile extends AppCompatActivity {
                 .enqueue(new Callback<JsonArray>() {
                     @Override
                     public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
+                        ((SimpleLoadingDialog) properties.get("loading")).dismiss();
+
                         if (properties.containsKey("imageRealPath")) {
-                            ((SimpleLoadingDialog) properties.get("loading")).dismiss();
                             PathUtil.deleteTempFile(EditProfile.this, (String) properties.get("imageRealPath"));
                         }
 
@@ -238,8 +247,9 @@ public class EditProfile extends AppCompatActivity {
                     }
                     @Override
                     public void onFailure(Call<JsonArray> call, Throwable t) {
+                        ((SimpleLoadingDialog) properties.get("loading")).dismiss();
+
                         if (properties.containsKey("imageRealPath")) {
-                            ((SimpleLoadingDialog) properties.get("loading")).dismiss();
                             PathUtil.deleteTempFile(EditProfile.this, (String) properties.get("imageRealPath"));
                         }
 
@@ -249,20 +259,31 @@ public class EditProfile extends AppCompatActivity {
                 });
     }
 
-
-    protected void loadData() {
-        if (currUser == null) return;
-
-        // Load author avatar
-        Glide.with(binding.getRoot())
-                .load(currUser.getAvatar())
-                .centerCrop()
-                .into(binding.userAvatar);
-
-        Log.d("debug", String.valueOf(currUser));
-        binding.emailText.setText(currUser.getEmail());
-        binding.usernameEditText.setText(currUser.getUserName());
-        binding.nameEditText.setText(currUser.getName());
+    protected void openGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        activityResultLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
-
+    private void onClickRequestPermission() {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            openGallery();
+        }
+        else {
+            String[] permissions = {
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            };
+            requestPermissions(permissions, REQUEST_CODE);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery();
+            }
+        }
+    }
 }

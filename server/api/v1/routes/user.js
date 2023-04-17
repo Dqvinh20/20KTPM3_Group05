@@ -18,6 +18,10 @@ router.patch(
   "/update",
   multer.single("avatar_img"),
   body("user_name").custom(async (value) => {
+    console.log("user_name: " + value);
+    if (!value) {
+      return Promise.resolve();
+    }
     const user = await UserService.getUserByUsername(value);
     if (user) {
       return Promise.reject("Username already exists");

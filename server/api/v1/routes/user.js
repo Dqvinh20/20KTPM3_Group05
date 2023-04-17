@@ -1,12 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { body } = require("express-validator");
+const { body, validationResult } = require("express-validator");
 
 const UserController = require("../controllers/user.controller");
 const UserService = require("../services/user.service");
 
 const multer = require("../utils/multer");
-const Validation = require("../utils/validation");
 
 router.get("/:user_id/followers", UserController.getFollowers);
 router.get("/:user_id/followings", UserController.getFollowings);
@@ -18,12 +17,21 @@ router.delete("/unlike/:post_id", UserController.unlikePost);
 router.patch(
   "/update",
   multer.single("avatar_img"),
-  body("user_name").custom((value) => {
-    if (UserService.getUserByUsername(value)) {
+  body("user_name").custom(async (value) => {
+    const user = await UserService.getUserByUsername(value);
+    if (user) {
       return Promise.reject("Username already exists");
     }
   }),
-  Validation.validate,
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    next();
+  },
   UserController.updateUser
 );
 module.exports = router;

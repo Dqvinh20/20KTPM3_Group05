@@ -2,7 +2,6 @@ package com.example.tripblog.ui.search;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,7 @@ public class CustomSuggestionSearchUserAdapter extends ArrayAdapter<String> {
         ImageView icon_suggestion_search_imageview = ( ImageView ) row.findViewById(R.id.icon_suggestion_search_imageview);
 
         titleTextView.setText(userListBelow.get(position).getUserName());
-        subTiltleTextView.setText(userListBelow.get(position).getUserNameNonAccent());
+        subTiltleTextView.setText(userListBelow.get(position).getNameNonAccent());
         Glide.with(row)
                 .load(userListBelow.get(position).getAvatar())
                 .placeholder(R.drawable.img_placeholder)

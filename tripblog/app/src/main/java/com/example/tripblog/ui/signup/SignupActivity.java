@@ -1,6 +1,7 @@
 package com.example.tripblog.ui.signup;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -24,8 +25,15 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivitySignupBinding;
 import com.example.tripblog.model.response.AuthResponse;
+import com.example.tripblog.ui.SimpleLoadingDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,8 +41,10 @@ import retrofit2.Response;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
     public final String TAG = SignupActivity.class.getSimpleName();
-    MaterialAlertDialogBuilder loading = null;
     ActivitySignupBinding binding;
+
+    // Source pattern https://stackoverflow.com/a/5963425
+    private final String NAME_PATTERN = "^(?:[\\p{L}\\p{Mn}\\p{Pd}\\'\\x{2019}]+\\s[\\p{L}\\p{Mn}\\p{Pd}\\'\\x{2019}]+\\s?)+$";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +62,11 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         binding.editEmail.addTextChangedListener(new ValidationTextWatcher(binding.editEmail));
         binding.editPassword.addTextChangedListener(new ValidationTextWatcher(binding.editPassword));
+
+        binding.editName.setText("Nguyen Hau");
+        binding.editEmail.setText("test1@gmail.com");
+        binding.editPassword.setText("123456");
+        binding.editConfirmPassword.setText("123456");
     }
 
     @Override
@@ -61,8 +76,9 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void signup() {
-        String email = binding.editEmail.getText().toString();
-        String password = binding.editPassword.getText().toString();
+        String name = binding.editName.getText().toString().trim();
+        String email = binding.editEmail.getText().toString().trim();
+        String password = binding.editPassword.getText().toString().trim();
 
         if (email.isEmpty()) {
             binding.editEmailLayout.setError(getString(R.string.email_required_err));
@@ -75,70 +91,80 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             requestFocus(binding.editPassword);
             return;
         }
-        if (loading == null) {
-            loading = new MaterialAlertDialogBuilder(SignupActivity.this);
-            loading.setView(R.layout.loading);
-            loading.setBackground(getDrawable(android.R.color.transparent));
-            loading.setCancelable(false);
-        }
-        AlertDialog loadingDialog = loading.show();
+        SimpleLoadingDialog loading = new SimpleLoadingDialog(this);
+        loading.show();
+
         AuthService authService = TripBlogApplication.createService(AuthService.class);
-
-        Log.d(TAG, "OnSignupBtn Press");
-        Log.d(TAG, "Waiting response");
-        authService.signup(email, password).enqueue(new Callback<AuthResponse>() {
-            @Override
-            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try {
+                Response<AuthResponse> response = authService.signup(email, name, password).execute();
                 AuthResponse body = response.body();
-                Log.d(TAG, "Received response successfully");
+                runOnUiThread(() -> {
+                        Log.e(TAG, String.valueOf(body));
+                        if (body.getStatus().equals( "failure")){
+                            binding.editEmailLayout.setError(body.getError().getAsString());
+                            loading.dismiss();
+                            return;
+                        }
+                        else if (body.getStatus().equals("error")) {
+                            JsonObject error = body.getError().getAsJsonArray().get(0).getAsJsonObject();
+                            loading.dismiss();
 
-                if (body.getStatus().equals( "failure")){
-                    binding.editEmailLayout.setError(body.getError().getAsString());
-                    loadingDialog.dismiss();
-                    return;
-                }
-                else if (body.getStatus().equals( "error")) {
-                    binding.editEmailLayout.setError("Unexpected error occur ! Try again !!!");
-                    loadingDialog.dismiss();
+                            if (error.get("param").getAsString().equals("email")) {
+                                binding.editEmailLayout.setError(error.get("msg").getAsString());
+                            }
+                            else {
+                                Snackbar
+                                        .make(binding.getRoot(), "Unexpected error occur!", Snackbar.LENGTH_LONG)
+                                        .setAction("Retry", view -> {
+                                            signup();
+                                        })
+                                        .show();
+                            }
+
+                            return;
+                        }
+
+                    loading.dismiss();
                     Snackbar
-                            .make(binding.getRoot(), "Unexpected error occur!", Snackbar.LENGTH_LONG)
+                            .make(binding.getRoot(), "Signup successfully", Snackbar.LENGTH_SHORT)
+                            .setDuration(200)
+                            .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+                            .addCallback(new Snackbar.Callback() {
+                                @Override
+                                public void onDismissed(Snackbar transientBottomBar, int event) {
+                                    super.onDismissed(transientBottomBar, event);
+                                    Intent data = new Intent();
+                                    Bundle args = new Bundle();
+                                    args.putString("email", email);
+                                    data.putExtras(args);
+                                    setResult(1, data);
+                                    finishAfterTransition();
+                                }
+                            })
+                            .show();
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    Snackbar
+                            .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_LONG)
                             .setAction("Retry", view -> {
                                 signup();
                             })
                             .show();
-                    return;
-                }
-
-                loadingDialog.dismiss();
-                Snackbar
-                        .make(binding.getRoot(), "Signup successfully", Snackbar.LENGTH_SHORT)
-                        .setDuration(200)
-                        .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                        .addCallback(new Snackbar.Callback() {
-                            @Override
-                            public void onDismissed(Snackbar transientBottomBar, int event) {
-                                super.onDismissed(transientBottomBar, event);
-                                finishAfterTransition();
-                            }
-                        })
-                        .show();
-            }
-
-            @Override
-            public void onFailure(Call<AuthResponse> call, Throwable t) {
-                Snackbar
-                        .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_LONG)
-                        .setAction("Retry", view -> {
-                            signup();
-                        })
-                        .show();
-                loadingDialog.dismiss();
+                    loading.dismiss();
+                });
             }
         });
+        executorService.shutdown();
     }
 
     @Override
     public void onClick(View view) {
+        if (!validateName()) return;
         if (!validateEmail()) return;
         if (!validatePassword()) return;
         if (!binding.editConfirmPassword.getText().toString()
@@ -148,11 +174,28 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         }
         signup();
     }
+
     private void requestFocus(View v) {
         if  (v.requestFocus()) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
+    private boolean validateName() {
+        String nameText = binding.editName.getText().toString().trim();
+
+        if (nameText.isEmpty()) {
+            binding.editName.setError("Please enter your name.");
+            return false;
+        }
+
+        if (!nameText.matches(NAME_PATTERN)) {
+            binding.editName.setError("Your name should contain letters only.");
+            return false;
+        }
+
+        return true;
+    }
+
     private boolean validateEmail() {
         String email = binding.editEmail.getText().toString();
         if (email.trim().isEmpty()) {
@@ -212,6 +255,9 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         }
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             switch (view.getId()) {
+                case R.id.editName:
+                    binding.editName.setError(null);
+                    break;
                 case R.id.editPassword:
                     binding.editPasswordLayout.setError(null);
                     break;

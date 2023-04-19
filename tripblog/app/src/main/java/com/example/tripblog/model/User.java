@@ -12,8 +12,8 @@ public class User implements Serializable {
     private String userName;
     @SerializedName("name")
     private  String name;
-    @SerializedName("user_name_non_accent")
-    private String userNameNonAccent;
+    @SerializedName("name_non_accent")
+    private String nameNonAccent;
     @SerializedName("followers_count")
     private Integer followersCount;
     @SerializedName("following_count")
@@ -23,7 +23,7 @@ public class User implements Serializable {
     private Date updatedAt;
 
     public User(User user) {
-        this(user.getUserName(), user.getId(), user.getName(), user.getAvatar(), user.getUserNameNonAccent(), user.getFollowersCount(), user.getFollowingsCount(), user.getEmail(), user.getCreatedAt(), user.getUpdatedAt());
+        this(user.getUserName(), user.getId(), user.getName(), user.getAvatar(), user.getNameNonAccent(), user.getFollowersCount(), user.getFollowingsCount(), user.getEmail(), user.getCreatedAt(), user.getUpdatedAt());
     }
 
     public User(String userName, Integer id, String name, String avatar, String userNameNonAccent, Integer followersCount, Integer followingsCount, String email, Date createdAt, Date updatedAt) {
@@ -31,7 +31,7 @@ public class User implements Serializable {
         this.id = id;
         this.name = name;
         this.avatar = avatar;
-        this.userNameNonAccent = userNameNonAccent;
+        this.nameNonAccent = userNameNonAccent;
         this.followersCount = followersCount;
         this.followingsCount = followingsCount;
         this.email = email;
@@ -48,7 +48,7 @@ public class User implements Serializable {
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", userName='" + userName + '\'' +
-                ", userNameNonAccent='" + userNameNonAccent + '\'' +
+                ", userNameNonAccent='" + nameNonAccent + '\'' +
                 ", followersCount=" + followersCount +
                 ", followingsCount=" + followingsCount +
                 ", avatar='" + avatar + '\'' +
@@ -74,13 +74,13 @@ public class User implements Serializable {
         this.followingsCount = followingsCount;
     }
 
-    public String getUserNameNonAccent() {
-        return userNameNonAccent;
+    public String getNameNonAccent() {
+        return nameNonAccent;
     }
     public String getName(){ return name;}
 
-    public void setUserNameNonAccent(String userNameNonAccent) {
-        this.userNameNonAccent = userNameNonAccent;
+    public void setNameNonAccent(String nameNonAccent) {
+        this.nameNonAccent = nameNonAccent;
     }
 
     public Integer getId() {

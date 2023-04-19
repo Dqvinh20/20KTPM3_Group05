@@ -1,5 +1,9 @@
 package com.example.tripblog.ui.login;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +30,7 @@ import com.example.tripblog.databinding.ActivityLoginBinding;
 import com.example.tripblog.model.response.AuthResponse;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.MainActivity;
+import com.example.tripblog.ui.SimpleLoadingDialog;
 import com.example.tripblog.ui.resetpassword.ResetPassword;
 import com.example.tripblog.ui.signup.SignupActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -33,19 +38,38 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     public final String TAG = LoginActivity.class.getSimpleName();
-    MaterialAlertDialogBuilder loading = null;
     ActivityLoginBinding binding;
+    ActivityResultLauncher<Intent> activityResultLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == 1 && result.getData() != null) {
+                            Bundle data = result.getData().getExtras();
+                            String email = data.getString("email");
+                            binding.editEmail.setText(email);
+                        }
+                    }
+                }
+        );
 
         binding.loginBtn.setOnClickListener(this);
         binding.forgotPasswordBtn.setOnClickListener(this);
@@ -58,12 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         binding.editEmail.setText("test@gmail.com");
         binding.editPassword.setText("123456");
 
-        binding.loginBtn.performClick();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+//        binding.signupBtn.performClick();
     }
 
     @Override
@@ -134,73 +153,65 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
-        if (loading == null) {
-            loading = new MaterialAlertDialogBuilder(LoginActivity.this);
-            loading.setView(R.layout.loading);
-            loading.setBackground(getDrawable(android.R.color.transparent));
-            loading.setCancelable(false);
-        }
+        SimpleLoadingDialog loadingDialog = new SimpleLoadingDialog(this);
 
-        AlertDialog loadingDialog = loading.show();
+        loadingDialog.show();
+
         AuthService authService = TripBlogApplication.createService(AuthService.class);
-        Log.d(TAG, "OnLoginButton Press");
-        Log.d(TAG, "Waiting response");
-        authService.login(email, password).enqueue(new Callback<AuthResponse>() {
-            @Override
-            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try {
+                Response<AuthResponse> response = authService.login(email, password).execute();
                 AuthResponse body = response.body();
-                Log.d(TAG, "Received response successfully");
+                runOnUiThread(() -> {
+                    if (body.getStatus().equals( "failure")){
+                        binding.editEmailLayout.setError(body.getError().getAsString());
+                        loadingDialog.dismiss();
+                        return;
+                    }
+                    else if (body.getStatus().equals( "error")) {
+                        loadingDialog.dismiss();
+                        Snackbar
+                                .make(binding.getRoot(), "Unexpected error occur!", Snackbar.LENGTH_LONG)
+                                .setAction("Retry", view -> {
+                                    login();
+                                })
+                                .show();
+                        return;
+                    }
 
-                if (body.getStatus().equals( "failure")){
-                    binding.editEmailLayout.setError(body.getError().getAsString());
+                    // Save logged user
+                    JsonElement userJson = body.getData().getAsJsonObject().get("user");
+                    User loggedUser = new Gson().fromJson(userJson, User.class);
+                    TripBlogApplication.getInstance().setLoggedUser(loggedUser);
+
+                    String token = body.getData().getAsJsonObject().get("token").getAsString();
+                    SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
+                    sharedPreferences.edit().putString("token", token).commit();
+                    TripBlogApplication.updateToken(token); // Save token for next req
+
                     loadingDialog.dismiss();
-                    return;
-                }
-                else if (body.getStatus().equals( "error")) {
-//                    binding.editEmailLayout.setError("Unexpected error occur ! Try again !!!");
-                    Log.e(TAG, "Server error: " + body.getError().toString());
+
+                    // Go to main
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finishAfterTransition();
+                });
+            } catch (IOException e) {
+                runOnUiThread(() -> {
+
                     loadingDialog.dismiss();
                     Snackbar
-                            .make(binding.getRoot(), "Unexpected error occur!", Snackbar.LENGTH_LONG)
+                            .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_LONG)
                             .setAction("Retry", view -> {
                                 login();
                             })
                             .show();
-                    return;
-                }
+                });
 
-                // Save logged user
-                JsonElement userJson = body.getData().getAsJsonObject().get("user");
-                User loggedUser = new Gson().fromJson(userJson, User.class);
-                TripBlogApplication.getInstance().setLoggedUser(loggedUser);
-
-                Log.d(TAG, "Saved token");
-                String token = body.getData().getAsJsonObject().get("token").getAsString();
-                SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
-                sharedPreferences.edit().putString("token", token).commit();
-                TripBlogApplication.updateToken(token); // Save token for next req
-
-                loadingDialog.dismiss();
-
-                // Go to main
-                Log.d(TAG, "Go to Home Page");
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finishAfterTransition();
-            }
-
-            @Override
-            public void onFailure(Call<AuthResponse> call, Throwable t) {
-                Log.e(TAG, "Client error: " + t);
-                loadingDialog.dismiss();
-                Snackbar
-                        .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_LONG)
-                        .setAction("Retry", view -> {
-                            login();
-                        })
-                        .show();
             }
         });
+        executorService.shutdown();
     }
 
     private void goToForgotPassword() {
@@ -210,7 +221,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void goToSignup() {
         Intent signup = new Intent(LoginActivity.this, SignupActivity.class);
-        startActivity(signup);
+        activityResultLauncher.launch(signup);
     }
 
     private class ValidationTextWatcher implements TextWatcher {

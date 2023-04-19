@@ -16,7 +16,7 @@ public interface AuthService {
 
     @FormUrlEncoded
     @POST("auth/signup")
-    Call<AuthResponse> signup(@Field("email") String email, @Field("password") String password);
+    Call<AuthResponse> signup(@Field("email") String email,@Field("name") String name, @Field("password") String password);
 
     @GET("auth/logged-user")
     Call<User> retrieveLoggedUserInfo();

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingHorizontal="@dimen/margin_padding_size_large"
-    android:paddingVertical="@dimen/margin_padding_size_xxlarge"
+    android:paddingVertical="@dimen/margin_padding_size_medium"
     tools:context=".ui.signup.SignupActivity"
     >
     <ImageView
@@ -18,7 +18,6 @@
         android:src="@drawable/app_logo_transparent"
         android:contentDescription="@string/app_name"
         />
-
     <TextView
         android:id="@+id/title"
         android:gravity="center"
@@ -38,12 +37,35 @@
         android:orientation="vertical"
         android:layout_below="@+id/title"
         >
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editNameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorEnabled="true"
+            app:hintEnabled="true"
+            app:hintAnimationEnabled="true"
+            app:startIconDrawable="@drawable/ic_baseline_person_24"
+            app:endIconMode="clear_text"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:ems="3"
+                android:maxLines="1"
+                android:hint="Name"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editEmailLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_padding_size_small"
             app:errorEnabled="true"
             app:hintEnabled="true"
             app:hintAnimationEnabled="true"
@@ -63,11 +85,11 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editPasswordLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_padding_size_small"
             app:errorEnabled="true"
             app:hintEnabled="true"
             app:hintAnimationEnabled="true"
@@ -89,7 +111,6 @@
             android:id="@+id/editConfirmPasswordLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_padding_size_small"
             app:errorEnabled="true"
             app:hintEnabled="true"
             app:hintAnimationEnabled="true"

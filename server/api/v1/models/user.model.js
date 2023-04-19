@@ -34,7 +34,6 @@ const User = sequelize.define(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "Name" + Math.floor(Math.random() * 1000000),
     },
     user_name: {
       type: DataTypes.STRING,

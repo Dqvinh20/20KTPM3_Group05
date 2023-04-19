@@ -75,8 +75,8 @@ public class SearchResultRecycleAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         else {
             User currUser = (User) currItem;
-            resultViewHolder.titleTextView.setText(currUser.getUserName());
-            resultViewHolder.subTiltleTextView.setText(currUser.getUserNameNonAccent());
+            resultViewHolder.titleTextView.setText(currUser.getName());
+            resultViewHolder.subTiltleTextView.setText(currUser.getUserName());
             Glide.with(resultViewHolder.itemView)
                     .load(currUser.getAvatar())
                     .placeholder(R.drawable.img_placeholder)

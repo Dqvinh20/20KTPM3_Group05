@@ -32,7 +32,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -82,14 +85,17 @@ public class OverviewFragment extends Fragment {
             RatePostDialog ratePostDialog = new RatePostDialog(postId);
             ratePostDialog.show(getChildFragmentManager(), RatePostDialog.class.getSimpleName());
         });
-        binding.ratingTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        binding.reviewExpandableLayout.setVisibility(View.VISIBLE);
+
+        binding.ratingTitle.setOnClickListener(view -> {
+            try{
                 isExpanded = !isExpanded;
+
                 int icon = isExpanded ? R.drawable.ic_baseline_arrow_drop_down_24 : R.drawable.ic_baseline_arrow_left_24;
                 binding.ratingTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, icon, 0);
                 binding.reviewExpandableLayout.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-                Log.e(TAG, "ratingTitle");
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         });
 
@@ -124,10 +130,13 @@ public class OverviewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadDataToView();
         if (isFirstLoad && postId != null) {
+            Log.e(TAG, "onResume " + isFirstLoad);
             fetchRatings();
             isFirstLoad = false;
+        }
+        else {
+            loadDataToView();
         }
     }
 
@@ -179,6 +188,7 @@ public class OverviewFragment extends Fragment {
     }
 
     private void loadMore() {
+        Log.e(TAG, "loadMore");
         currentPage += 1;
         if (currentPage > maxPage) {
             return;
@@ -221,25 +231,27 @@ public class OverviewFragment extends Fragment {
         if (currentPage > maxPage) {
             return;
         }
-        ratingService.getAllPostRatings(postId, currentPage, (int) LIMIT_RATING_PER_REQ)
-                .enqueue(new Callback<JsonObject>() {
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        if (response.isSuccessful()) {
-                            List<Rating> ratings = parseResponseData(response);
-                            ratingItemAdapter.addAll(ratings);
-                            binding.divider.setVisibility(ratings != null && !ratings.isEmpty() ? View.VISIBLE : View.GONE);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try {
+                Response<JsonObject> response = ratingService.getAllPostRatings(postId, currentPage, (int) LIMIT_RATING_PER_REQ).execute();
+                if (response.isSuccessful()) {
+                    List<Rating> ratings1 = parseResponseData(response);
+                    binding.ratingList.post(() -> {
+                        binding.divider.setVisibility(ratings1 != null && !ratings1.isEmpty() ? View.VISIBLE : View.GONE);
+                        if (!ratings1.isEmpty()) {
+                            ratingItemAdapter.setRatingList(ratings1);
+                            loadDataToView();
                         }
-                    }
-
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-                        t.printStackTrace();
-                        Snackbar
-                                .make(binding.getRoot(), "Fail when load reviews", Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                });
+                    });
+                }
+            } catch (IOException e) {
+                Snackbar
+                        .make(binding.getRoot(), "Fail when load reviews", Snackbar.LENGTH_SHORT)
+                        .show();
+            }
+        });
+        executorService.shutdown();
     }
 
     public void appendNewRating(Rating rating) {
@@ -248,6 +260,7 @@ public class OverviewFragment extends Fragment {
     }
 
     private void loadDataToView() {
+        try {
         if (isResumed()) {
             if (!isEditable && (briefDescription == null || briefDescription.isEmpty())) {
                 binding.briefDescription.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -267,6 +280,9 @@ public class OverviewFragment extends Fragment {
                             NumberUtil.formatShorter(avgCount)
                     )
             );
+        }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

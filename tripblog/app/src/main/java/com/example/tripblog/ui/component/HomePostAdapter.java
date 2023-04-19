@@ -2,6 +2,7 @@ package com.example.tripblog.ui.component;
 
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -60,7 +61,8 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.HomePo
         if(listTripPlan.size() == 0){
             return;
         }
-        holder.namelb.setText(listTripPlan.get(position).getAuthor().getUserName());
+
+        holder.namelb.setText(listTripPlan.get(position).getAuthor().getName());
         holder.tiltelb.setText(listTripPlan.get(position).getTitle());
         holder.briefDeslb.setText(listTripPlan.get(position).getBriefDescription());
         if (listTripPlan.get(position).getBriefDescription().isEmpty()) {

@@ -1,5 +1,6 @@
 package com.example.tripblog.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,7 +101,7 @@ public class RatingItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 .error(R.drawable.img_placeholder)
                 .into(holder.avatar);
 
-        holder.usernameTxt.setText(author.getUserName());
+        holder.usernameTxt.setText(author.getName());
         holder.point.setRating(rating.getScore());
         holder.contentTxt.setText(rating.getContent());
     }

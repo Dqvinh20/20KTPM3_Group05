@@ -36,7 +36,7 @@ const Rating = sequelize.define(
                 "email",
                 "avatar",
                 "user_name",
-                "user_name_non_accent",
+                "name_non_accent",
                 "name",
               ],
             });

@@ -32,7 +32,7 @@ import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.databinding.FragmentCreateBinding;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.SimpleLoadingDialog;
+import com.example.tripblog.ui.dialog.SimpleLoadingDialog;
 import com.example.tripblog.ui.tripPlan.EditableTripPlanDetailActivity;
 import com.example.tripblog.utils.PathUtil;
 import com.google.android.material.bottomsheet.BottomSheetDialog;

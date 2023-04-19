@@ -5,7 +5,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -15,7 +14,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,10 +28,9 @@ import com.example.tripblog.databinding.ActivityLoginBinding;
 import com.example.tripblog.model.response.AuthResponse;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.SimpleLoadingDialog;
+import com.example.tripblog.ui.dialog.SimpleLoadingDialog;
 import com.example.tripblog.ui.resetpassword.ResetPassword;
 import com.example.tripblog.ui.signup.SignupActivity;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -42,8 +39,6 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -77,12 +72,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         binding.editEmail.addTextChangedListener(new ValidationTextWatcher(binding.editEmail));
         binding.editPassword.addTextChangedListener(new ValidationTextWatcher(binding.editPassword));
-
-        // DEBUG ONLY
-        binding.editEmail.setText("test@gmail.com");
-        binding.editPassword.setText("123456");
-
-//        binding.signupBtn.performClick();
     }
 
     @Override
@@ -190,16 +179,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     sharedPreferences.edit().putString("token", token).commit();
                     TripBlogApplication.updateToken(token); // Save token for next req
 
-                    loadingDialog.dismiss();
-
                     // Go to main
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    loadingDialog.dismiss();
                     startActivity(intent);
                     finishAfterTransition();
                 });
             } catch (IOException e) {
                 runOnUiThread(() -> {
-
                     loadingDialog.dismiss();
                     Snackbar
                             .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_LONG)

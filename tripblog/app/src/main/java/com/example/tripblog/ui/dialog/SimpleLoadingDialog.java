@@ -1,4 +1,4 @@
-package com.example.tripblog.ui;
+package com.example.tripblog.ui.dialog;
 
 import android.content.Context;
 

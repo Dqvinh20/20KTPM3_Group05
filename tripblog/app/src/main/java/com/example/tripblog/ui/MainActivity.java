@@ -18,16 +18,15 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
 
 import com.example.tripblog.R;
+import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.databinding.ActivityMainBinding;
 import com.example.tripblog.ui.fragments.HomeFragment;
 import com.example.tripblog.ui.fragments.CreateFragment;
 import com.example.tripblog.ui.fragments.ProfileFragment;
+import com.example.tripblog.ui.interfaces.MainCallbacks;
 import com.example.tripblog.ui.search.Search;
 import com.google.android.material.snackbar.Snackbar;
 //import com.karumi.dexter.Dexter;
@@ -37,7 +36,7 @@ import com.google.android.material.snackbar.Snackbar;
 //import com.karumi.dexter.listener.PermissionRequest;
 //import com.karumi.dexter.listener.single.PermissionListener;
 
-public class MainActivity extends AppCompatActivity implements MainCallbacks{
+public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public static int TRIP_PLAN_REQ_CODE = 1;
     public static int SEARCH_REQ_CODE = 2;
 
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
     private long lastClickTime = 0;
     private NotificationManagerCompat notificationManagerCompat;
     HomeFragment homeFragment = new HomeFragment();
-    ProfileFragment profileFragment = new ProfileFragment();
+    ProfileFragment profileFragment = ProfileFragment.newInstance(TripBlogApplication.getInstance().getLoggedUser().getId(), true);
 
     ActivityResultLauncher<Intent> activityResultLauncher;
     public ActivityResultLauncher<Intent> getActivityResultLauncher() {

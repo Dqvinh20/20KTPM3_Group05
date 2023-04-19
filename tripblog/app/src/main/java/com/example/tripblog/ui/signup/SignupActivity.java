@@ -17,7 +17,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tripblog.R;
@@ -25,18 +24,14 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivitySignupBinding;
 import com.example.tripblog.model.response.AuthResponse;
-import com.example.tripblog.ui.SimpleLoadingDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.example.tripblog.ui.dialog.SimpleLoadingDialog;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
@@ -62,11 +57,6 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         binding.editEmail.addTextChangedListener(new ValidationTextWatcher(binding.editEmail));
         binding.editPassword.addTextChangedListener(new ValidationTextWatcher(binding.editPassword));
-
-        binding.editName.setText("Nguyen Hau");
-        binding.editEmail.setText("test1@gmail.com");
-        binding.editPassword.setText("123456");
-        binding.editConfirmPassword.setText("123456");
     }
 
     @Override

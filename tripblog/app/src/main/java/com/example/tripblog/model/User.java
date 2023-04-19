@@ -48,7 +48,7 @@ public class User implements Serializable {
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", userName='" + userName + '\'' +
-                ", userNameNonAccent='" + nameNonAccent + '\'' +
+                ", NameNonAccent='" + nameNonAccent + '\'' +
                 ", followersCount=" + followersCount +
                 ", followingsCount=" + followingsCount +
                 ", avatar='" + avatar + '\'' +

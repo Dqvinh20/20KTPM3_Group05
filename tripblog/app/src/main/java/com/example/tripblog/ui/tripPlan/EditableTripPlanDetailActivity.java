@@ -30,7 +30,7 @@ import com.example.tripblog.R;
 import com.example.tripblog.model.Location;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.model.Schedule;
-import com.example.tripblog.ui.SimpleLoadingDialog;
+import com.example.tripblog.ui.dialog.SimpleLoadingDialog;
 import com.example.tripblog.utils.PathUtil;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;

@@ -53,7 +53,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private UserService userService;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private int currUserId = 2;
+    private int currUserId;
     private User currUserData;
     private List<User> followingList;
     ActivityResultLauncher<Intent> activityResultLauncher;

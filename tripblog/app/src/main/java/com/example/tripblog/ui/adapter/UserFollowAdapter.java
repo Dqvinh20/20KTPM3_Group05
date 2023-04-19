@@ -87,13 +87,12 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
     @Override
     public void onBindViewHolder(@NonNull UserFollowAdapter.UserFollowViewHolder holder, int position) {
         User currUser = userList.get(position);
-
         Glide.with(holder.itemView)
                 .load(currUser.getAvatar())
                 .placeholder(R.drawable.img_placeholder)
                 .error(R.drawable.avatar)
                 .into(holder.avatar);
-        holder.name.setText(currUser.getUserName());
+        holder.name.setText(currUser.getName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

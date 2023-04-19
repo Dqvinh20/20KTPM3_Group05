@@ -4,7 +4,7 @@ const cloudinary = require("../utils/cloudinary");
 
 const queryAuthor = {
   association: "author",
-  attributes: ["id", "email", "avatar", "user_name", "user_name_non_accent"],
+  attributes: { exclude: ["password"] },
 };
 
 const common = (query) => {

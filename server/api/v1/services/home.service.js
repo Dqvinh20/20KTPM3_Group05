@@ -6,7 +6,7 @@ const UserFollow = User.sequelize.models.user_followers;
 
 const queryAuthor = {
   association: "author",
-  attributes: ["id", "email", "avatar", "user_name", "user_name_non_accent"],
+  attributes: { exclude: ["password"] },
 };
 
 const commonPost = (opts) => ({

@@ -2,7 +2,6 @@ const { DataTypes } = require("sequelize");
 
 const sequelize = require("../config");
 const User = require("./user.model");
-const Converter = require("../utils/converter");
 
 const Post = sequelize.define(
   "Post",
@@ -14,9 +13,6 @@ const Post = sequelize.define(
       allowNull: false,
     },
     title: {
-      type: DataTypes.TEXT,
-    },
-    title_non_accent: {
       type: DataTypes.TEXT,
     },
     brief_description: {
@@ -60,18 +56,6 @@ const Post = sequelize.define(
   },
   {
     tableName: "posts",
-    hooks: {
-      beforeCreate: async (post) => {
-        post.title_non_accent = Converter.toLowerCaseNonAccentVietnamese(
-          post.title
-        );
-      },
-      beforeUpdate: async (post) => {
-        post.title_non_accent = Converter.toLowerCaseNonAccentVietnamese(
-          post.title
-        );
-      },
-    },
   }
 );
 

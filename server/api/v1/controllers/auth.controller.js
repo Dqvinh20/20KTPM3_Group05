@@ -45,9 +45,9 @@ const login = async (req, res) => {
 };
 
 const signup = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
   try {
-    await UserService.createUser({ email, password });
+    await UserService.createUser({ email, password, name });
     return res.status(201).json(ResponseType.Success("User created"));
   } catch (error) {
     if (error instanceof ValidationError) {
@@ -65,7 +65,6 @@ const signup = async (req, res) => {
 const resetPassword = async (req, res) => {
   const { email } = req.body;
   try {
-    // console.log(req.body);
     const user = await AuthService.resetPassword(email);
     res.json(ResponseType.Success(user));
   } catch (error) {

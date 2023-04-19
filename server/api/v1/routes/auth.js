@@ -25,9 +25,7 @@ router.post(
       .trim()
       .custom(async (value) => {
         try {
-          console.log(value);
           const user = await UserService.getUserByEmail(value);
-          console.log(user);
           if (user) {
             return Promise.reject("E-mail already in use");
           }

@@ -41,7 +41,7 @@ const User = sequelize.define(
       allowNull: false,
       defaultValue: "user " + Math.floor(Math.random() * 1000000),
     },
-    user_name_non_accent: {
+    name_non_accent: {
       type: DataTypes.STRING,
     },
     avatar: {
@@ -57,23 +57,23 @@ const User = sequelize.define(
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    tokens: {
-      type: DataTypes.STRING,
-      defaultValue: "",
-    },
   },
   {
     tableName: "users",
     hooks: {
       beforeCreate: async (user) => {
-        user.user_name_non_accent = Converter.toLowerCaseNonAccentVietnamese(
-          user.user_name
+        user.name_non_accent = Converter.toLowerCaseNonAccentVietnamese(
+          user.name
         );
       },
       beforeUpdate: async (user) => {
-        user.user_name_non_accent = Converter.toLowerCaseNonAccentVietnamese(
-          user.user_name
+        user.name_non_accent = Converter.toLowerCaseNonAccentVietnamese(
+          user.name
         );
+      },
+      afterCreate: async (user) => {
+        user.user_name = "user" + user.id;
+        await user.save();
       },
     },
   }

@@ -108,7 +108,7 @@
     <style name="Widget.Tripblog.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="labelVisibilityMode">unlabeled</item>
         <item name="compatShadowEnabled">true</item>
-        <item name="backgroundTint">@color/quantum_white_100</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
         <item name="itemIconSize">32dp</item>
         <item name="itemIconTint">@color/bottom_nav_icon_color</item>
         <item name="itemRippleColor">@android:color/transparent</item>

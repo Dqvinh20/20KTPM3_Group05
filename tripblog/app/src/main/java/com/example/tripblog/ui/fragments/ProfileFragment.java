@@ -1,5 +1,6 @@
 package com.example.tripblog.ui.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,9 +83,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == 1 && result.getData() != null) {
-                            Bundle data = result.getData().getExtras();
-                            User user = (User) data.getSerializable("user");
-                            TripBlogApplication.getInstance().setLoggedUser(user);
                             updateUI();
                         }
                     }
@@ -117,6 +116,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         }
 
         binding.followBtn.addOnCheckedChangeListener(new MaterialButton.OnCheckedChangeListener() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onCheckedChanged(MaterialButton button, boolean isChecked) {
                 // Followed
@@ -226,6 +226,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private void updateUI() {
         User currLoggedUser = TripBlogApplication.getInstance().getLoggedUser();
+        Log.e(currLoggedUser.toString(), "1");
         binding.usernameTxt.setText("@" + currLoggedUser.getUserName());
         binding.nameTxt.setText(currLoggedUser.getName());
         Glide.with(binding.getRoot())

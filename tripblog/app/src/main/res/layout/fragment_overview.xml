@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:text="Brief Description"
             android:paddingHorizontal="@dimen/margin_padding_size_medium"
-            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
             android:textStyle="bold"
             android:layout_marginBottom="@dimen/margin_padding_size_small"
             />
@@ -94,7 +94,7 @@
                 android:drawableEnd="@drawable/ic_baseline_arrow_left_24"
                 android:paddingHorizontal="@dimen/content_item_padding_horizontal"
                 android:text="Ratings"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
                 android:textStyle="bold"
                 android:stateListAnimator="@animator/button_scale_animator"
                 android:layout_marginBottom="@dimen/margin_padding_size_small"
@@ -105,7 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/ratingTitle"
-                android:visibility="visible"
+                android:visibility="gone"
                 >
 
                 <TextView

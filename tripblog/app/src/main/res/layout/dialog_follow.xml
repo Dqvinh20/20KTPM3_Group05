@@ -52,15 +52,15 @@
         android:background="@color/white"
         app:tabMode="scrollable"
         app:tabTextColor="@color/quantum_grey600"
-        app:tabIndicatorColor="@color/quantum_orange800"
-        app:tabSelectedTextColor="@color/quantum_orange800"
+        app:tabIndicatorColor="?attr/colorPrimary"
+        app:tabSelectedTextColor="?attr/colorPrimary"
         app:tabSelectedTextAppearance="?attr/textAppearanceTitleMedium"
         app:tabTextAppearance="?attr/textAppearanceTitleMedium"
         app:tabIndicatorFullWidth="true"
         app:tabPaddingStart="@dimen/margin_padding_size_large"
         app:tabPaddingEnd="@dimen/margin_padding_size_large"
-        app:tabRippleColor="@android:color/transparent"
         android:clipToPadding="false"
+
         android:paddingHorizontal="@dimen/margin_padding_size_small"
         />
     <com.google.android.material.divider.MaterialDivider

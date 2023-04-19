@@ -24,7 +24,7 @@ public interface ScheduleService {
     @HTTP(method = "DELETE", path = "schedule/remove-location", hasBody = true)
     Call<Integer> removeLocation(
             @Field("schedule_id")Integer scheduleId,
-            @Field("location_id")Integer locationId
+            @Field("location_pos")Integer locationPos
     );
 
     @FormUrlEncoded
@@ -32,6 +32,7 @@ public interface ScheduleService {
     Call<JsonObject> editLocationNote(
             @Field("schedule_id")Integer scheduleId,
             @Field("location_id")Integer locationId,
+            @Field("location_pos") Integer locationPos,
             @Field("note")String note
     );
 

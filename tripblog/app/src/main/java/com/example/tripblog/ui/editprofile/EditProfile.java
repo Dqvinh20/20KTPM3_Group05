@@ -57,7 +57,7 @@ public class EditProfile extends AppCompatActivity {
     private final String NAME_PATTERN = "^(?:[\\p{L}\\p{Mn}\\p{Pd}\\'\\x{2019}]+\\s[\\p{L}\\p{Mn}\\p{Pd}\\'\\x{2019}]+\\s?)+$";
     private final UserService userService = TripBlogApplication.createService(UserService.class);
     private ActivityUpdateProfileBinding binding;
-    private User currUser = TripBlogApplication.getInstance().getLoggedUser();
+    private User currUser;
     ActivityResultLauncher<Intent> activityResultLauncher;
 
     @Override
@@ -65,6 +65,8 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityUpdateProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        currUser = TripBlogApplication.getInstance().getLoggedUser();
+        Log.e(TAG, String.valueOf(currUser));
 
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -103,10 +105,8 @@ public class EditProfile extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         Intent result = new Intent();
         Bundle data = new Bundle();
-        data.putSerializable("user", currUser);
-        result.putExtras(data);
         setResult(1, result);
-        finishAfterTransition();
+        finish();
         return true;
     }
 
@@ -257,12 +257,14 @@ public class EditProfile extends AppCompatActivity {
                         // Update success
                         if (body.get(0).getAsInt() == 1) {
                             User updateUser = new Gson().fromJson(body.get(1).getAsJsonObject(), User.class);
-                            currUser.setName(updateUser.getName());
-                            currUser.setUserName(updateUser.getUserName());
-                            currUser.setAvatar(updateUser.getAvatar());
+                            TripBlogApplication.getInstance().setLoggedUser(updateUser);
+                            currUser = TripBlogApplication.getInstance().getLoggedUser();
                             loadData();
                             Snackbar
                                     .make(binding.getRoot(), "Update successfully!", Snackbar.LENGTH_SHORT).show();
+                            if (properties.get("name") != null) {
+                                onSupportNavigateUp();
+                            }
                         }
                     }
                     @Override

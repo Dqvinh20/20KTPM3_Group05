@@ -153,8 +153,8 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             removeLocation.setOnClickListener(view -> {
                 Location location = locations.get(getBindingAdapterPosition());
                 Bundle data = new Bundle();
-                data.putInt("locationPos", getBindingAdapterPosition());
-                data.putInt("locationId", location.getId());
+                data.putInt("locationBindingPos", getBindingAdapterPosition());
+                data.putInt("locationPos", location.getPosition());
                 onClickListener.onClick("remove_location", data);
             });
 
@@ -189,7 +189,9 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
                         Bundle data = new Bundle();
                         data.putInt("locationId", location.getId());
-                        data.putInt("locationPos", getBindingAdapterPosition());
+                        data.putInt("locationPos", location.getPosition());
+                        data.putInt("locationBindingPos", getBindingAdapterPosition());
+
                         data.putString("note", newNote);
                         onClickListener.onClick("edit_note", data);
                         location.setNote(newNote);

@@ -1,5 +1,6 @@
 package com.example.tripblog.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -82,6 +83,7 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
         return new UserFollowViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.user_follow_item, parent, false));
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(@NonNull UserFollowAdapter.UserFollowViewHolder holder, int position) {
         User currUser = userList.get(position);
@@ -101,12 +103,10 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
         holder.followBtn.addOnCheckedChangeListener((button, isChecked) -> {
             // Followed
             if (isChecked) {
-                button.setTextColor(Color.RED);
                 button.setText("Unfollow");
             }
             // Not follow
             else {
-                button.setTextColor(Color.WHITE);
                 button.setText("Follow");
             }
         });

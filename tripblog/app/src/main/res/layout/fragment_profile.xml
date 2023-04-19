@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorOnSurfaceInverse"
+        android:background="@color/quantum_grey200"
         tools:context=".ui.fragments.ProfileFragment">
 
         <com.google.android.material.button.MaterialButton
@@ -52,7 +52,7 @@
             android:clickable="true"
             android:text="Follow"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/follow_btn_in_profile_text_color"
             app:cornerRadius="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -189,8 +189,8 @@
                 android:layout_height="?minTouchTargetSize"
                 android:background="@color/white"
                 app:tabMode="scrollable"
-                app:tabIndicatorColor="@color/quantum_orange800"
-                app:tabSelectedTextColor="@color/quantum_orange800"
+                app:tabIndicatorColor="?attr/colorPrimary"
+                app:tabSelectedTextColor="?attr/colorPrimary"
                 app:tabSelectedTextAppearance="?attr/textAppearanceTitleMedium"
                 app:tabTextAppearance="?attr/textAppearanceTitleMedium"
                 app:tabTextColor="@color/quantum_grey600"
@@ -200,7 +200,11 @@
                 android:clipToPadding="false"
                 >
             </com.google.android.material.tabs.TabLayout>
-
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="@dimen/margin_padding_size_small"
+                />
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/pager"
                 android:layout_width="match_parent"

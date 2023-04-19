@@ -1,12 +1,15 @@
 package com.example.tripblog.ui.fragments;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,6 +89,7 @@ public class OverviewFragment extends Fragment {
                 int icon = isExpanded ? R.drawable.ic_baseline_arrow_drop_down_24 : R.drawable.ic_baseline_arrow_left_24;
                 binding.ratingTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, icon, 0);
                 binding.reviewExpandableLayout.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+                Log.e(TAG, "ratingTitle");
             }
         });
 

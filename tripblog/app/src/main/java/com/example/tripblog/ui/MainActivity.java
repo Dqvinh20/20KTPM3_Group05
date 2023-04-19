@@ -168,8 +168,13 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks{
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
+
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
+
+        if (name == HomeFragment.TAG) {
+            showAppBar();
+        }
     }
 
     @Override

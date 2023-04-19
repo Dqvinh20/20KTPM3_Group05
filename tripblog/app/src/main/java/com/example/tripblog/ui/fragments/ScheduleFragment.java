@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,10 +81,10 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                 break;
             case "remove_location":
                 if (data != null) {
+                    int locationBindingPos = data.getInt("locationBindingPos");
                     int locationPos = data.getInt("locationPos");
-                    int locationId = data.getInt("locationId");
                     int schedulePos = data.getInt("schedulePos");
-                    removeLocation(schedulePos, locationId, locationPos);
+                    removeLocation(schedulePos, locationPos, locationBindingPos);
                 }
                 break;
             case "edit_note":
@@ -91,8 +92,9 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                     int locationPos = data.getInt("locationPos");
                     int locationId = data.getInt("locationId");
                     int schedulePos = data.getInt("schedulePos");
+                    int scheduleBindingPos = data.getInt("locationBindingPos");
                     String note = data.getString("note");
-                    editNote(schedulePos, locationId, note, locationPos);
+                    editNote(schedulePos, locationId, note, locationPos, scheduleBindingPos);
                 }
                 break;
             case "view_on_map":
@@ -141,10 +143,10 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                     }
                 });
     }
-    public void removeLocation(int schedulePos, int locationId, int locationPos) {
+    public void removeLocation(int schedulePos, int locationPos, int locationBindingPos) {
         int scheduleId = (int) adapter.getItemId(schedulePos);
 
-        scheduleService.removeLocation(scheduleId, locationId)
+        scheduleService.removeLocation(scheduleId, locationPos)
                 .enqueue(new Callback<Integer>() {
                     @Override
                     public void onResponse(Call<Integer> call, Response<Integer> response) {
@@ -156,7 +158,7 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                         };
                         Integer isSuccess = response.body();
                         if (isSuccess != null && isSuccess == 1) {
-                            adapter.removeLocation(schedulePos, locationPos);
+                            adapter.removeLocation(schedulePos, locationBindingPos);
                         }
                         Snackbar
                                 .make(binding.getRoot(), "Removed place", Snackbar.LENGTH_SHORT)
@@ -164,16 +166,17 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                     }
                     @Override
                     public void onFailure(Call<Integer> call, Throwable t) {
+                        t.printStackTrace();
                         Snackbar
                                 .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_SHORT)
                                 .show();
                     }
                 });
     }
-    private void editNote(int schedulePos, int locationId, String note, int locationPos) {
+    private void editNote(int schedulePos, int locationId, String note, int locationPos, int locationBindingPos) {
         int scheduleId = (int) adapter.getItemId(schedulePos);
 
-        scheduleService.editLocationNote(scheduleId, locationId, note)
+        scheduleService.editLocationNote(scheduleId, locationId, locationPos, note)
                 .enqueue(new Callback<JsonObject>() {
                     @Override
                     public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -185,8 +188,9 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                         };
 
                         JsonObject result = response.body();
-                        if (result == null && !result.has("note")) {
-                            adapter.editNoteLocation(schedulePos, locationPos, note);
+                        if (result != null && !result.has("note")) {
+                            Log.e(TAG, String.valueOf(result));
+                            adapter.editNoteLocation(schedulePos, locationBindingPos, note);
                         }
                     }
                     @Override

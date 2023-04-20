@@ -140,7 +140,6 @@ public class Search extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if(newText.isEmpty()) return false;
-                SearchService searchService = TripBlogApplication.createService(SearchService.class);
 //                searchService.searchPlaces(newText,5).enqueue(new Callback<SearchResponse>() {
 //                    @Override
 //                    public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {

@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
@@ -39,8 +38,8 @@ public class ViewSearchList extends AppCompatActivity {
     ActivityViewSearchListBinding binding;
     private static final String TAG = ViewSearchList.class.getSimpleName();
     TextView hint_search;
-    List<TripPlan> listpost;
-    CustomResultSearchAdapter postAdapter;
+    List<TripPlan> tripPlansList;
+    CustomResultSearchAdapter tripPlansAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,15 +58,18 @@ public class ViewSearchList extends AppCompatActivity {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 JsonArray list = response.body();
-                listpost = new Gson().fromJson(list, new TypeToken<List<TripPlan>>(){}.getType());
-                if (listpost != null && listpost.size() == 0) {
+                tripPlansList = new Gson().fromJson(list, new TypeToken<List<TripPlan>>(){}.getType());
+                tripPlansList.sort((tripPlan, t1) -> Float.compare(t1.getAvgRating(), tripPlan.getAvgRating()));
+
+                if (tripPlansList != null && tripPlansList.size() == 0) {
                     binding.noResultInfo.setVisibility(View.VISIBLE);
                 }
                 else {
                     binding.noResultInfo.setVisibility(View.GONE);
                 }
-                postAdapter = new CustomResultSearchAdapter(ViewSearchList.this, R.layout.post_search_list_component, listpost);
-                binding.listResultSearch.setAdapter(postAdapter);
+
+                tripPlansAdapter = new CustomResultSearchAdapter(ViewSearchList.this, R.layout.post_search_list_component, tripPlansList);
+                binding.listResultSearch.setAdapter(tripPlansAdapter);
             }
 
             @Override
@@ -78,7 +80,7 @@ public class ViewSearchList extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(ViewSearchList.this, TripPlanDetailActivity.class);
-                intent.putExtra("postId", listpost.get(position).getId());
+                intent.putExtra("postId", tripPlansList.get(position).getId());
                 startActivity(intent);
             }
         });

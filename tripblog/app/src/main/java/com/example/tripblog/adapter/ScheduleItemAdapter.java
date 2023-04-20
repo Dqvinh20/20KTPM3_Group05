@@ -1,6 +1,7 @@
 package com.example.tripblog.adapter;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
@@ -51,7 +53,8 @@ public class ScheduleItemAdapter
 
     public void setScheduleList(List<Schedule> scheduleList) {
         this.scheduleList = scheduleList;
-        Executors.newSingleThreadExecutor().execute(() -> {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
             List<Integer> markerColors = ColorUtil.generateMapMarkerColors(this.scheduleList.size());
             IntStream.range(0, this.scheduleList.size()).forEach(idx -> {
                 this.scheduleList.get(idx).setMarkerColor(markerColors.get(idx));
@@ -59,6 +62,7 @@ public class ScheduleItemAdapter
 
             notifyDataSetChanged();
         });
+        executorService.shutdown();
     }
 
     private void loadScheduleColors() {

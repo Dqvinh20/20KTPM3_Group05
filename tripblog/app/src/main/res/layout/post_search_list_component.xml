@@ -7,6 +7,7 @@
     android:orientation="horizontal"
     android:padding="@dimen/margin_padding_size_medium"
     android:gravity="center_vertical"
+    android:descendantFocusability="blocksDescendants"
     >
     <androidx.cardview.widget.CardView
         android:layout_width="130dp"
@@ -98,13 +99,27 @@
                     android:gravity="center_vertical"
 
                     >
-                    <ImageView
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/fav_icon"
+                        app:toggleCheckedStateOnClick="true"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:background="@drawable/favarite_icon"
-                        android:tag="unliked"
-                        android:foregroundGravity="center"/>
+                        android:gravity="center"
+                        android:checkable="true"
+                        android:clickable="false"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconTint="@color/like_icon_color"
+                        app:icon="@drawable/favorite_icon_toggle"
+                        style="@style/Widget.Tripblog.PostDetail.BottomAppBar.Button"
+                        />
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/fav_icon"-->
+<!--                        android:layout_width="24dp"-->
+<!--                        android:layout_height="24dp"-->
+<!--                        android:background="@drawable/favarite_icon"-->
+<!--                        android:foregroundGravity="center"/>-->
                     <TextView
                         android:id="@+id/fav_count_textView"
                         android:layout_width="match_parent"

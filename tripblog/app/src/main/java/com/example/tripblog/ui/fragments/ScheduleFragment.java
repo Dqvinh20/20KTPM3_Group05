@@ -188,8 +188,7 @@ public class ScheduleFragment extends Fragment implements IOnClickListener {
                         };
 
                         JsonObject result = response.body();
-                        if (result != null && !result.has("note")) {
-                            Log.e(TAG, String.valueOf(result));
+                        if (result != null && result.has("note")) {
                             adapter.editNoteLocation(schedulePos, locationBindingPos, note);
                         }
                     }

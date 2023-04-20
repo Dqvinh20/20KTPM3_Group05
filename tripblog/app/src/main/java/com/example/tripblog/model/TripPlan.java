@@ -30,7 +30,6 @@ public class TripPlan implements Serializable {
     private Date createdAt;
     private Date updatedAt;
     private User author;
-
     private List<Schedule> schedules;
 
     public List<Schedule> getSchedules() {
@@ -68,6 +67,7 @@ public class TripPlan implements Serializable {
                 ", isPublic=" + isPublic +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", isLikedByYou=" + isLikedByYou +
                 "author=" + (author != null ? author.toString() : "null") +
                 "schedules=" + (schedules != null ? schedules.toString() : "null") +
                 '}';

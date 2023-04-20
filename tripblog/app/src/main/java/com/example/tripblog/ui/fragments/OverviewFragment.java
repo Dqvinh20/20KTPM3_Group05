@@ -85,7 +85,7 @@ public class OverviewFragment extends Fragment {
             RatePostDialog ratePostDialog = new RatePostDialog(postId);
             ratePostDialog.show(getChildFragmentManager(), RatePostDialog.class.getSimpleName());
         });
-        binding.reviewExpandableLayout.setVisibility(View.VISIBLE);
+        binding.reviewExpandableLayout.setVisibility(View.GONE);
 
         binding.ratingTitle.setOnClickListener(view -> {
             try{
@@ -139,7 +139,6 @@ public class OverviewFragment extends Fragment {
             loadDataToView();
         }
     }
-
     private void initScrollListener() {
         binding.ratingList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

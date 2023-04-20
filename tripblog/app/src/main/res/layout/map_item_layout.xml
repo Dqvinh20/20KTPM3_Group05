@@ -86,11 +86,12 @@
             <EditText
                 android:id="@+id/locationNote"
                 android:paddingVertical="@dimen/margin_padding_size_medium"
-                android:paddingHorizontal="@dimen/margin_padding_size_medium"
+                android:paddingHorizontal="@dimen/margin_padding_size_small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:minLines="3"
+                android:minLines="1"
+                android:ellipsize="end"
                 tools:text="@tools:sample/lorem"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 />

@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -64,6 +65,7 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e(TAG, "onCreate");
 
         binding = ActivityTripPlanDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -193,37 +195,34 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
         else {
             // Load data from internet
             Integer postId = bundle.getInt("postId");
-
-            // Increase view
-            if (!isEditable) {
-                // View only
-                tripPlanService.increaseView(postId).enqueue(new Callback<TripPlan>() {
-                    @Override
-                    public void onResponse(Call<TripPlan> call, Response<TripPlan> response) {
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.execute(() -> {
+                try {
+                    if (!isEditable) {
+                        Response<TripPlan> response = tripPlanService.increaseView(postId).execute();
                         if (response.isSuccessful()) {
-                            currPostLiveData.postValue(response.body());
+                            Log.d(TAG, "Increased view");
                         }
                     }
-                    @Override
-                    public void onFailure(Call<TripPlan> call, Throwable t) {}
-                });
-            }
 
-            tripPlanService.getTripPlanById(postId).enqueue(new Callback<TripPlan>() {
-                @Override
-                public void onResponse(Call<TripPlan> call, Response<TripPlan> response) {
-                    TripPlan tripPlan = response.body();
-                    if (tripPlan.getId() == null) return;
-                    currPostLiveData.postValue(tripPlan);
-                }
-
-                @Override
-                public void onFailure(Call<TripPlan> call, Throwable t) {
-                    Snackbar
-                            .make(binding.getRoot(), "Can't connect to server", Snackbar.LENGTH_SHORT)
-                            .show();
+                    Response<TripPlan> tripPlanResponse = tripPlanService.getTripPlanById(postId).execute();
+                    if (tripPlanResponse.isSuccessful()) {
+                        TripPlan tripPlan = tripPlanResponse.body();
+                        Log.d(TAG, "Get data successfully!");
+                        if (tripPlan.getId() == null) return;
+                        runOnUiThread(() -> {
+                            currPostLiveData.postValue(tripPlan);
+                        });
+                    }
+                } catch (IOException e) {
+                    runOnUiThread(() -> {
+                        Snackbar
+                                .make(binding.getRoot(), "Fetch data error!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    });
                 }
             });
+            executorService.shutdown();
         }
     }
     protected void loadData() {
@@ -262,6 +261,7 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
 
         binding.contentViewPaper.setVisibility(View.VISIBLE);
     }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -288,30 +288,29 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
             TripPlan tripPlan = currPostLiveData.getValue();
             int likedCount = tripPlan.getLikeCount();
             boolean isLiked = tripPlan.isLikedByYou();
-
-            if (isLiked) {
-                executorService.execute(() -> {
-                    try {
+            executorService.execute(() -> {
+                try {
+                    if (isLiked) {
                         userService.unlikePost(tripPlan.getId()).execute();
-                        isLoading = false;
-                    } catch (IOException e) {}
-                });
-            }
-            else {
-                executorService.execute(() -> {
-                    try {
+                    }
+                    else {
                         userService.likePost(tripPlan.getId()).execute();
-                        isLoading = false;
-                    } catch (IOException e) {}
-                });
-            }
-            executorService.shutdown();
-            tripPlan.setLikedByYou(!isLiked);
-            tripPlan.setLikeCount(likedCount + (!isLiked ? 1 : -1));
+                    }
+                }
+                catch (IOException e) {}
+                finally {
+                    isLoading = false;
+                    runOnUiThread(() -> {
+                        tripPlan.setLikedByYou(!isLiked);
+                        tripPlan.setLikeCount(likedCount + (!isLiked ? 1 : -1));
 
-            // Update like button text
-            String formattedLikeCount = NumberUtil.formatShorter(tripPlan.getLikeCount());
-            binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
+                        // Update like button text
+                        String formattedLikeCount = NumberUtil.formatShorter(tripPlan.getLikeCount());
+                        binding.likeBtn.setText(String.join(" ", formattedLikeCount, getString(R.string.like_btn_txt)));
+                    });
+                }
+            });
+            executorService.shutdown();
         }
         else if (view.getId() == R.id.shareBtn) {
             String link = "https://tripblog.com?postId=" + currPostLiveData.getValue().getId();

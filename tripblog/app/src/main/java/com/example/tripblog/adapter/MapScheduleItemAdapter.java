@@ -129,7 +129,8 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return 0;
     }
 
-    public class MapScheduleItemViewHolder extends RecyclerView.ViewHolder {
+    public class MapScheduleItemViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
         TextView locationName, locationPosition;
         ImageView locationPhoto;
         EditText locationNote;
@@ -145,60 +146,68 @@ public class MapScheduleItemAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             removeLocation = itemView.findViewById(R.id.removeLocation);
             expandableLayout = itemView.findViewById(R.id.expandableLayout);
 
-            viewOnMap.setOnClickListener(view -> {
-                Bundle data = new Bundle();
-                onClickListener.onClick("view_on_map", data);
-            });
-
-            removeLocation.setOnClickListener(view -> {
-                Location location = locations.get(getBindingAdapterPosition());
-                Bundle data = new Bundle();
-                data.putInt("locationBindingPos", getBindingAdapterPosition());
-                data.putInt("locationPos", location.getPosition());
-                onClickListener.onClick("remove_location", data);
-            });
-
-            itemView.setOnClickListener(v -> {
-                Location location = locations.get(getBindingAdapterPosition());
-                location.setExpandable(!location.isExpandable());
-                notifyItemChanged(getBindingAdapterPosition());
-            });
-
-            locationNote.setOnClickListener(v -> {
-                Location location = locations.get(getBindingAdapterPosition());
-                location.setExpandable(!location.isExpandable());
-                notifyItemChanged(getBindingAdapterPosition());
-            });
-
-            locationPhoto.setOnClickListener(v -> {
-                Bitmap imgSrc = ((BitmapDrawable) locationPhoto.getDrawable()).getBitmap();
-                Bundle data = new Bundle();
-                data.putParcelable("imgSrc", imgSrc);
-                onClickListener.onClick("show_img_preview", data);
-            });
+            viewOnMap.setOnClickListener(this);
+            removeLocation.setOnClickListener(this);
+            locationPhoto.setOnClickListener(this);
+            locationNote.setOnClickListener(this);
+            itemView.setOnClickListener(this);
 
             locationNote.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
-                public void onFocusChange(View view, boolean b) {
+                public void onFocusChange(View view, boolean hasFocus) {
                     Location location = locations.get(getBindingAdapterPosition());
                     String newNote = locationNote.getText().toString();
-                    if (!b && !location.getNote().equals(newNote)) {
+
+                    if (!hasFocus) {
                         // Hide keyboard
                         InputMethodManager imm =  (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                        Bundle data = new Bundle();
-                        data.putInt("locationId", location.getId());
-                        data.putInt("locationPos", location.getPosition());
-                        data.putInt("locationBindingPos", getBindingAdapterPosition());
-
-                        data.putString("note", newNote);
-                        onClickListener.onClick("edit_note", data);
-                        location.setNote(newNote);
-                        notifyItemChanged(getBindingAdapterPosition());
+                        if (!location.getNote().equals(newNote)) {
+                            Bundle data = new Bundle();
+                            data.putInt("locationId", location.getId());
+                            data.putInt("locationPos", location.getPosition());
+                            data.putInt("locationBindingPos", getBindingAdapterPosition());
+                            data.putString("note", newNote);
+                            onClickListener.onClick("edit_note", data);
+                        }
                     }
                 }
             });
+        }
+
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.viewOnMap: {
+                    Bundle data = new Bundle();
+                    onClickListener.onClick("view_on_map", data);
+                    break;
+                }
+                case R.id.locationPhoto: {
+                    Bitmap imgSrc = ((BitmapDrawable) locationPhoto.getDrawable()).getBitmap();
+                    Bundle data = new Bundle();
+                    data.putParcelable("imgSrc", imgSrc);
+                    onClickListener.onClick("show_img_preview", data);
+                    break;
+                }
+                case R.id.removeLocation: {
+                    Location location = locations.get(getBindingAdapterPosition());
+                    Bundle data = new Bundle();
+                    data.putInt("locationBindingPos", getBindingAdapterPosition());
+                    data.putInt("locationPos", location.getPosition());
+                    onClickListener.onClick("remove_location", data);
+                    break;
+                }
+
+                // Expand the map item view
+                default: {
+                    Location location = locations.get(getBindingAdapterPosition());
+                    location.setExpandable(!location.isExpandable());
+                    notifyItemChanged(getBindingAdapterPosition());
+                    break;
+                }
+            }
         }
     }
 }

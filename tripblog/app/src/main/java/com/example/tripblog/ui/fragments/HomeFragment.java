@@ -120,7 +120,7 @@ public class HomeFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
         tripPlanService.getPopularTripPlans(
-                1,10
+                1,5
         ).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {

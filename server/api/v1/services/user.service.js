@@ -21,7 +21,7 @@ const getFollowers = async (user_id) => {
     },
     include: {
       association: "followers",
-      attributes: ["id", "user_name", "email", "avatar"],
+      attributes: { exclude: ["password", "_search"] },
     },
   });
 };
@@ -33,7 +33,7 @@ const getFollowings = async (user_id) => {
     },
     include: {
       association: "followings",
-      attributes: ["id", "user_name", "email", "avatar"],
+      attributes: { exclude: ["password", "_search"] },
     },
   });
 };

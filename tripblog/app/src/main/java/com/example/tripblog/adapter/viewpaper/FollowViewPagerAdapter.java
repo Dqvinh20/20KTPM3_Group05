@@ -1,4 +1,4 @@
-package com.example.tripblog.ui.adapter;
+package com.example.tripblog.adapter.viewpaper;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

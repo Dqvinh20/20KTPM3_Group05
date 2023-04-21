@@ -1,20 +1,13 @@
-package com.example.tripblog.ui.adapter;
+package com.example.tripblog.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.ButtonBarLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -24,8 +17,6 @@ import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.model.User;
 //import com.example.tripblog.ui.component.PostnewsfeedAdapterRecycle;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

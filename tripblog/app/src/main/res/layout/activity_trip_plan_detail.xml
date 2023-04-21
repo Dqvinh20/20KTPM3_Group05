@@ -135,7 +135,7 @@
                 app:contentInsetEnd="?attr/actionBarSize"
                 app:contentInsetStartWithNavigation="0dp"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
+                android:background="@drawable/top_app_bar_bg"
                 android:layout_width="match_parent"
                 app:layout_collapseMode="pin"
                 app:contentInsetStart="0dp"

@@ -1,4 +1,4 @@
-package com.example.tripblog.adapter;
+package com.example.tripblog.adapter.viewpaper;
 
 import android.os.Bundle;
 

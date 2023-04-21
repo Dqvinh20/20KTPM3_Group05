@@ -1,4 +1,4 @@
-package com.example.tripblog.ui.component;
+package com.example.tripblog.adapter;
 
 import android.app.Activity;
 import android.content.Context;

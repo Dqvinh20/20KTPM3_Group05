@@ -2,24 +2,14 @@ package com.example.tripblog.ui.fragments;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-import androidx.viewpager2.widget.ViewPager2;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.databinding.DialogFollowBinding;
-import com.example.tripblog.model.User;
-import com.example.tripblog.ui.adapter.FollowViewPagerAdapter;
-import com.google.android.material.tabs.TabLayout;
+import com.example.tripblog.adapter.viewpaper.FollowViewPagerAdapter;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class FollowDialogFragment extends DialogFragment {

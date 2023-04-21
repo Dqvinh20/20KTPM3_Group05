@@ -18,7 +18,7 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.model.User;
-import com.example.tripblog.ui.adapter.PlanListAdapter;
+import com.example.tripblog.adapter.PlanListAdapter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;

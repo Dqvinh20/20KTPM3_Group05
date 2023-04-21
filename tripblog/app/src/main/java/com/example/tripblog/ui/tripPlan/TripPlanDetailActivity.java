@@ -22,14 +22,13 @@ import android.widget.EditText;
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
 import com.example.tripblog.TripBlogApplication;
-import com.example.tripblog.adapter.PostDetailViewPaperAdapter;
+import com.example.tripblog.adapter.viewpaper.PostDetailViewPaperAdapter;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.ActivityTripPlanDetailBinding;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.fragments.ProfileFragment;
 import com.example.tripblog.utils.NumberUtil;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
@@ -45,8 +44,6 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class TripPlanDetailActivity extends AppCompatActivity implements View.OnClickListener {

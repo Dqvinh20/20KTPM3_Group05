@@ -1,8 +1,7 @@
-package com.example.tripblog.ui.component;
+package com.example.tripblog.adapter;
 
 
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;

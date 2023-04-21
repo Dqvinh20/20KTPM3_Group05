@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,7 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.component.HomePostAdapter;
+import com.example.tripblog.adapter.HomePostAdapter;
 import com.example.tripblog.ui.tripPlan.TripPlanDetailActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;

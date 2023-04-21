@@ -25,7 +25,7 @@ import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.FragmentProfileBinding;
 import com.example.tripblog.model.User;
 import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.adapter.PostViewPagerAdapter;
+import com.example.tripblog.adapter.viewpaper.PostViewPagerAdapter;
 import com.example.tripblog.ui.editprofile.EditProfile;
 import com.example.tripblog.ui.login.LoginActivity;
 import com.example.tripblog.utils.NumberUtil;

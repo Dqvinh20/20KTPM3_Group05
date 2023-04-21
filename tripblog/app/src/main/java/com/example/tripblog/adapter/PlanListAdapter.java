@@ -1,4 +1,4 @@
-package com.example.tripblog.ui.adapter;
+package com.example.tripblog.adapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;

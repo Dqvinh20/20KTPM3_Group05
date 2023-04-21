@@ -113,6 +113,7 @@ public class OverviewFragment extends Fragment {
             briefDescription = args.getString("briefDescription");
             avgPoint = (float) args.getDouble("avgPoint");
             avgCount = args.getInt("avgCount");
+            loadDataToView();
         }
     }
 
@@ -140,6 +141,7 @@ public class OverviewFragment extends Fragment {
         }
     }
     private void initScrollListener() {
+        Log.e()
         binding.ratingList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -275,7 +277,7 @@ public class OverviewFragment extends Fragment {
             binding.avgRatingBar.setRating(avgPoint);
             binding.ratingCount.setText(
                     String.format(
-                            "based on %s reviews",
+                            "based on %s ratings",
                             NumberUtil.formatShorter(avgCount)
                     )
             );

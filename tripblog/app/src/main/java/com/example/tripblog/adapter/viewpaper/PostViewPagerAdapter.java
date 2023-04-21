@@ -1,4 +1,4 @@
-package com.example.tripblog.ui.adapter;
+package com.example.tripblog.adapter.viewpaper;
 
 import android.util.Log;
 import android.widget.Toast;

@@ -21,7 +21,7 @@ import android.widget.EditText;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.adapter.viewpaper.PostDetailViewPaperAdapter;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.api.services.UserService;
@@ -52,7 +52,7 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
     protected ActivityTripPlanDetailBinding binding;
     protected MutableLiveData<TripPlan> currPostLiveData = new MutableLiveData<>();
     protected PostDetailViewPaperAdapter contentViewPaperAdapter;
-    protected final TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+    protected final TripPlanService tripPlanService = TripShareApplication.createService(TripPlanService.class);
     protected boolean isEditable = false;
     private boolean isLoading = false;
 
@@ -281,7 +281,7 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
         if (view.getId() == R.id.likeBtn) {
             if (isLoading) return;
             ExecutorService executorService = Executors.newSingleThreadExecutor();
-            UserService userService = TripBlogApplication.createService(UserService.class);
+            UserService userService = TripShareApplication.createService(UserService.class);
             TripPlan tripPlan = currPostLiveData.getValue();
             int likedCount = tripPlan.getLikeCount();
             boolean isLiked = tripPlan.isLikedByYou();
@@ -322,7 +322,7 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
         }
         else if (view.getId() == R.id.authorAvatar) {
             User author = currPostLiveData.getValue().getAuthor();
-            if (author == null || author.getId() == TripBlogApplication.getInstance().getLoggedUser().getId()) {
+            if (author == null || author.getId() == TripShareApplication.getInstance().getLoggedUser().getId()) {
                 return;
             }
 

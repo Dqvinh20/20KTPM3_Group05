@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.model.User;
 import com.example.tripblog.adapter.UserFollowAdapter;
@@ -66,7 +66,7 @@ public class FollowingFragment extends Fragment {
         }
         loadingProgressBar.setVisibility(View.VISIBLE);
         recyclerList.setVisibility(View.GONE);
-        UserService userService = TripBlogApplication.createService(UserService.class);
+        UserService userService = TripShareApplication.createService(UserService.class);
         userService.getUserFollowing(currUserId).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {

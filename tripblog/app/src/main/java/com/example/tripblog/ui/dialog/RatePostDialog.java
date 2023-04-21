@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.RatingService;
 import com.example.tripblog.model.Rating;
 import com.example.tripblog.ui.fragments.OverviewFragment;
@@ -104,7 +104,7 @@ public class RatePostDialog extends DialogFragment implements View.OnClickListen
     public Runnable fetchNewRating = new Runnable() {
         @Override
         public void run() {
-            RatingService ratingService = TripBlogApplication.createService(RatingService.class);
+            RatingService ratingService = TripShareApplication.createService(RatingService.class);
 
             try {
                 Response<JsonObject> req = ratingService.getAllPostRatings(postId, 1, 1).execute();
@@ -127,7 +127,7 @@ public class RatePostDialog extends DialogFragment implements View.OnClickListen
         return new Runnable() {
             @Override
             public void run() {
-                RatingService ratingService = TripBlogApplication.createService(RatingService.class);
+                RatingService ratingService = TripShareApplication.createService(RatingService.class);
                 try {
                     Response<JsonObject> response = ratingService
                                                                 .writeRating(

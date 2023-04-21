@@ -81,20 +81,20 @@
     </style>
 
     <!-- Post detail   -->
-    <style name="CollapsingToolbarLayoutExpandedTextStyle" parent="Theme.Tripblog">
+    <style name="CollapsingToolbarLayoutExpandedTextStyle" parent="Theme.Tripshare">
         <item name="android:textColor">@android:color/transparent</item>
         <item name="android:textSize">0sp</item>
     </style>
 
-    <!-- Widget.Tripblog.BottomAppBar -->
-    <style name="Widget.Tripblog.PostDetail.BottomAppBar" parent="Widget.Material3.BottomAppBar">
+    <!-- Widget.Tripshare.BottomAppBar -->
+    <style name="Widget.Tripshare.TripPlanDetail.BottomAppBar" parent="Widget.Material3.BottomAppBar">
         <item name="backgroundTint">@color/quantum_white_100</item>
         <item name="contentInsetEnd">8dp</item>
         <item name="contentInsetEndWithActions">8dp</item>
         <item name="addElevationShadow">true</item>
     </style>
 
-    <style name="Widget.Tripblog.PostDetail.BottomAppBar.Button" parent="@style/Widget.Material3.Button.TextButton">
+    <style name="Widget.Tripshare.TripPlanDetail.BottomAppBar.Button" parent="@style/Widget.Material3.Button.TextButton">
         <item name="backgroundTint">@android:color/transparent</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="iconTint">?attr/colorOnSurface</item>
@@ -105,28 +105,28 @@
 
     <!-- Widget.Tripblog.BottomAppBar -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar"></style>
-    <style name="Widget.Tripblog.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+    <style name="Widget.Tripshare.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="labelVisibilityMode">unlabeled</item>
         <item name="compatShadowEnabled">true</item>
         <item name="backgroundTint">?attr/colorSurface</item>
         <item name="itemIconSize">32dp</item>
         <item name="itemIconTint">@color/bottom_nav_icon_color</item>
         <item name="itemRippleColor">@android:color/transparent</item>
-        <item name="itemActiveIndicatorStyle">@style/Widget.Tripblog.BottomNavigationView.ActiveIndicator</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.Tripshare.BottomNavigationView.ActiveIndicator</item>
         <item name="addElevationShadow">true</item>
     </style>
 
-    <style name="Widget.Tripblog.BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+    <style name="Widget.Tripshare.BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@android:color/transparent</item>
     </style>
 
-    <style name="Widget.Tripblog.CreatePostButton" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+    <style name="Widget.Tripshare.CreatePostButton" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
         <item name="shapeAppearance">@style/ShapeAppearanceOverlay.Material3.Button</item>
         <item name="iconSize">40dp</item>
         <item name="elevation">1dp</item>
     </style>
 
-    <style name="Widget.Tripblog.GoldenRatingBar" parent="Widget.AppCompat.RatingBar.Indicator">
+    <style name="Widget.Tripshare.GoldenRatingBar" parent="Widget.AppCompat.RatingBar.Indicator">
         <item name="android:progressTint">@color/quantum_yellow</item>
         <item name="android:secondaryProgressTint">@android:color/transparent</item>
     </style>

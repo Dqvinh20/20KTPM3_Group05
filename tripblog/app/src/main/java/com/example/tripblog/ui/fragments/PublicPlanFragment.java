@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.model.User;
@@ -35,7 +35,7 @@ public class PublicPlanFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private int currUserId;
     private boolean isEditable = true;
-    private User loggedUser = TripBlogApplication.getInstance().getLoggedUser();
+    private User loggedUser = TripShareApplication.getInstance().getLoggedUser();
     ListView planList;
     public PublicPlanFragment() {
         // Required empty public constructor
@@ -75,7 +75,7 @@ public class PublicPlanFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+        TripPlanService tripPlanService = TripShareApplication.createService(TripPlanService.class);
         tripPlanService.getTripPlanByUserId(currUserId, true).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {

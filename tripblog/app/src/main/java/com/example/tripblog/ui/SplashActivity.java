@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivitySplashBinding;
 import com.example.tripblog.model.User;
@@ -77,8 +77,8 @@ public class SplashActivity extends AppCompatActivity {
         String token = sharedPreferences.getString("token", "");
 
         if (!token.isEmpty()) {
-            TripBlogApplication.updateToken(token);
-            AuthService authService = TripBlogApplication.createService(AuthService.class);
+            TripShareApplication.updateToken(token);
+            AuthService authService = TripShareApplication.createService(AuthService.class);
             Arrays.stream(authService.getClass().getInterfaces()).forEach(aClass -> {
                 Log.d(SplashActivity.class.getSimpleName(), aClass.getSimpleName());
             });
@@ -89,7 +89,7 @@ public class SplashActivity extends AppCompatActivity {
 
                     if (response.isSuccessful()) {
                         // Save logged user info
-                        TripBlogApplication.getInstance().setLoggedUser(response.body());
+                        TripShareApplication.getInstance().setLoggedUser(response.body());
                         goToMainActivity();
                     }
                     else {

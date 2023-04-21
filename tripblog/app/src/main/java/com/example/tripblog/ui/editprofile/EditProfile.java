@@ -23,7 +23,7 @@ import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.ActivityUpdateProfileBinding;
 import com.example.tripblog.model.User;
@@ -54,7 +54,7 @@ public class EditProfile extends AppCompatActivity {
 
     // Source pattern https://stackoverflow.com/a/5963425
     private final String NAME_PATTERN = "^(?:[\\p{L}\\p{Mn}\\p{Pd}\\'\\x{2019}]+\\s[\\p{L}\\p{Mn}\\p{Pd}\\'\\x{2019}]+\\s?)+$";
-    private final UserService userService = TripBlogApplication.createService(UserService.class);
+    private final UserService userService = TripShareApplication.createService(UserService.class);
     private ActivityUpdateProfileBinding binding;
     private User currUser;
     ActivityResultLauncher<Intent> activityResultLauncher;
@@ -64,7 +64,7 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityUpdateProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        currUser = TripBlogApplication.getInstance().getLoggedUser();
+        currUser = TripShareApplication.getInstance().getLoggedUser();
         Log.e(TAG, String.valueOf(currUser));
 
         activityResultLauncher = registerForActivityResult(
@@ -256,8 +256,8 @@ public class EditProfile extends AppCompatActivity {
                         // Update success
                         if (body.get(0).getAsInt() == 1) {
                             User updateUser = new Gson().fromJson(body.get(1).getAsJsonObject(), User.class);
-                            TripBlogApplication.getInstance().setLoggedUser(updateUser);
-                            currUser = TripBlogApplication.getInstance().getLoggedUser();
+                            TripShareApplication.getInstance().setLoggedUser(updateUser);
+                            currUser = TripShareApplication.getInstance().getLoggedUser();
                             loadData();
                             Snackbar
                                     .make(binding.getRoot(), "Update successfully!", Snackbar.LENGTH_SHORT).show();

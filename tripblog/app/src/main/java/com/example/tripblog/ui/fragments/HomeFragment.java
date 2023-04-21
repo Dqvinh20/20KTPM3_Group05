@@ -16,7 +16,7 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.ui.MainActivity;
@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment
         latestPostAdapter.setItemClickListener(this);
         popularPosts.setAdapter(popularPostsAdapter);
         lastedPosts.setAdapter(latestPostAdapter);
-        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+        TripPlanService tripPlanService = TripShareApplication.createService(TripPlanService.class);
         scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View view, int i, int i1, int i2, int i3) {
@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+        TripPlanService tripPlanService = TripShareApplication.createService(TripPlanService.class);
         tripPlanService.getPopularTripPlans(
                 1,5
         ).enqueue(new Callback<JsonArray>() {

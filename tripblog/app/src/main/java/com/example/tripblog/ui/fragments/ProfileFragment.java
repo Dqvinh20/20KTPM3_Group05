@@ -20,7 +20,7 @@ import android.widget.Button;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.databinding.FragmentProfileBinding;
 import com.example.tripblog.model.User;
@@ -76,7 +76,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         ((MainActivity) requireActivity()).hideAppBar();
 
-        userService = TripBlogApplication.createService(UserService.class);
+        userService = TripShareApplication.createService(UserService.class);
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -105,7 +105,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             binding.backBtn.setVisibility(View.GONE);
         }
 
-        if(currUserId == TripBlogApplication.getInstance().getLoggedUser().getId()) {
+        if(currUserId == TripShareApplication.getInstance().getLoggedUser().getId()) {
             binding.followBtn.setVisibility(View.GONE);
             binding.moreSettingProfileBtn.setVisibility(View.VISIBLE);
         }
@@ -225,7 +225,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateUI() {
-        User currLoggedUser = TripBlogApplication.getInstance().getLoggedUser();
+        User currLoggedUser = TripShareApplication.getInstance().getLoggedUser();
         Log.e(currLoggedUser.toString(), "1");
         binding.usernameTxt.setText("@" + currLoggedUser.getUserName());
         binding.nameTxt.setText(currLoggedUser.getName());
@@ -237,7 +237,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     private void getLoggedUserFollowings() {
-        userService.getUserFollowing(TripBlogApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
+        userService.getUserFollowing(TripShareApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if(response.isSuccessful()) {
@@ -290,7 +290,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TripBlogApplication.logout(getContext());
+                TripShareApplication.logout(getContext());
                 Intent loginPage = new Intent(getContext(), LoginActivity.class);
                 popupSetting.dismiss();
                 getActivity().finish();

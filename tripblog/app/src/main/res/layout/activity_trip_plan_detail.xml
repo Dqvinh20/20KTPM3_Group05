@@ -209,7 +209,7 @@
                 android:checkable="true"
                 app:iconTint="@color/like_icon_color"
                 app:icon="@drawable/favorite_icon_toggle"
-                style="@style/Widget.Tripblog.PostDetail.BottomAppBar.Button"
+                style="@style/Widget.Tripshare.TripPlanDetail.BottomAppBar.Button"
                 />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/viewCountTxt"
@@ -222,7 +222,7 @@
                 app:icon="@drawable/ic_outline_remove_red_eye_24"
                 android:maxLines="1"
                 android:text="@string/view_txt"
-                style="@style/Widget.Tripblog.PostDetail.BottomAppBar.Button"
+                style="@style/Widget.Tripshare.TripPlanDetail.BottomAppBar.Button"
                 />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/shareBtn"
@@ -231,7 +231,7 @@
                 android:layout_alignParentEnd="true"
                 android:text="@string/share_btn_txt"
                 app:icon="@drawable/ic_share_24"
-                style="@style/Widget.Tripblog.PostDetail.BottomAppBar.Button"
+                style="@style/Widget.Tripshare.TripPlanDetail.BottomAppBar.Button"
                 />
         </RelativeLayout>
     </com.google.android.material.bottomappbar.BottomAppBar>

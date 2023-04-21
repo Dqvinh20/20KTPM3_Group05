@@ -1,7 +1,6 @@
 package com.example.tripblog.ui.resetpassword;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -21,7 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivityResetPasswordBinding;
 import com.example.tripblog.model.response.AuthResponse;
@@ -97,7 +96,7 @@ public class ResetPassword extends AppCompatActivity implements  View.OnClickLis
     @Override
     public void onClick(View view) {
         String email = binding.editEmail.getText().toString().trim();
-        AuthService authService = TripBlogApplication.createService(AuthService.class);
+        AuthService authService = TripShareApplication.createService(AuthService.class);
 
         SimpleLoadingDialog loading = new SimpleLoadingDialog(this);
 

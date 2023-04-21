@@ -6,17 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 
 import androidx.appcompat.widget.SearchView;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.SearchService;
 import com.example.tripblog.databinding.ActivitySearchBinding;
 import com.example.tripblog.model.Location;
@@ -37,8 +35,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Search extends AppCompatActivity {
@@ -216,7 +212,7 @@ public class Search extends AppCompatActivity {
                 try {
                     locations = searchLocation(query);
                     users = searchUser(query);
-                    users.removeIf(user -> user.getId().equals(TripBlogApplication.getInstance().getLoggedUser().getId()));
+                    users.removeIf(user -> user.getId().equals(TripShareApplication.getInstance().getLoggedUser().getId()));
                     List<Serializable> results = new ArrayList<>();
                     results.addAll(locations);
                     results.addAll(users);
@@ -235,7 +231,7 @@ public class Search extends AppCompatActivity {
     }
 
     public List<Location> searchLocation(String query) throws IOException {
-        SearchService searchService = TripBlogApplication.createService(SearchService.class);
+        SearchService searchService = TripShareApplication.createService(SearchService.class);
 
         Response<SearchResponse> response = searchService.searchPlaces(query, 5).execute();
         List<Location> locations = response.body().getLocations();
@@ -245,7 +241,7 @@ public class Search extends AppCompatActivity {
     }
 
     public List<User> searchUser(String query) throws IOException {
-        SearchService searchService = TripBlogApplication.createService(SearchService.class);
+        SearchService searchService = TripShareApplication.createService(SearchService.class);
         Response<JsonObject> response = searchService.getUserFromText(query).execute();
         JsonObject data = response.body();
         JsonArray list = data.getAsJsonArray("users");

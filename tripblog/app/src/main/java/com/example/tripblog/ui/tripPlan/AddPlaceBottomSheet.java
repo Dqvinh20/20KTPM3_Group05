@@ -13,7 +13,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.adapter.SearchResultAdapter;
 import com.example.tripblog.api.services.SearchService;
 import com.example.tripblog.databinding.BottomSheetSearchPlacesBinding;
@@ -32,7 +32,7 @@ public class AddPlaceBottomSheet extends BottomSheetDialogFragment
         implements TextWatcher, Callback<SearchResponse> {
     private final String TAG = BottomSheetDialog.class.getSimpleName();
     BottomSheetSearchPlacesBinding binding;
-    private final SearchService searchService = TripBlogApplication.createService(SearchService.class);
+    private final SearchService searchService = TripShareApplication.createService(SearchService.class);
     private Long lastRequest = 0L;
     SearchResultAdapter adapter = new SearchResultAdapter();
 

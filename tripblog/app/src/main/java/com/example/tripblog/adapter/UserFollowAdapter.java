@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.UserService;
 import com.example.tripblog.model.User;
 //import com.example.tripblog.ui.component.PostnewsfeedAdapterRecycle;
@@ -35,8 +35,8 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
     private boolean isFollowerFragment;
     private ItemClickListener listener;
     private List<User> followingList = null;
-    UserService userService = TripBlogApplication.createService(UserService.class);
-    private final int loggedUserId = TripBlogApplication.getInstance().getLoggedUser().getId();
+    UserService userService = TripShareApplication.createService(UserService.class);
+    private final int loggedUserId = TripShareApplication.getInstance().getLoggedUser().getId();
 
 
     public UserFollowAdapter(List<User> userList, boolean isFollowerFragment, ItemClickListener listener) {
@@ -48,7 +48,7 @@ public class UserFollowAdapter extends RecyclerView.Adapter<UserFollowAdapter.Us
     }
 
     private void loadFollowingList() {
-        userService.getUserFollowing(TripBlogApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
+        userService.getUserFollowing(TripShareApplication.getInstance().getLoggedUser().getId()).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if(response.isSuccessful()){

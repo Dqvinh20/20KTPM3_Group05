@@ -22,7 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivityLoginBinding;
 import com.example.tripblog.model.response.AuthResponse;
@@ -146,7 +146,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         loadingDialog.show();
 
-        AuthService authService = TripBlogApplication.createService(AuthService.class);
+        AuthService authService = TripShareApplication.createService(AuthService.class);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try {
@@ -172,12 +172,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     // Save logged user
                     JsonElement userJson = body.getData().getAsJsonObject().get("user");
                     User loggedUser = new Gson().fromJson(userJson, User.class);
-                    TripBlogApplication.getInstance().setLoggedUser(loggedUser);
+                    TripShareApplication.getInstance().setLoggedUser(loggedUser);
 
                     String token = body.getData().getAsJsonObject().get("token").getAsString();
                     SharedPreferences sharedPreferences = getSharedPreferences("auth", MODE_PRIVATE);
                     sharedPreferences.edit().putString("token", token).commit();
-                    TripBlogApplication.updateToken(token); // Save token for next req
+                    TripShareApplication.updateToken(token); // Save token for next req
 
                     // Go to main
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);

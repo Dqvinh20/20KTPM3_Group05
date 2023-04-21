@@ -30,7 +30,7 @@
             />
 
         <RatingBar
-            style="@style/Widget.Tripblog.GoldenRatingBar"
+            style="@style/Widget.Tripshare.GoldenRatingBar"
             android:id="@+id/avgRatingBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

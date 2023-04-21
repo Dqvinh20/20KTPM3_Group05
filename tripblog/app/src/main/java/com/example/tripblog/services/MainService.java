@@ -21,11 +21,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
-import com.example.tripblog.ui.MainActivity;
-import com.example.tripblog.ui.login.LoginActivity;
+import com.example.tripblog.TripShareApplication;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -82,7 +79,7 @@ public class MainService extends Service {
 
         PendingIntent contentIntent = PendingIntent.getActivity(
                 this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification notification = new NotificationCompat.Builder(this, TripBlogApplication.CHANNEL_1_ID)
+        Notification notification = new NotificationCompat.Builder(this, TripShareApplication.CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.app_logo_transparent)
                 .setContentTitle("User followed Has new Post")
                 .setContentText("https://tripblog.com?postId=18")

@@ -7,12 +7,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.adapter.ScheduleItemAdapter;
 import com.example.tripblog.api.services.ScheduleService;
 import com.example.tripblog.databinding.FragmentScheduleBinding;
@@ -34,7 +33,7 @@ import retrofit2.Response;
 
 public class ScheduleFragment extends Fragment implements IOnClickListener {
     private static final String TAG = ScheduleFragment.class.getSimpleName();
-    private final ScheduleService scheduleService = TripBlogApplication.createService(ScheduleService.class);
+    private final ScheduleService scheduleService = TripShareApplication.createService(ScheduleService.class);
     ScheduleItemAdapter adapter = new ScheduleItemAdapter(this);
     FragmentScheduleBinding binding;
 

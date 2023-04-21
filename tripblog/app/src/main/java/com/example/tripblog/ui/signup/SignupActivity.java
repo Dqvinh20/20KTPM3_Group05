@@ -20,7 +20,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivitySignupBinding;
 import com.example.tripblog.model.response.AuthResponse;
@@ -84,7 +84,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         SimpleLoadingDialog loading = new SimpleLoadingDialog(this);
         loading.show();
 
-        AuthService authService = TripBlogApplication.createService(AuthService.class);
+        AuthService authService = TripShareApplication.createService(AuthService.class);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try {

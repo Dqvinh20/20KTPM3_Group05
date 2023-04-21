@@ -21,7 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.databinding.ActivityMainBinding;
 import com.example.tripblog.ui.fragments.HomeFragment;
 import com.example.tripblog.ui.fragments.CreateFragment;
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     private long lastClickTime = 0;
     private NotificationManagerCompat notificationManagerCompat;
     HomeFragment homeFragment = new HomeFragment();
-    ProfileFragment profileFragment = ProfileFragment.newInstance(TripBlogApplication.getInstance().getLoggedUser().getId(), true);
+    ProfileFragment profileFragment = ProfileFragment.newInstance(TripShareApplication.getInstance().getLoggedUser().getId(), true);
 
     ActivityResultLauncher<Intent> activityResultLauncher;
     public ActivityResultLauncher<Intent> getActivityResultLauncher() {

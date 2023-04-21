@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.model.TripPlan;
 import com.example.tripblog.ui.tripPlan.EditableTripPlanDetailActivity;
@@ -107,7 +107,7 @@ public class PlanListAdapter extends ArrayAdapter<String> {
                                 .setPositiveButton("Yes, delete it", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+                                        TripPlanService tripPlanService = TripShareApplication.createService(TripPlanService.class);
                                         tripPlanService.delete(list.get(position).getId()).enqueue(new Callback<Integer>() {
                                             @Override
                                             public void onResponse(Call<Integer> call, Response<Integer> response) {

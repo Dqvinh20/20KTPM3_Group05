@@ -9,14 +9,12 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-import android.util.Log;
 import android.content.Context;
 
 import androidx.core.app.ActivityCompat;
 
 import com.example.tripblog.api.RetrofitClient;
 import com.example.tripblog.model.User;
-import com.example.tripblog.services.MainService;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -26,10 +24,10 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import retrofit2.Retrofit;
 
-public class TripBlogApplication extends Application {
-    public static final String TAG = TripBlogApplication.class.getSimpleName();
+public class TripShareApplication extends Application {
+    public static final String TAG = TripShareApplication.class.getSimpleName();
     public static final String CHANNEL_1_ID = "channel1";
-    private static TripBlogApplication ins;
+    private static TripShareApplication ins;
     private static Retrofit retrofitClient;
     private User loggedUser = null;
 
@@ -85,7 +83,7 @@ public class TripBlogApplication extends Application {
         }
     }
 
-    public static synchronized TripBlogApplication getInstance() {
+    public static synchronized TripShareApplication getInstance() {
         return ins;
     }
     public static void updateToken(String authToken) {

@@ -111,7 +111,7 @@
                         app:iconPadding="0dp"
                         app:iconTint="@color/like_icon_color"
                         app:icon="@drawable/favorite_icon_toggle"
-                        style="@style/Widget.Tripblog.PostDetail.BottomAppBar.Button"
+                        style="@style/Widget.Tripshare.TripPlanDetail.BottomAppBar.Button"
                         />
 
 <!--                    <ImageView-->

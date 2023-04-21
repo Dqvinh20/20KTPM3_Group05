@@ -19,7 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.databinding.ActivityViewSearchListBinding;
 import com.example.tripblog.model.TripPlan;
@@ -53,7 +53,7 @@ public class ViewSearchList extends AppCompatActivity {
         Bundle currBundle = getIntent().getExtras();;
         Integer locationId = currBundle.getInt("LocationId");
 
-        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+        TripPlanService tripPlanService = TripShareApplication.createService(TripPlanService.class);
         tripPlanService.getTripPlanByLocation(locationId).enqueue(new Callback<JsonArray>() {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {

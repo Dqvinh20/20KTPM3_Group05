@@ -67,7 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:menu="@menu/bottom_nav_menu"
-            style="@style/Widget.Tripblog.BottomNavigationView"
+            style="@style/Widget.Tripshare.BottomNavigationView"
 
             />
 
@@ -77,7 +77,7 @@
             android:layout_height="wrap_content"
             app:layout_anchor="@id/bottomAppBar"
             app:icon="@drawable/ic_baseline_add_24"
-            style="@style/Widget.Tripblog.CreatePostButton"
+            style="@style/Widget.Tripshare.CreatePostButton"
             android:id="@+id/create"
             />
 

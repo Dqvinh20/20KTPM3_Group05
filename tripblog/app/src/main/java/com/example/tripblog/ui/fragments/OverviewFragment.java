@@ -1,11 +1,9 @@
 package com.example.tripblog.ui.fragments;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,7 +14,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.adapter.RatingItemAdapter;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.api.services.RatingService;
@@ -47,7 +45,7 @@ public class OverviewFragment extends Fragment {
     private static final String TAG = OverviewFragment.class.getSimpleName();
     private final short LIMIT_RATING_PER_REQ = 5;
     private final RatingItemAdapter ratingItemAdapter = new RatingItemAdapter();
-    private final RatingService ratingService = TripBlogApplication.createService(RatingService.class);
+    private final RatingService ratingService = TripShareApplication.createService(RatingService.class);
     FragmentOverviewBinding binding;
     private boolean isEditable = false;
     private Integer postId;
@@ -286,7 +284,7 @@ public class OverviewFragment extends Fragment {
     }
 
     private void updateBriefDescription() {
-        TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+        TripPlanService tripPlanService = TripShareApplication.createService(TripPlanService.class);
         RequestBody postIdBody = RequestBody.create(
                 MediaType.parse("multipart/form-data"),
                 postId.toString());

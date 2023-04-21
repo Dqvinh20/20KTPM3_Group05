@@ -27,7 +27,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
 import com.example.tripblog.R;
-import com.example.tripblog.TripBlogApplication;
+import com.example.tripblog.TripShareApplication;
 import com.example.tripblog.api.services.TripPlanService;
 import com.example.tripblog.databinding.FragmentCreateBinding;
 import com.example.tripblog.model.TripPlan;
@@ -92,7 +92,7 @@ public class CreateFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         final Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.Theme_Tripblog_DialogFragmentAnim;
+        dialog.getWindow().getAttributes().windowAnimations = R.style.Theme_Tripshare_DialogFragmentAnim;
         return dialog;
     }
 
@@ -127,7 +127,7 @@ public class CreateFragment extends DialogFragment
                 }
         );
 
-        setStyle(STYLE_NO_TITLE, R.style.Theme_Tripblog_NoActionBar);
+        setStyle(STYLE_NO_TITLE, R.style.Theme_Tripshare_NoActionBar);
     }
 
     @Override
@@ -299,7 +299,7 @@ public class CreateFragment extends DialogFragment
         String briefDescription = binding.editTripBriefDescription.getText().toString();
         String startDateStr = formatDate(startDate, SUBMIT_DATE_PATTERN);
         String endDateStr = formatDate(endDate, SUBMIT_DATE_PATTERN);
-        String createdBy = TripBlogApplication.getInstance().getLoggedUser().getId().toString();
+        String createdBy = TripShareApplication.getInstance().getLoggedUser().getId().toString();
 
         RequestBody tripTitleBody = RequestBody.create(MediaType.parse("multipart/form-data"), tripTitle);
         RequestBody briefDescriptionBody = RequestBody.create(MediaType.parse("multipart/form-data"), briefDescription);
@@ -318,7 +318,7 @@ public class CreateFragment extends DialogFragment
             @Override
             public void run() {
                 try {
-                    TripPlanService tripPlanService = TripBlogApplication.createService(TripPlanService.class);
+                    TripPlanService tripPlanService = TripShareApplication.createService(TripPlanService.class);
                     Call<TripPlan> createNewTripCall = tripPlanService.createNewTripPlan(
                             tripTitleBody,
                             startDateBody,

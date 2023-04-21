@@ -247,7 +247,7 @@ public class EditableTripPlanDetailActivity extends TripPlanDetailActivity {
         String message = String.format(
                 "%s %s (%s)",
 
-                "Are you sure you want to change post privacy to",
+                "Are you sure you want to change trip plan privacy to",
                 getString(isPublic ? R.string.private_txt : R.string.public_txt),
                 getString(isPublic ? R.string.private_scope : R.string.public_scope)
         );

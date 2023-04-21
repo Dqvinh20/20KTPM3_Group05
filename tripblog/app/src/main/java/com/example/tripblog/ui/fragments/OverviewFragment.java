@@ -141,7 +141,6 @@ public class OverviewFragment extends Fragment {
         }
     }
     private void initScrollListener() {
-        Log.e()
         binding.ratingList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -150,7 +149,6 @@ public class OverviewFragment extends Fragment {
                 if (newState == RecyclerView.SCROLL_STATE_DRAGGING &&
                         !binding.ratingList.canScrollVertically(1)) {
                     if (!isLoading) {
-                        currentPage++;
                         isLoading = true;
                         loadMore();
                     }
@@ -190,10 +188,10 @@ public class OverviewFragment extends Fragment {
 
     private void loadMore() {
         Log.e(TAG, "loadMore");
-        currentPage += 1;
         if (currentPage > maxPage) {
             return;
         }
+        currentPage += 1;
 
         binding.ratingList.post(() -> {
             ratingItemAdapter.add(null);

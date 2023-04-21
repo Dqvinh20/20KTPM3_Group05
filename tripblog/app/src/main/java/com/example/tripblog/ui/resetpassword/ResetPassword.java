@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.example.tripblog.TripBlogApplication;
 import com.example.tripblog.api.services.AuthService;
 import com.example.tripblog.databinding.ActivityResetPasswordBinding;
 import com.example.tripblog.model.response.AuthResponse;
+import com.example.tripblog.ui.dialog.SimpleLoadingDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -32,8 +34,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ResetPassword extends AppCompatActivity implements  View.OnClickListener   {
-    MaterialAlertDialogBuilder loading = null;
-
     ActivityResetPasswordBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,22 +99,17 @@ public class ResetPassword extends AppCompatActivity implements  View.OnClickLis
         String email = binding.editEmail.getText().toString().trim();
         AuthService authService = TripBlogApplication.createService(AuthService.class);
 
+        SimpleLoadingDialog loading = new SimpleLoadingDialog(this);
 
-        if (loading == null) {
-            loading = new MaterialAlertDialogBuilder(ResetPassword.this);
-            loading.setView(R.layout.loading);
-            loading.setBackground(getDrawable(android.R.color.transparent));
-            loading.setCancelable(false);
-        }
-        AlertDialog loadingDialog = loading.show();
+        loading.show();
 
         authService.resetPassword(email).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                loadingDialog.dismiss();
+                loading.dismiss();
                 AuthResponse authResponse = response.body();
-
-                if (authResponse.getStatus() == "success"){
+                Log.e("onResponse", authResponse.getStatus());
+                if (authResponse.getStatus().equals("success")){
                     showDialogMessage(getString(R.string.success), getString(R.string.success_message), () -> {
                         finish();
                     });
@@ -127,7 +122,7 @@ public class ResetPassword extends AppCompatActivity implements  View.OnClickLis
 
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
-                loadingDialog.dismiss();
+                loading.dismiss();
 
                 Snackbar
                         .make(binding.getRoot(), "Can't connect to server!", Snackbar.LENGTH_LONG)

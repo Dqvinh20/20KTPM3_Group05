@@ -84,7 +84,6 @@ public class SplashActivity extends AppCompatActivity {
             });
             char countTry = 0;
             while (countTry < 4) {
-
                 try {
                     Response<User> response = authService.retrieveLoggedUserInfo().execute();
 
@@ -105,6 +104,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         goToLoginActivity();
+        sharedPreferences.edit().putString("token", "");
     }
 
     private void goToMainActivity() {

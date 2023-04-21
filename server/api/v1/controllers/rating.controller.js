@@ -2,12 +2,12 @@ const RatingService = require("../services/rating.service");
 
 const createRating = async (req, res) => {
   try {
-    const { post_id, score, content } = req.body;
+    const { post_id, score, content, user_id } = req.body;
     const ratingData = {
       score,
       content,
       post_id,
-      rating_user_id: req.user.id,
+      rating_user_id: user_id ? user_id : req.user.id,
     };
     const rating = await RatingService.createRating(ratingData);
     res.json(rating);

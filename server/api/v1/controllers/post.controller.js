@@ -174,19 +174,20 @@ const createPost = async (req, res) => {
 };
 
 const createExamplePost = async (req, res) => {
-  const user_id = req.user.id;
+  let { user_id } = req.query;
+  if (!user_id) user_id = req.user.id;
+  else user_id = Number(user_id);
   const start_date = dayjs().toDate();
   const end_date = dayjs(start_date).add(3, "day").toDate();
   const postData = {
-    title: "Trip to Vietnam in 3 days",
-    brief_description: "Trip to Vietnam in 3 days",
+    title: "Example plan in 3 days",
+    brief_description: "This is an example plan in 3 days. Enjoy!",
     start_date,
     end_date,
     is_public: true,
     created_by: user_id,
     schedules: createSchedules(start_date, end_date),
   };
-  console.log(postData);
 
   try {
     const post = await PostService.createPost(postData);

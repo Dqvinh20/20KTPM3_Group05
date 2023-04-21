@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.tripblog'
+    namespace 'com.example.tripshare'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.tripblog"
+        applicationId "com.example.tripshare"
         minSdk 28
         targetSdk 33
         versionCode 1

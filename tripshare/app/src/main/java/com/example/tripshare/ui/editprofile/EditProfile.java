@@ -57,6 +57,7 @@ public class EditProfile extends AppCompatActivity {
     private final UserService userService = TripShareApplication.createService(UserService.class);
     private ActivityUpdateProfileBinding binding;
     private User currUser;
+    private Uri avatarUri = null;
     ActivityResultLauncher<Intent> activityResultLauncher;
 
     @Override
@@ -74,7 +75,12 @@ public class EditProfile extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK  && result.getData() != null) {
                             final Uri imageUri = result.getData().getData();
-                            updateCoverImg(imageUri);
+                            avatarUri = imageUri;
+                            // Load author avatar
+                            Glide.with(binding.getRoot())
+                                    .load(avatarUri)
+                                    .centerCrop()
+                                    .into(binding.userAvatar);
                         }
                     }
                 }
@@ -173,6 +179,17 @@ public class EditProfile extends AppCompatActivity {
         }
 
         data.put("name",name);
+
+        if (avatarUri != null) {
+            String imageRealPath = PathUtil.getRealPath(this, avatarUri);
+            File coverImgFile = new File(imageRealPath);
+            RequestBody coverImg = RequestBody.create(MediaType.parse("multipart/form-data"), coverImgFile);
+            MultipartBody.Part multipartBodyCoverImg = MultipartBody.Part.createFormData("avatar_img", coverImgFile.getName(), coverImg);
+
+            data.put("avatar_img", multipartBodyCoverImg);
+            data.put("imageRealPath", imageRealPath);
+        }
+
         data.put("loading", loadingDialog);
         callUpdateApi(data);
     }
@@ -199,24 +216,17 @@ public class EditProfile extends AppCompatActivity {
         }
     }
 
-    private void updateCoverImg(Uri imageUri) {
-        try {
-            SimpleLoadingDialog loadingDialog = new SimpleLoadingDialog(this);
-            loadingDialog.show();
-
-            String imageRealPath = PathUtil.getRealPath(this, imageUri);
-            File coverImgFile = new File(imageRealPath);
-            RequestBody coverImg = RequestBody.create(MediaType.parse("multipart/form-data"), coverImgFile);
-            MultipartBody.Part multipartBodyCoverImg = MultipartBody.Part.createFormData("avatar_img", coverImgFile.getName(), coverImg);
-            Properties data = new Properties();
-            data.put("avatar_img", multipartBodyCoverImg);
-            data.put("imageRealPath", imageRealPath);
-            data.put("loading", loadingDialog);
-            callUpdateApi(data);
-        } catch (Exception err) {
-            Log.e(TAG, err.toString());
-        }
-    };
+    //    private void updateCoverImg(Uri imageUri) {
+//        try {
+//            SimpleLoadingDialog loadingDialog = new SimpleLoadingDialog(this);
+//            loadingDialog.show();
+//
+//
+//            callUpdateApi(data);
+//        } catch (Exception err) {
+//            Log.e(TAG, err.toString());
+//        }
+//    };
     private void callUpdateApi(Properties properties) {
         userService.updateUser(
                         (RequestBody) properties.get("user_name"),
@@ -233,11 +243,6 @@ public class EditProfile extends AppCompatActivity {
                         }
 
                         if (!response.isSuccessful()) {
-                            if (properties.get("avatar_img") != null) {
-                                Snackbar
-                                    .make(binding.getRoot(), "Upload image unsuccessfully!", Snackbar.LENGTH_SHORT).show();
-                                return;
-                            }
                             try {
                                 String responseData = response.errorBody().string();
                                 JsonObject errorBody = new Gson().fromJson(responseData, JsonObject.class);

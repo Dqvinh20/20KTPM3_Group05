@@ -31,36 +31,44 @@ const getAllLocationsInSchedule = async (schedule_id) => {
 
 const addLocation = async (schedule_id, location_id) => {
   const schedule = await Schedule.findByPk(schedule_id);
+  if (!schedule) {
+    throw new Error("Schedule does not exist");
+  }
+
   const location = await LocationService.getLocationById(location_id);
   if (!location) {
     throw new Error("Location does not exist");
-  } else if (await schedule.hasLocation(location_id)) {
-    throw new Error("Location already exists in schedule");
   }
 
-  const [[locationResult], scheduleResult] = await Promise.all([
-    schedule.addLocation(location_id),
+  const [locationResult, scheduleResult] = await Promise.all([
+    await SchedulesLocations.create({
+      schedule_id: schedule_id,
+      location_id: location_id,
+    }),
     schedule.increment("location_count", { by: 1 }),
   ]);
 
   locationResult.position = scheduleResult.location_count;
   await locationResult.save();
 
-  return await schedule.getLocations({
+  let result = await schedule.getLocations({
     where: { id: location_id },
+    through: { where: { id: locationResult.id } },
   });
+
+  return result;
 };
 
-const editLocationNote = async (schedule_id, location_id, note) => {
+const editLocationNote = async (schedule_id, location_pos, note) => {
   const locationInSchedule = await SchedulesLocations.findOne({
     where: {
       schedule_id: schedule_id,
-      location_id: location_id,
+      position: location_pos,
     },
   });
 
   if (!locationInSchedule) {
-    throw new Error("Location does not exist in schedule");
+    throw new Error("Note does not exist");
   }
 
   locationInSchedule.note = note;
@@ -68,17 +76,30 @@ const editLocationNote = async (schedule_id, location_id, note) => {
   return locationInSchedule;
 };
 
-const removeLocation = async (schedule_id, location_id) => {
+const removeLocation = async (schedule_id, location_pos) => {
   const schedule = await Schedule.findByPk(schedule_id);
+  if (!schedule) {
+    throw new Error("Schedule does not exist");
+  }
+
   let currPosition = await schedule.getLocations({
-    where: { id: location_id },
-    through: { attributes: ["position"] },
+    through: { attributes: ["position"], where: { position: location_pos } },
   });
+
+  if (!currPosition) {
+    throw new Error("Location does not exist in schedule");
+  }
+
   if (currPosition.length !== 0) {
     currPosition = currPosition[0].SchedulesLocations.position;
   }
 
-  const result = await schedule.removeLocation(location_id);
+  const result = await SchedulesLocations.destroy({
+    where: {
+      schedule_id: schedule_id,
+      position: location_pos,
+    },
+  });
   await schedule.decrement("location_count", { by: result });
 
   if (result === 1) {
@@ -123,42 +144,50 @@ const removeAllSchedules = async (post_id) => {
 };
 
 const changeScheduleRange = async (post_id, start, end) => {
-  try {
-    const post = await Post.findByPk(post_id, {
-      attributes: ["start_date", "end_date"],
-    });
+  const post = await Post.findByPk(post_id, {
+    attributes: ["start_date", "end_date"],
+  });
+  const newStart = new Date(start);
+  const newEnd = new Date(end);
+  const oldStart = new Date(post.start_date);
+  const oldEnd = new Date(post.end_date);
 
-    const newEnd = new Date(end);
-    const newStart = new Date(start);
-
-    if (newStart > newEnd) {
-      return;
-    }
-    await removeBetween(
-      post_id,
-      post.start_date,
-      dayjs(newStart).subtract(1, "day").toDate()
-    );
-    await removeBetween(
-      post_id,
-      dayjs(newEnd).add(1, "day").toDate(),
-      post.end_date
-    );
-    await addBetween(post_id, newStart, newEnd);
-    await Post.update(
-      {
-        start_date: newStart,
-        end_date: newEnd,
-      },
-      {
-        where: {
-          id: post_id,
-        },
-      }
-    );
-  } catch (e) {
-    throw e;
+  if (
+    newStart.getTime() === oldStart.getTime() &&
+    newEnd.getTime() === oldEnd.getTime()
+  ) {
+    return 0;
   }
+
+  if (newStart > newEnd) {
+    throw new Error("Start date must be before end date");
+  }
+
+  await removeBetween(
+    post_id,
+    post.start_date,
+    dayjs(newStart).subtract(1, "day").toDate()
+  );
+
+  await removeBetween(
+    post_id,
+    dayjs(newEnd).add(1, "day").toDate(),
+    post.end_date
+  );
+  await addBetween(post_id, newStart, newEnd);
+
+  const result = await Post.update(
+    {
+      start_date: newStart,
+      end_date: newEnd,
+    },
+    {
+      where: {
+        id: post_id,
+      },
+    }
+  );
+  return result[0];
 };
 
 const addBetween = async (post_id, start, end) => {
@@ -215,6 +244,5 @@ module.exports = {
   getScheduleById,
   removeAllSchedules,
   changeScheduleRange,
-  addBetween,
   model: Schedule,
 };

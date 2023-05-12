@@ -2,7 +2,6 @@ const { DataTypes } = require("sequelize");
 
 const sequelize = require("../config");
 const User = require("./user.model");
-const Converter = require("../utils/converter");
 
 const Post = sequelize.define(
   "Post",
@@ -16,16 +15,15 @@ const Post = sequelize.define(
     title: {
       type: DataTypes.TEXT,
     },
-    title_non_accent: {
-      type: DataTypes.TEXT,
-    },
     brief_description: {
       type: DataTypes.TEXT,
+      defaultValue: "",
     },
     cover_img: {
       type: DataTypes.STRING,
+      allowNull: false,
       defaultValue:
-        "https://res.cloudinary.com/dkzlalahi/image/upload/v1677847284/cld-sample-2.jpg",
+        "https://res.cloudinary.com/dkzlalahi/image/upload/q_90/v1681707145/default_trip_plan_cover_img.png",
     },
     is_public: {
       type: DataTypes.BOOLEAN,
@@ -58,18 +56,6 @@ const Post = sequelize.define(
   },
   {
     tableName: "posts",
-    hooks: {
-      beforeCreate: async (post) => {
-        post.title_non_accent = Converter.toLowerCaseNonAccentVietnamese(
-          post.title
-        );
-      },
-      beforeUpdate: async (post) => {
-        post.title_non_accent = Converter.toLowerCaseNonAccentVietnamese(
-          post.title
-        );
-      },
-    },
   }
 );
 
@@ -102,51 +88,5 @@ User.belongsToMany(Post, {
   foreignKey: "user_id",
   otherKey: "post_id",
 });
-
-(async () => {
-  // await Post.sync();
-  // await Post.create({
-  //   title: "Post 1",
-  //   brief_description: "Post 1 brief description",
-  //   created_by: 1,
-  // });
-  // await sequelize.models.users_posts_like.create({
-  //   user_id: 1,
-  //   post_id: 1,
-  // });
-  // await Post.findByPk(1, {
-  //   attributes: {
-  //     exclude: ["created_by"],
-  //   },
-  //   include: [
-  //     {
-  //       model: User,
-  //       as: "liked_by",
-  //       attributes: ["id", "email"],
-  //       through: { attributes: [] },
-  //     },
-  //     {
-  //       model: User,
-  //       as: "author",
-  //       attributes: ["id", "email"],
-  //     },
-  //   ],
-  // }).then((post) => console.log(JSON.stringify(post, null, 2)));
-  // await User.findByPk(1, {
-  //   // attributes: {
-  //   //   exclude: ["created_by"],
-  //   // },
-  //   include: [
-  //     {
-  //       model: Post,
-  //       as: "liked_posts",
-  //       attributes: {
-  //         exclude: ["created_by"],
-  //       },
-  //       through: { attributes: [] },
-  //     },
-  //   ],
-  // }).then((post) => console.log(JSON.stringify(post, null, 2)));
-})();
 
 module.exports = Post;

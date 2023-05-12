@@ -231,8 +231,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         binding.nameTxt.setText(currLoggedUser.getName());
         Glide.with(binding.getRoot())
                 .load(currLoggedUser.getAvatar())
-                .placeholder(R.drawable.da_lat)
-                .error(R.drawable.da_lat)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.avatar)
                 .into(binding.avatar);
     }
 

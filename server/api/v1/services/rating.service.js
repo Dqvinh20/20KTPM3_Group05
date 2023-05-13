@@ -24,11 +24,6 @@ const createRating = async (ratingData) => {
     );
     await post.setDataValue("rating_count", ratings.count);
     await post.save();
-    // await post.increment("rating_count", { by: 1 });
-    // post.avg_rating =
-    //   (post.avg_rating * (post.rating_count - 1) + ratingData.score) /
-    //   post.rating_count;
-    // await post.save();
     return { success: 1, error: null, newRating };
   } catch (error) {
     console.log(error);

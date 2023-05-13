@@ -31,25 +31,6 @@ const getPopularPosts = async ({ offset, limit }) => {
   return result;
 };
 
-// const countAllNewestPosts = async () => {
-//     const count = await Post.count({
-//         where: { is_public: true },
-//         order: [["createdAt", "DESC"]],
-//     });
-//     return count;
-// };
-
-// const getNewestPosts = async ({ offset, limit }) => {
-//     const result = await Post.findAll(
-//         commonPost({
-//             order: [["createdAt", "DESC"]],
-//             offset: offset ? offset : 0,
-//             limit,
-//         })
-//     );
-//     return result;
-// };
-
 const getNewestPostsOfFollowings = async (
   followings,
   { where, limit, offset }
@@ -149,6 +130,4 @@ const getNewsFeed = async (user_id, { offset, limit, ...opts }) => {
 module.exports = {
   getPopularPosts,
   getNewsFeed,
-  // getNewestPosts,
-  // countAllNewestPosts,
 };

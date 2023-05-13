@@ -58,8 +58,4 @@ const Location = sequelize.define(
   }
 );
 
-// (async () => {
-//   await Location.sync({ force: true });
-// })();
-
 module.exports = Location;

@@ -1,4 +1,4 @@
-package com.example.tripshare.adapter.viewpaper;
+package com.example.tripshare.adapter.viewpager;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

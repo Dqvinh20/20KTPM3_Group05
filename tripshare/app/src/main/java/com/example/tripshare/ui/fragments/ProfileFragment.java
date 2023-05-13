@@ -25,7 +25,7 @@ import com.example.tripshare.api.services.UserService;
 import com.example.tripshare.databinding.FragmentProfileBinding;
 import com.example.tripshare.model.User;
 import com.example.tripshare.ui.MainActivity;
-import com.example.tripshare.adapter.viewpaper.PostViewPagerAdapter;
+import com.example.tripshare.adapter.viewpager.PostViewPagerAdapter;
 import com.example.tripshare.ui.editprofile.EditProfile;
 import com.example.tripshare.ui.login.LoginActivity;
 import com.example.tripshare.utils.NumberUtil;

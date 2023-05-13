@@ -1,4 +1,4 @@
-package com.example.tripshare.adapter.viewpaper;
+package com.example.tripshare.adapter.viewpager;
 
 import android.os.Bundle;
 
@@ -10,7 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.tripshare.ui.fragments.OverviewFragment;
 import com.example.tripshare.ui.fragments.ScheduleFragment;
 
-public class PostDetailViewPaperAdapter extends FragmentStateAdapter {
+public class PostDetailViewPagerAdapter extends FragmentStateAdapter {
     private OverviewFragment overviewFragment = new OverviewFragment();
     private ScheduleFragment scheduleFragment = new ScheduleFragment();
     private boolean isEditable = false;
@@ -21,7 +21,7 @@ public class PostDetailViewPaperAdapter extends FragmentStateAdapter {
         scheduleFragment.setEditable(isEditable);
     }
 
-    public PostDetailViewPaperAdapter(@NonNull FragmentActivity fragmentActivity) {
+    public PostDetailViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 

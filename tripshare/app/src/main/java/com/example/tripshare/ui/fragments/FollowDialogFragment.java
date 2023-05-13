@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.tripshare.databinding.DialogFollowBinding;
-import com.example.tripshare.adapter.viewpaper.FollowViewPagerAdapter;
+import com.example.tripshare.adapter.viewpager.FollowViewPagerAdapter;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class FollowDialogFragment extends DialogFragment {

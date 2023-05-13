@@ -22,7 +22,7 @@ import android.widget.EditText;
 import com.bumptech.glide.Glide;
 import com.example.tripshare.R;
 import com.example.tripshare.TripShareApplication;
-import com.example.tripshare.adapter.viewpaper.PostDetailViewPaperAdapter;
+import com.example.tripshare.adapter.viewpager.PostDetailViewPagerAdapter;
 import com.example.tripshare.api.services.TripPlanService;
 import com.example.tripshare.api.services.UserService;
 import com.example.tripshare.databinding.ActivityTripPlanDetailBinding;
@@ -51,7 +51,7 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
     protected final String DATE_PATTERN = "MMM d"; // "d/M/yy"
     protected ActivityTripPlanDetailBinding binding;
     protected MutableLiveData<TripPlan> currPostLiveData = new MutableLiveData<>();
-    protected PostDetailViewPaperAdapter contentViewPaperAdapter;
+    protected PostDetailViewPagerAdapter contentViewPaperAdapter;
     protected final TripPlanService tripPlanService = TripShareApplication.createService(TripPlanService.class);
     protected boolean isEditable = false;
     private boolean isLoading = false;
@@ -108,7 +108,7 @@ public class TripPlanDetailActivity extends AppCompatActivity implements View.On
     }
     protected void reloadEditableView() {
         // View pager
-        contentViewPaperAdapter = new PostDetailViewPaperAdapter(TripPlanDetailActivity.this);
+        contentViewPaperAdapter = new PostDetailViewPagerAdapter(TripPlanDetailActivity.this);
         contentViewPaperAdapter.setEditable(isEditable);
 
         binding.contentViewPaper.setAdapter(contentViewPaperAdapter);

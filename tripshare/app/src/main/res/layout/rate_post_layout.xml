@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+<androidx.cardview.widget.CardView
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/Widget.Material3.CardView.Elevated"
+    >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="12dp"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Trip plan rating"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Provide your rating about the trip"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:gravity="center_horizontal"
+            />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:numStars="5"
+            android:stepSize="1"
+            android:isIndicator="false"
+            style="@style/Widget.Tripshare.GoldenRatingBar"
+            android:layout_marginVertical="@dimen/margin_padding_size_medium"
+            />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:counterMaxLength="400"
+            app:hintEnabled="false"
+            app:helperTextEnabled="false"
+            >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@id/contentEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:textAlignment="gravity"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:hint="@string/content_rating_hint"
+            android:paddingHorizontal="@dimen/margin_padding_size_medium"
+            android:paddingVertical="@dimen/margin_padding_size_medium"
+            android:layout_marginHorizontal="@dimen/margin_padding_size_small"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
+            android:inputType="text|textMultiLine"
+            android:minLines="7"
+            android:maxLines="9"
+            android:ellipsize="end"
+            android:maxLength="400"
+            tools:text="@tools:sample/lorem/random"
+            />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--        android:background="@drawable/rating_content_edit_bg"-->
+        <!--            android:textColor="?attr/colorOnPrimaryContainer"-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end|right"
+            >
+            <Button
+                android:id="@+id/cancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                style="@style/Widget.Material3.Button.TextButton"
+                />
+            <Button
+                android:id="@+id/submitButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send Rating"
+                style="@style/Widget.Material3.Button.TextButton"
+                />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

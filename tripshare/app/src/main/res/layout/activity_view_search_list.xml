@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.tripPlan.ViewSearchList">
+    <TextView
+        android:paddingHorizontal="@dimen/margin_padding_size_large"
+        android:paddingVertical="@dimen/margin_padding_size_small"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="There is no trip plan about this place"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
+        android:gravity="center"
+        android:id="@+id/noResultInfo"
+        android:visibility="gone"
+        />
+    <ListView
+        android:id="@+id/list_result_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+</LinearLayout>

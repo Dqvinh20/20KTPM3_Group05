@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.editprofile.EditProfile"
+    android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="@dimen/margin_padding_size_medium">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/avatarLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/margin_padding_size_medium">
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Outlined"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:theme="@style/Theme.Material3.Light"
+                app:cardCornerRadius="250dp"
+                app:cardElevation="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeColor="@color/black">
+
+                <ImageView
+                    android:id="@+id/userAvatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/vinhhalong" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/editAvatarButton"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="?minTouchTargetSize"
+                android:layout_height="?minTouchTargetSize"
+                android:backgroundTint="@color/quantum_grey300"
+                app:icon="@android:drawable/ic_menu_edit"
+                app:iconGravity="textStart"
+                app:iconTint="@color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:strokeColor="@color/quantum_white_100"
+                app:strokeWidth="2dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nameEditLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/avatarLayout"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
+            android:hint="@string/name_hint"
+            app:errorEnabled="true"
+            app:errorTextAppearance="?attr/textAppearanceTitleMedium"
+            app:hintEnabled="true"
+            app:hintTextAppearance="?attr/textAppearanceTitleMedium"
+            app:placeholderText="e.g. John Smith">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/nameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/usernameEditLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/nameEditLayout"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
+            android:hint="Username"
+            app:errorEnabled="true"
+            app:errorTextAppearance="?attr/textAppearanceTitleMedium"
+            app:hintEnabled="true"
+            app:hintTextAppearance="?attr/textAppearanceTitleMedium"
+            app:placeholderText="e.g. gr5">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/usernameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/emailEditLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/usernameEditLayout"
+            android:layout_marginBottom="@dimen/margin_padding_size_small"
+            android:enabled="false"
+            android:hint="Email"
+            app:hintEnabled="true"
+            app:hintTextAppearance="?attr/textAppearanceTitleMedium">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailEdit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:text="@tools:sample/full_names" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/emailEditLayout"
+            android:layout_centerHorizontal="true"
+            android:text="Save"
+
+            />
+        <!--        android:id="@+id/nameEditText"-->
+
+        <!--        <EditText-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="?minTouchTargetSize"-->
+        <!--            android:layout_below="@+id/avatarLayout"-->
+        <!--            android:background="@drawable/form_border"-->
+        <!--            android:text="  Name  e.g Võ Minh Thông"-->
+        <!--            android:id="@+id/nameEditText"-->
+        <!--            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />-->
+
+        <!--        <EditText-->
+        <!--            android:id="@+id/usernameEditText"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="?minTouchTargetSize"-->
+        <!--            android:layout_below="@id/nameEditText"-->
+        <!--            android:background="@drawable/form_border"-->
+        <!--            android:text="  UserName  e.g vo minh thong"-->
+        <!--            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/emailText"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="?minTouchTargetSize"-->
+        <!--            android:layout_below="@id/usernameEditText"-->
+        <!--            android:background="@drawable/form_border"-->
+        <!--            android:gravity="center_vertical|start"-->
+        <!--            android:text="  UserName  e.g vo minh thong"-->
+        <!--            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />-->
+
+        <!--        <com.google.android.material.button.MaterialButton-->
+        <!--            android:id="@+id/saveButton"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_below="@id/emailText"-->
+        <!--            android:layout_centerHorizontal="true"-->
+        <!--            android:text="Save" />-->
+    </RelativeLayout>
+</RelativeLayout>
